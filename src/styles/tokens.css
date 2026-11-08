@@ -1,0 +1,73 @@
+/*
+ * Design token EOS Impianti — UNICA fonte di verità per colori, font, spaziature.
+ * I componenti usano solo queste variabili; nessun colore brand ridefinito altrove.
+ * Chart.js legge gli stessi valori a runtime con getComputedStyle (vedi Fase 3).
+ */
+:root {
+  /* Brand */
+  --c-red: #e52320;
+  --c-red-hover: #c81e1b;
+  --c-blue: #0044bd;
+  --c-blue-hover: #003399;
+  --c-green: #33a652;
+  --c-green-chart: #10b981;
+  --c-amber: #f59e0b; /* batteria nei grafici, glow lampadina */
+  --c-sky: #38bdf8; /* impulso elettrico */
+
+  /* Neutri */
+  --c-ink: #0f172a; /* titoli */
+  --c-ink-2: #1e293b; /* superfici scure */
+  --c-text: #475569; /* testo corrente */
+  --c-text-muted: #64748b;
+  --c-text-on-dark: #e2e8f0;
+  --c-text-on-dark-muted: #cbd5e1;
+  --c-bg: #f8fafc;
+  --c-surface: #ffffff;
+  --c-border: #e2e8f0;
+  --c-border-strong: #cbd5e1;
+
+  /* Stati */
+  --c-success-bg: #ecfdf5;
+  --c-success-border: #a7f3d0;
+  --c-success-text: #065f46;
+  --c-error-bg: #fef2f2;
+  --c-error-border: #fecaca;
+  --c-error-text: #991b1b;
+
+  /* Tipografia */
+  --font-heading: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Raggi, ombre */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 4px 6px -1px rgb(15 23 42 / 0.04);
+  --shadow-md: 0 10px 25px -5px rgb(15 23 42 / 0.08);
+  --shadow-lg: 0 20px 50px rgb(15 23 42 / 0.25);
+
+  /* Layout */
+  --container: 1080px; /* box centrale: lascia liberi i margini per cavo e icone */
+  --container-wide: 1350px;
+  --gutter: clamp(16px, 4vw, 40px);
+  /* Header fixed: non occupa spazio nel flusso, quindi il cambio d'altezza allo scroll
+     non provoca layout shift. --header-h-compact è l'altezza dopo lo scroll. */
+  --header-h: 64px;
+  --header-h-compact: 64px;
+  --focus-ring: 0 0 0 3px var(--c-surface), 0 0 0 5px var(--c-blue);
+
+  /* Livelli */
+  --z-wire: 1;
+  --z-content: 5;
+  --z-header: 1000;
+  --z-cookie: 4000;
+  --z-modal: 5000;
+}
+
+@media (min-width: 960px) {
+  :root {
+    --header-h: 128px;
+    --header-h-compact: 88px;
+  }
+}

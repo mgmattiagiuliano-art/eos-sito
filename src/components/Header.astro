@@ -1,0 +1,290 @@
+---
+import { company, nav } from '../data/site';
+---
+
+<header class="site-header" data-site-header>
+  <div class="site-header__inner">
+    <a class="site-header__brand" href="/" aria-label={`${company.legalName} — home`}>
+      <img
+        class="site-header__logo"
+        src="/logo.png"
+        alt=""
+        width="970"
+        height="257"
+        decoding="async"
+        fetchpriority="high"
+      />
+    </a>
+
+    <button
+      class="site-header__toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="site-nav"
+      data-nav-toggle
+    >
+      <span class="site-header__burger" aria-hidden="true"></span>
+      <span class="visually-hidden">Apri il menu</span>
+    </button>
+
+    <nav id="site-nav" class="site-nav" aria-label="Principale" data-nav>
+      <ul class="site-nav__list">
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} class:list={['site-nav__link', { 'site-nav__link--cta': item.cta }]}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: var(--z-header);
+    height: var(--header-h);
+    background: rgb(255 255 255 / 0.96);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--c-border);
+    box-shadow: 0 4px 20px rgb(0 0 0 / 0.03);
+    transition: height 0.3s ease;
+  }
+
+  .site-header[data-scrolled] {
+    height: var(--header-h-compact);
+  }
+
+  .site-header__inner {
+    height: 100%;
+    max-width: var(--container-wide);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .site-header__brand {
+    display: block;
+    flex-shrink: 0;
+    border-radius: 4px;
+  }
+
+  .site-header__logo {
+    height: 40px;
+    width: auto;
+    transition: height 0.3s ease;
+  }
+
+  /* ---------- Menu mobile ---------- */
+  .site-header__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-sm);
+    background: var(--c-surface);
+  }
+
+  .site-header__burger,
+  .site-header__burger::before,
+  .site-header__burger::after {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: var(--c-ink);
+    border-radius: 1px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .site-header__burger {
+    position: relative;
+  }
+
+  .site-header__burger::before,
+  .site-header__burger::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+
+  .site-header__burger::before {
+    top: -6px;
+  }
+
+  .site-header__burger::after {
+    top: 6px;
+  }
+
+  [aria-expanded='true'] .site-header__burger {
+    background: transparent;
+  }
+
+  [aria-expanded='true'] .site-header__burger::before {
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  [aria-expanded='true'] .site-header__burger::after {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  .site-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--c-surface);
+    border-bottom: 1px solid var(--c-border);
+    box-shadow: var(--shadow-md);
+    display: none;
+  }
+
+  .site-nav[data-open] {
+    display: block;
+  }
+
+  .site-nav__list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    padding: 8px var(--gutter) 16px;
+  }
+
+  .site-nav__link {
+    display: block;
+    padding: 12px 4px;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--c-text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  .site-nav__link:hover {
+    color: var(--c-blue);
+  }
+
+  .site-nav__link--cta {
+    margin-top: 12px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--c-blue);
+    color: #fff;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  .site-nav__link--cta:hover {
+    background: var(--c-blue-hover);
+    color: #fff;
+  }
+
+  /* ---------- Desktop: logo centrato sopra la nav (design approvato) ---------- */
+  @media (min-width: 960px) {
+    .site-header__inner {
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .site-header__logo {
+      height: 68px;
+    }
+
+    [data-scrolled] .site-header__logo {
+      height: 38px;
+    }
+
+    .site-header__toggle {
+      display: none;
+    }
+
+    .site-nav {
+      position: static;
+      display: block;
+      background: none;
+      border: none;
+      box-shadow: none;
+    }
+
+    .site-nav__list {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 4px 24px;
+      padding: 0;
+    }
+
+    .site-nav__link {
+      padding: 6px 0;
+      font-size: 0.85rem;
+      border: none;
+    }
+
+    .site-nav__link--cta {
+      margin-top: 0;
+      padding: 8px 18px;
+    }
+  }
+</style>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-site-header]');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+  const navEl = document.querySelector<HTMLElement>('[data-nav]');
+
+  if (header) {
+    let ticking = false;
+    const update = () => {
+      header.toggleAttribute('data-scrolled', window.scrollY > 50);
+      ticking = false;
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+    update();
+  }
+
+  if (toggle && navEl) {
+    const label = toggle.querySelector('.visually-hidden');
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      navEl.toggleAttribute('data-open', open);
+      if (label) label.textContent = open ? 'Chiudi il menu' : 'Apri il menu';
+    };
+
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+
+    navEl.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) setOpen(false);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    // Tornando a desktop il menu mobile non deve restare aperto
+    window.matchMedia('(min-width: 960px)').addEventListener('change', () => setOpen(false));
+  }
+</script>

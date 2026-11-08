@@ -1,0 +1,114 @@
+---
+import '@fontsource/montserrat/latin-600.css';
+import '@fontsource/montserrat/latin-700.css';
+import '@fontsource/montserrat/latin-800.css';
+import '@fontsource/montserrat/latin-900.css';
+import '@fontsource/poppins/latin-300.css';
+import '@fontsource/poppins/latin-400.css';
+import '@fontsource/poppins/latin-500.css';
+import '@fontsource/poppins/latin-600.css';
+import '@fontsource/jetbrains-mono/latin-500.css';
+import '@fontsource/jetbrains-mono/latin-700.css';
+import '../styles/global.css';
+
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { company, fullAddress, seo } from '../data/site';
+
+interface Props {
+  /** Titolo della pagina; se assente usa il titolo di default del sito. */
+  title?: string;
+  description?: string;
+  /** Percorso (relativo al sito) o URL dell'immagine social. */
+  image?: string;
+  noindex?: boolean;
+  /** Inserisce i dati strutturati LocalBusiness (solo home). */
+  structuredData?: boolean;
+}
+
+const {
+  title,
+  description = seo.defaultDescription,
+  image = seo.ogImage,
+  noindex = false,
+  structuredData = false,
+} = Astro.props;
+
+const pageTitle = title ? seo.titleTemplate(title) : seo.defaultTitle;
+// `site` è sempre definito in astro.config (PUBLIC_SITE_URL o default)
+const site = Astro.site ?? new URL(Astro.url.origin);
+const canonical = new URL(Astro.url.pathname, site).href;
+const imageUrl = new URL(image, site).href;
+const logoUrl = new URL('/logo.png', site).href;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Electrician',
+  '@id': new URL('/#azienda', site).href,
+  name: company.legalName,
+  url: site.href,
+  logo: logoUrl,
+  image: imageUrl,
+  telephone: company.phone.e164,
+  email: company.email,
+  vatID: `IT${company.vatNumber}`,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: company.address.street,
+    addressLocality: company.address.locality,
+    addressRegion: company.address.province,
+    postalCode: company.address.postalCode,
+    addressCountry: company.address.country,
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: company.geo.latitude,
+    longitude: company.geo.longitude,
+  },
+  areaServed: company.areaServed,
+  description: company.description,
+};
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <meta name="theme-color" content="#0F172A" />
+
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={company.legalName} />
+    <meta property="og:locale" content={seo.locale} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${company.legalName} — ${fullAddress}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+
+    {structuredData && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenuto">Vai al contenuto</a>
+    <Header />
+    <main id="contenuto" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

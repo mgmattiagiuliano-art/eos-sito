@@ -1,0 +1,132 @@
+---
+import { company, fullAddress, legalLinks } from '../data/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="site-footer__top">
+    <div>
+      <img
+        class="site-footer__logo"
+        src="/logo.png"
+        alt=""
+        width="970"
+        height="257"
+        loading="lazy"
+        decoding="async"
+      />
+      <p class="site-footer__name">{company.legalName}</p>
+      <p>Progettazione e installazione di impianti elettrici, fotovoltaici e tecnologici</p>
+    </div>
+    <address class="site-footer__contacts">
+      <span>{fullAddress}</span>
+      <a href={company.phone.href}>{company.phone.display}</a>
+      <a href={`mailto:${company.email}`}>{company.email}</a>
+      <span>P.IVA {company.vatNumber}</span>
+    </address>
+  </div>
+  <div class="site-footer__bottom">
+    <p>&copy; {year} {company.legalName} Tutti i diritti riservati.</p>
+    <ul class="site-footer__legal">
+      {
+        legalLinks.map((l) => (
+          <li>
+            <a href={l.href}>{l.label}</a>
+          </li>
+        ))
+      }
+      <li>
+        <!-- Riapre il banner cookie (collegato in Fase 5) -->
+        <button type="button" class="site-footer__linkbtn" data-cookie-preferences>
+          Preferenze cookie
+        </button>
+      </li>
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    position: relative;
+    z-index: var(--z-content);
+    background: var(--c-ink);
+    color: var(--c-text-on-dark-muted);
+    padding: 40px var(--gutter) 24px;
+    font-size: 0.9rem;
+  }
+
+  .site-footer__top,
+  .site-footer__bottom {
+    max-width: 1250px;
+    margin-inline: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .site-footer__top {
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgb(255 255 255 / 0.12);
+  }
+
+  .site-footer__logo {
+    height: 45px;
+    width: auto;
+    margin-bottom: 10px;
+    filter: brightness(0) invert(1);
+    opacity: 0.9;
+  }
+
+  .site-footer__name {
+    color: #fff;
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 800;
+  }
+
+  .site-footer__contacts {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-style: normal;
+  }
+
+  .site-footer a,
+  .site-footer__linkbtn {
+    color: var(--c-text-on-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .site-footer a:hover,
+  .site-footer__linkbtn:hover {
+    color: #fff;
+  }
+
+  .site-footer__bottom {
+    margin-top: 16px;
+    align-items: center;
+    font-size: 0.8rem;
+  }
+
+  .site-footer__legal {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+  }
+
+  .site-footer__linkbtn {
+    background: none;
+    border: none;
+    font: inherit;
+    padding: 0;
+  }
+
+  .site-footer :focus-visible {
+    outline-color: #fff;
+  }
+</style>

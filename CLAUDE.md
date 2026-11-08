@@ -50,8 +50,10 @@ src/
   layouts/      Base.astro (meta, OG, JSON-LD)
   pages/        index.astro, privacy.astro, cookie.astro, 404.astro
   styles/       tokens.css, global.css
-public/         logo.png, servizi/, lavori/, icons/, video/, og-image.jpg
+  assets/       servizi/, lavori/ (ottimizzate da astro:assets), icons/ (SVG importati inline al build)
+public/         logo.png, favicon.png, apple-touch-icon.png, video/, og-image.jpg, robots.txt
 ```
+Le immagini da ottimizzare e le icone SVG stanno in `src/assets/` perché `astro:assets` e l'import degli SVG come componenti funzionano solo su file importati da `src/`. In `public/` resta solo ciò che deve avere un URL fisso.
 
 ## Form: adapter portabile
 `src/lib/forms/submit.ts` espone `submitForm(name, data)` e sceglie il backend da `PUBLIC_FORMS_PROVIDER`:
