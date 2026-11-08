@@ -1,0 +1,160 @@
+---
+import { HONEYPOT_FIELD } from '../lib/forms/submit';
+import { company } from '../data/site';
+const formName = 'candidatura-tecnici';
+---
+
+<section class="section container" id="lavora-con-noi" aria-labelledby="careers-title">
+  <div class="careers box reveal">
+    <div>
+      <p class="careers__badge">Unisciti al nostro team</p>
+      <h2 id="careers-title" class="careers__title">Lavora con noi</h2>
+      <p class="careers__intro">
+        Cerchiamo <strong>tecnici elettricisti specializzati</strong> da inserire nel nostro organico per la realizzazione di
+        impianti civili, industriali e fotovoltaici.
+      </p>
+      <ul class="careers__list" role="list">
+        <li>Abilitazione tecnica o esperienza nel settore</li>
+        <li>Lettura di schemi elettrici e cablaggio quadri</li>
+        <li>Patente B e attitudine al lavoro di squadra</li>
+        <li><strong>Sede di lavoro principale:</strong> province di Alessandria e Genova</li>
+      </ul>
+    </div>
+
+    <form
+      name={formName}
+      method="POST"
+      enctype="multipart/form-data"
+      data-netlify="true"
+      netlify-honeypot={HONEYPOT_FIELD}
+      class="form"
+      data-site-form={formName}
+      novalidate
+    >
+      <input type="hidden" name="form-name" value={formName} />
+      <p class="form__hp" aria-hidden="true">
+        <label>Non compilare questo campo <input name={HONEYPOT_FIELD} tabindex="-1" autocomplete="off" /></label>
+      </p>
+
+      <div class="form__field">
+        <label for="cv-nome">Nome e cognome *</label>
+        <input id="cv-nome" name="nome" autocomplete="name" data-validate="required" data-label="Nome e cognome" aria-describedby="cv-nome-err" />
+        <p id="cv-nome-err" class="form__error" data-error-for="nome" hidden></p>
+      </div>
+      <div class="form__row">
+        <div class="form__field">
+          <label for="cv-email">Email *</label>
+          <input id="cv-email" type="email" name="email" autocomplete="email" data-validate="required email" data-label="Email" aria-describedby="cv-email-err" />
+          <p id="cv-email-err" class="form__error" data-error-for="email" hidden></p>
+        </div>
+        <div class="form__field">
+          <label for="cv-tel">Telefono *</label>
+          <input id="cv-tel" type="tel" name="telefono" autocomplete="tel" data-validate="required phone" data-label="Telefono" aria-describedby="cv-tel-err" />
+          <p id="cv-tel-err" class="form__error" data-error-for="telefono" hidden></p>
+        </div>
+      </div>
+      <div class="form__field">
+        <label for="cv-file">Curriculum *</label>
+        <input
+          id="cv-file"
+          type="file"
+          name="curriculum"
+          accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          data-validate="cv"
+          data-label="Curriculum"
+          aria-describedby="cv-file-hint cv-file-err"
+        />
+        <p id="cv-file-hint" class="form__hint">PDF, DOC o DOCX, massimo 5 MB.</p>
+        <p id="cv-file-err" class="form__error" data-error-for="curriculum" hidden></p>
+      </div>
+      <div class="form__field">
+        <label for="cv-lettera">Breve presentazione</label>
+        <textarea id="cv-lettera" name="lettera" rows="3"></textarea>
+      </div>
+      <div>
+        <div class="form__check">
+          <input id="cv-privacy" type="checkbox" name="privacy" value="accettata" data-validate="consent" aria-describedby="cv-privacy-err" />
+          <label for="cv-privacy">
+            Ho letto l'<a href="/privacy" target="_blank" rel="noopener">informativa privacy</a> e acconsento al trattamento
+            dei miei dati per la selezione del personale. *
+          </label>
+        </div>
+        <p id="cv-privacy-err" class="form__error" data-error-for="privacy" hidden></p>
+      </div>
+
+      <div class="form__msg form__msg--ok" role="status" tabindex="-1" data-form-success hidden>
+        Candidatura inviata. Grazie: ti ricontatteremo se il tuo profilo è in linea con le posizioni aperte.
+      </div>
+      <div class="form__msg form__msg--err" role="alert" data-form-error hidden>
+        <p data-form-error-msg></p>
+        <p>In alternativa invia il curriculum a <a href={`mailto:${company.email}`}>{company.email}</a>.</p>
+      </div>
+
+      <button type="submit" class="btn btn--primary btn--block">Invia candidatura</button>
+      <p class="form__hint">* Campi obbligatori</p>
+    </form>
+  </div>
+</section>
+
+<style>
+  .careers {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  @media (min-width: 868px) {
+    .careers {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .careers__badge {
+    width: fit-content;
+    margin-bottom: 12px;
+    padding: 4px 12px;
+    border: 1px solid rgb(0 68 189 / 0.2);
+    border-radius: 99px;
+    background: rgb(0 68 189 / 0.08);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--c-blue);
+  }
+
+  .careers__title {
+    margin-bottom: 12px;
+    font-size: 1.8rem;
+  }
+
+  .careers__intro {
+    margin-bottom: 20px;
+  }
+
+  .careers__list {
+    list-style: none;
+    display: grid;
+    gap: 10px;
+  }
+
+  .careers__list li {
+    position: relative;
+    padding-left: 26px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--c-ink);
+  }
+
+  .careers__list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    font-weight: 800;
+    color: var(--c-green);
+  }
+</style>
+
+<script>
+  import { initForm } from '../lib/forms/form-ui';
+  const form = document.querySelector<HTMLFormElement>('[data-site-form="candidatura-tecnici"]');
+  if (form) initForm(form, 'candidatura-tecnici');
+</script>

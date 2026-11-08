@@ -1,0 +1,213 @@
+---
+/**
+ * Lightbox della fotogallery su <dialog> nativo (focus trap, Esc).
+ * Frecce ←/→ da tastiera, swipe su touch, pulsanti precedente/successiva, contatore.
+ */
+interface Props {
+  images: { src: string; width: number; height: number; alt: string }[];
+}
+const { images } = Astro.props;
+---
+
+<dialog class="lightbox" id="gallery-lightbox" aria-label="Galleria fotografica" data-modal data-lightbox={JSON.stringify(images)}>
+  <div class="lightbox__inner">
+    <button type="button" class="lightbox__close" data-modal-close aria-label="Chiudi la galleria">&times;</button>
+    <figure class="lightbox__figure">
+      <img class="lightbox__img" src="" alt="" data-lightbox-img />
+      <figcaption class="lightbox__caption">
+        <span data-lightbox-caption></span>
+        <span class="lightbox__count" data-lightbox-count aria-live="polite"></span>
+      </figcaption>
+    </figure>
+    <button type="button" class="lightbox__nav lightbox__nav--prev" data-lightbox-prev aria-label="Foto precedente">
+      <span aria-hidden="true">‹</span>
+    </button>
+    <button type="button" class="lightbox__nav lightbox__nav--next" data-lightbox-next aria-label="Foto successiva">
+      <span aria-hidden="true">›</span>
+    </button>
+  </div>
+</dialog>
+
+<style>
+  .lightbox {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #fff;
+  }
+
+  .lightbox::backdrop {
+    background: rgb(15 23 42 / 0.95);
+    backdrop-filter: blur(10px);
+  }
+
+  .lightbox__inner {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 64px 16px 24px;
+    touch-action: pan-y;
+  }
+
+  .lightbox__figure {
+    max-width: min(1100px, 100%);
+    text-align: center;
+  }
+
+  .lightbox__img {
+    max-width: 100%;
+    max-height: calc(100dvh - 140px);
+    width: auto;
+    height: auto;
+    margin-inline: auto;
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    object-fit: contain;
+    user-select: none;
+  }
+
+  .lightbox__caption {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 16px;
+    margin-top: 12px;
+    font-size: 0.9rem;
+    color: var(--c-text-on-dark);
+  }
+
+  .lightbox__count {
+    font-family: var(--font-mono);
+  }
+
+  .lightbox__close,
+  .lightbox__nav {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border: 1px solid rgb(255 255 255 / 0.3);
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.15);
+    color: #fff;
+    font-size: 1.8rem;
+    line-height: 1;
+    transition: background-color 0.2s ease;
+  }
+
+  .lightbox__close:hover,
+  .lightbox__nav:hover {
+    background: var(--c-red);
+  }
+
+  .lightbox :focus-visible {
+    outline-color: #fff;
+  }
+
+  .lightbox__close {
+    top: 12px;
+    right: 12px;
+  }
+
+  .lightbox__nav {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .lightbox__nav--prev {
+    left: 12px;
+  }
+
+  .lightbox__nav--next {
+    right: 12px;
+  }
+
+  @media (max-width: 767px) {
+    .lightbox__nav {
+      top: auto;
+      bottom: 16px;
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  import { initModals, openModal } from '../lib/ui/dialog';
+  initModals();
+
+  interface Img {
+    src: string;
+    width: number;
+    height: number;
+    alt: string;
+  }
+
+  const dialog = document.getElementById('gallery-lightbox') as HTMLDialogElement | null;
+  if (dialog) {
+    const images = JSON.parse(dialog.dataset.lightbox ?? '[]') as Img[];
+    const img = dialog.querySelector<HTMLImageElement>('[data-lightbox-img]')!;
+    const caption = dialog.querySelector<HTMLElement>('[data-lightbox-caption]')!;
+    const count = dialog.querySelector<HTMLElement>('[data-lightbox-count]')!;
+    let index = 0;
+
+    const show = (i: number) => {
+      index = (i + images.length) % images.length;
+      const item = images[index]!;
+      img.src = item.src;
+      img.width = item.width;
+      img.height = item.height;
+      img.alt = item.alt;
+      caption.textContent = item.alt;
+      count.textContent = `${index + 1} / ${images.length}`;
+      // precarica la successiva
+      const next = images[(index + 1) % images.length];
+      if (next) new Image().src = next.src;
+    };
+
+    document.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-gallery-open]');
+      if (!btn) return;
+      show(Number(btn.dataset.galleryOpen));
+      openModal('gallery-lightbox', btn);
+    });
+
+    dialog.querySelector('[data-lightbox-prev]')?.addEventListener('click', () => show(index - 1));
+    dialog.querySelector('[data-lightbox-next]')?.addEventListener('click', () => show(index + 1));
+
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(index - 1);
+      else if (e.key === 'ArrowRight') show(index + 1);
+    });
+
+    // Clic sullo sfondo (fuori da foto e pulsanti) chiude
+    const inner = dialog.querySelector<HTMLElement>('.lightbox__inner');
+    dialog.addEventListener('click', (e) => {
+      if (e.target === inner) dialog.close();
+    });
+
+    // Swipe orizzontale su touch
+    let startX: number | null = null;
+    let startY = 0;
+    dialog.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse') return;
+      startX = e.clientX;
+      startY = e.clientY;
+    });
+    dialog.addEventListener('pointerup', (e) => {
+      if (startX === null) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      startX = null;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) show(index + (dx < 0 ? 1 : -1));
+    });
+    dialog.addEventListener('pointercancel', () => (startX = null));
+  }
+</script>

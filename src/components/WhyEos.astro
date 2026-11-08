@@ -1,0 +1,57 @@
+---
+// TODO(EOS): confermare "20+ anni di esperienza" (ripreso dal prototipo).
+const features = [
+  { value: '20+', title: 'Anni di esperienza', text: 'Competenza consolidata nel settore civile e industriale.' },
+  { value: '100%', title: 'Su misura', text: "Progetti nati dall'analisi dei consumi reali." },
+  { value: '1', title: 'Unico referente', text: 'Dalla prima consulenza alla manutenzione nel tempo.' },
+  { value: 'AL · GE', title: 'Radicamento e operatività', text: 'Radicati tra Alessandria e Genova, operativi su tutto il territorio nazionale.' },
+];
+---
+
+<section class="section container" id="perche-eos" aria-labelledby="perche-title">
+  <div class="box reveal">
+    <div class="section-head">
+      <h2 id="perche-title">Perché scegliere <span class="spark">EOS Impianti</span></h2>
+      <p>Un unico referente per trasformare le tue esigenze in soluzioni affidabili e durature.</p>
+    </div>
+    <ul class="features" role="list">
+      {
+        features.map((f) => (
+          <li>
+            <p class="features__value">{f.value}</p>
+            <h3 class="features__title">{f.title}</h3>
+            <p class="features__text">{f.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .features {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+    gap: 24px;
+    text-align: center;
+  }
+
+  .features__value {
+    margin-bottom: 4px;
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--c-blue);
+  }
+
+  .features__title {
+    margin-bottom: 4px;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .features__text {
+    font-size: 0.88rem;
+  }
+</style>

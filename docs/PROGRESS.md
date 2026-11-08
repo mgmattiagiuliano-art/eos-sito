@@ -9,8 +9,8 @@
 | 0 Analisi e piano | — | ✅ |
 | 1 Scaffold | `claude/eos-impianti-refactor-n2nhdt` | ✅ pushato |
 | 2 Motore EOSolar | `claude/eos-fase-2-motore` | ✅ pushato |
-| 3 UI calcolatore | `claude/eos-fase-3-ui-calcolatore` | ✅ in attesa di ok |
-| 4 Pagina e animazioni | `claude/eos-fase-4-pagina` | ⏳ |
+| 3 UI calcolatore | `claude/eos-fase-3-ui-calcolatore` | ✅ pushato |
+| 4 Pagina e animazioni | `claude/eos-fase-4-pagina` | ✅ in attesa di ok |
 | 5 Privacy, SEO, rifinitura | `claude/eos-fase-5-privacy-seo` | ⏳ |
 | 6 Verifica e consegna | `claude/eos-fase-6-consegna` | ⏳ |
 
@@ -30,7 +30,12 @@
 ## Bug: stato
 | # | Descrizione | Stato |
 |---|---|---|
-| 1–6 | hero mobile, 100vw, cavo, stroke, icone fetch, stato icone | Fase 4 |
+| 1 | hero irraggiungibile su mobile | ✅ F4 (impilata di default; orizzontale solo ≥768px + motion, via `gsap.matchMedia`) |
+| 2 | larghezze 100vw | ✅ F4 (slide `flex: 0 0 100%` del contenitore, x = −(scrollWidth − clientWidth)) |
+| 3 | cavo disallineato dallo spacer del pin | ✅ F4 (`[data-wire-scope]` relativo; ricalcolo su `refresh` e `ResizeObserver`) |
+| 4 | stroke deformato | ✅ F4 (viewBox = px reali + `vector-effect`); scarto icona/vertice < 0,2px a 1100/1280/1440 |
+| 5 | icone via fetch | ✅ F4 (SVG ripuliti e importati inline al build) |
+| 6 | stato icone dal proprio trigger | ✅ F4 (lunghezza cumulata ai vertici vs tratto disegnato) |
 | 7 | stili non applicati a innerHTML | ✅ F3 (`eosolar.css` globale con prefisso `.eosolar-`, risultati clonati da `<template>` + `textContent`) |
 | 9 | `switchEosTab` con `event` globale | ✅ F3 (`data-tab`, tablist/tab/tabpanel, frecce/Home/End, `activateTab(id)`) |
 | 16 | disclaimer | ✅ F3 (teaser + risultati; rimossi "irraggiamento satellitare" e "stima precisa") |
@@ -52,7 +57,12 @@
 | 28 | validazione input | ✅ F2 (`validate`) |
 | 29 | profilo F1 default 64% | TODO(EOS) |
 | 30 | header sopra la hero pinnata | ✅ F1 (header fixed); pin in F4 |
-| 31–37 | card hover, h2, label, lightbox, footer contrasto, smooth scroll, claim | 35–36 ✅ F1; resto F4–F5 |
+| 31 | descrizioni servizi solo hover | ✅ F4 (sempre visibili su touch; hover/focus-within su desktop; link per tastiera) |
+| 32–34 | titoli h2, label, lightbox | ✅ F4 (`<dialog>`, frecce, swipe, Esc, contatore) |
+| 35–36 | contrasto footer, smooth scroll | ✅ F1 |
+| 37 | claim aziendali | TODO(EOS) nel codice |
+| 38 | (nuovo) form: errore che sparisce al blur sposta il layout e fa perdere il click | ✅ F4 (rivalidazione su `input`) |
+| 39 | (nuovo) icone SVG con classi `.cls-*` e id duplicati in conflitto | ✅ F4 (fill inline, id rimossi) |
 
 ## Motore EOSolar (Fase 2) — riferimento
 `src/lib/eosolar/`: `types.ts`, `defaults.ts`, `costs.ts`, `finance.ts`, `model.ts`, `optimizer.ts`, `index.ts` (`defaultConfig()`), test in `eosolar.test.ts`.
@@ -77,7 +87,17 @@ Con RID off l'immissione vale 0 € e l'ottimo NPV resta piccolo: dipende dal de
 - Astro 7: un solo dev server alla volta (gira in background): fermarlo con `npx astro dev stop`.
 - Verificato con Playwright a 360/1280: flusso gate → risultati identici ai test (NPV 3.607 €, payback 8,0, MIRR 9,5%), nessuno scroll orizzontale, nessun errore console, nessuna richiesta esterna.
 
+## Pagina e animazioni (Fase 4) — riferimento
+- `src/scripts/animations.ts`: init dopo `document.fonts.ready`; ordine hero → cavo → reveal. Reduced-motion: nessun pin/scrub, cavo statico tutto acceso.
+- `src/lib/wire.ts` (+ test): tracciato a serpentina che passa per i centri delle icone.
+- `WireTrack.astro`: icone agganciate alle sezioni (`data-anchor` + `data-at`), visibili da 1100px.
+- Form contatti/candidatura: `src/lib/forms/form-ui.ts` + `validate.ts` (CV PDF/DOC/DOCX ≤ 5 MB, testato). Privacy + honeypot già presenti.
+- Mappa: click-to-load (nessuna richiesta a Google prima del click). In F5 collegarla al banner cookie.
+- Video slide 5: compare da solo se esiste `public/video/hero-fotovoltaico.mp4` (altrimenti poster).
+- `<Picture>` con `fallbackFormat="jpg"`: senza, le sorgenti AVIF generavano fallback PNG da 2 MB.
+
 ## TODO(EOS) raccolti
+- Descrizioni reali delle foto dei lavori (alt e didascalie lightbox).
 - Testo finalità del lead gate coerente con l'informativa privacy.
 - Dominio definitivo (`PUBLIC_SITE_URL`), coordinate GPS, "oltre 20 anni", "enti pubblici".
 - Listini CAPEX FV/batteria (IVA esclusa?), tariffa, inflazione generale, ore equivalenti locali, profilo F1.

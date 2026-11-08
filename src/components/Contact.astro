@@ -1,0 +1,182 @@
+---
+import { HONEYPOT_FIELD } from '../lib/forms/submit';
+import { company, fullAddress } from '../data/site';
+
+const formName = 'contatti-ufficiali';
+const mapQuery = encodeURIComponent(`${company.address.street}, ${company.address.postalCode} ${company.address.locality} ${company.address.province}`);
+const mapEmbed = `https://maps.google.com/maps?q=${mapQuery}&z=14&output=embed`;
+const mapLink = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
+---
+
+<section class="section container" id="contatti" aria-labelledby="contatti-title">
+  <div class="section-head">
+    <h2 id="contatti-title">Hai un progetto in mente?</h2>
+    <p>Raccontaci le tue esigenze: ti ricontattiamo per un sopralluogo o un preventivo.</p>
+  </div>
+
+  <div class="contact box reveal">
+    <div>
+      <h3 class="contact__title">Informazioni di contatto</h3>
+      <dl class="contact__list">
+        <div class="contact__item">
+          <dt>Sede operativa e legale</dt>
+          <dd>{company.legalName}<br />{fullAddress}</dd>
+        </div>
+        <div class="contact__item">
+          <dt>Telefono</dt>
+          <dd><a href={company.phone.href}>{company.phone.display}</a></dd>
+        </div>
+        <div class="contact__item">
+          <dt>Email</dt>
+          <dd><a href={`mailto:${company.email}`}>{company.email}</a></dd>
+        </div>
+      </dl>
+
+      <!-- Google Maps: nessuna richiesta a Google finché l'utente non lo chiede (consenso esplicito). -->
+      <div class="map" data-map data-map-src={mapEmbed}>
+        <div class="map__placeholder" data-map-placeholder>
+          <p>La mappa è fornita da Google Maps, che può installare cookie di terze parti. Viene caricata solo se lo chiedi.</p>
+          <button type="button" class="btn btn--secondary" data-map-load>Mostra la mappa</button>
+          <a href={mapLink} target="_blank" rel="noopener">Apri in Google Maps<span class="visually-hidden"> (nuova scheda)</span></a>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="contact__title">Richiedi una consulenza</h3>
+      <form name={formName} method="POST" data-netlify="true" netlify-honeypot={HONEYPOT_FIELD} class="form" data-site-form={formName} novalidate>
+        <input type="hidden" name="form-name" value={formName} />
+        <p class="form__hp" aria-hidden="true">
+          <label>Non compilare questo campo <input name={HONEYPOT_FIELD} tabindex="-1" autocomplete="off" /></label>
+        </p>
+        <div class="form__field">
+          <label for="ct-nome">Nome e cognome *</label>
+          <input id="ct-nome" name="nome" autocomplete="name" data-validate="required" data-label="Nome e cognome" aria-describedby="ct-nome-err" />
+          <p id="ct-nome-err" class="form__error" data-error-for="nome" hidden></p>
+        </div>
+        <div class="form__row">
+          <div class="form__field">
+            <label for="ct-email">Email *</label>
+            <input id="ct-email" type="email" name="email" autocomplete="email" data-validate="required email" data-label="Email" aria-describedby="ct-email-err" />
+            <p id="ct-email-err" class="form__error" data-error-for="email" hidden></p>
+          </div>
+          <div class="form__field">
+            <label for="ct-tel">Telefono</label>
+            <input id="ct-tel" type="tel" name="telefono" autocomplete="tel" data-validate="phone" data-label="Telefono" aria-describedby="ct-tel-err" />
+            <p id="ct-tel-err" class="form__error" data-error-for="telefono" hidden></p>
+          </div>
+        </div>
+        <div class="form__field">
+          <label for="ct-msg">Messaggio *</label>
+          <textarea id="ct-msg" name="messaggio" rows="5" data-validate="required" data-label="Messaggio" aria-describedby="ct-msg-err"></textarea>
+          <p id="ct-msg-err" class="form__error" data-error-for="messaggio" hidden></p>
+        </div>
+        <div>
+          <div class="form__check">
+            <input id="ct-privacy" type="checkbox" name="privacy" value="accettata" data-validate="consent" aria-describedby="ct-privacy-err" />
+            <label for="ct-privacy">
+              Ho letto l'<a href="/privacy" target="_blank" rel="noopener">informativa privacy</a> e acconsento al trattamento
+              dei miei dati per ricevere una risposta. *
+            </label>
+          </div>
+          <p id="ct-privacy-err" class="form__error" data-error-for="privacy" hidden></p>
+        </div>
+
+        <div class="form__msg form__msg--ok" role="status" tabindex="-1" data-form-success hidden>
+          Richiesta inviata. Grazie: ti ricontatteremo al più presto.
+        </div>
+        <div class="form__msg form__msg--err" role="alert" data-form-error hidden>
+          <p data-form-error-msg></p>
+          <p>In alternativa chiamaci al <a href={company.phone.href}>{company.phone.display}</a>.</p>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--block">Invia richiesta</button>
+        <p class="form__hint">* Campi obbligatori</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  @media (min-width: 868px) {
+    .contact {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .contact__title {
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+  }
+
+  .contact__list {
+    display: grid;
+    gap: 16px;
+  }
+
+  .contact__item dt {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .contact__item dd {
+    font-weight: 600;
+    color: var(--c-ink);
+  }
+
+  .contact__item a {
+    color: var(--c-ink);
+  }
+
+  .map {
+    height: 240px;
+    margin-top: 20px;
+    overflow: hidden;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-md);
+    background: var(--c-bg);
+  }
+
+  .map__placeholder {
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 12px;
+    height: 100%;
+    padding: 16px;
+    font-size: 0.88rem;
+    text-align: center;
+  }
+
+  .map :global(iframe) {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+</style>
+
+<script>
+  import { initForm } from '../lib/forms/form-ui';
+  const form = document.querySelector<HTMLFormElement>('[data-site-form="contatti-ufficiali"]');
+  if (form) initForm(form, 'contatti-ufficiali');
+
+  // Click-to-load: l'iframe di Google Maps viene creato solo su richiesta esplicita.
+  // In Fase 5 il consenso viene anche ricordato e collegato al banner cookie.
+  document.querySelectorAll<HTMLElement>('[data-map]').forEach((map) => {
+    map.querySelector('[data-map-load]')?.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = map.dataset.mapSrc ?? '';
+      iframe.title = 'Mappa della sede di EOS Impianti';
+      iframe.loading = 'lazy';
+      iframe.referrerPolicy = 'no-referrer-when-downgrade';
+      map.replaceChildren(iframe);
+    });
+  });
+</script>

@@ -1,0 +1,167 @@
+---
+import { Picture } from 'astro:assets';
+import { services } from '../data/services';
+---
+
+<section class="section container" id="servizi" aria-labelledby="servizi-title">
+  <div class="section-head">
+    <h2 id="servizi-title">I nostri <span class="spark">servizi specializzati</span></h2>
+    <p>Dalla progettazione alla manutenzione, un unico referente per ogni impianto.</p>
+  </div>
+
+  <ul class="services" role="list">
+    {
+      services.map((s) => (
+        <li class="service reveal">
+          <Picture
+            src={s.image}
+            alt={s.alt}
+            formats={['avif', 'webp']}
+            fallbackFormat="jpg"
+            quality={70}
+            widths={[400, 640, 900]}
+            sizes="(min-width: 1100px) 340px, (min-width: 720px) 50vw, 100vw"
+            class="service__img"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="service__overlay">
+            <span class="service__tag">{s.tag}</span>
+            <h3 class="service__title">{s.title}</h3>
+            <p class="service__desc">{s.description}</p>
+            <a class="service__link" href="/#contatti">
+              Chiedi informazioni<span class="visually-hidden"> su {s.title.toLowerCase()}</span>
+            </a>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .services {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: 24px;
+  }
+
+  .service {
+    position: relative;
+    height: 360px;
+    overflow: hidden;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-lg);
+    background: var(--c-ink-2);
+    box-shadow: var(--shadow-sm);
+    transition:
+      transform 0.35s ease,
+      box-shadow 0.35s ease,
+      border-color 0.35s ease;
+  }
+
+  .service :global(.service__img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+
+  .service__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 24px;
+    background: linear-gradient(to top, rgb(15 23 42 / 0.94) 0%, rgb(15 23 42 / 0.55) 55%, rgb(15 23 42 / 0.1) 100%);
+    color: #fff;
+  }
+
+  .service__tag {
+    width: fit-content;
+    margin-bottom: 8px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--c-red);
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .service__title {
+    margin-bottom: 6px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #fff;
+  }
+
+  .service__desc {
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: var(--c-text-on-dark);
+  }
+
+  .service__link {
+    width: fit-content;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #fff;
+    text-underline-offset: 3px;
+  }
+
+  .service__link:hover {
+    color: #fff;
+  }
+
+  .service__link:focus-visible {
+    outline-color: #fff;
+  }
+
+  /*
+   * Solo su dispositivi con hover reale la descrizione si apre al passaggio del mouse.
+   * Si apre anche con il focus da tastiera (focus-within). Su touch resta sempre visibile.
+   */
+  @media (hover: hover) and (pointer: fine) {
+    .service__desc,
+    .service__link {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition:
+        max-height 0.4s ease,
+        opacity 0.4s ease;
+    }
+
+    .service:hover .service__desc,
+    .service:focus-within .service__desc {
+      max-height: 160px;
+      opacity: 1;
+    }
+
+    .service:hover .service__link,
+    .service:focus-within .service__link {
+      max-height: 40px;
+      opacity: 1;
+    }
+
+    .service:hover,
+    .service:focus-within {
+      border-color: var(--c-blue);
+      box-shadow: 0 15px 30px rgb(0 0 0 / 0.08);
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .service:hover {
+      transform: translateY(-8px);
+    }
+
+    .service:hover :global(.service__img) {
+      transform: scale(1.08);
+    }
+  }
+</style>

@@ -1,0 +1,136 @@
+---
+/**
+ * Cavo elettrico a serpentina con 8 icone (solo desktop ≥ 1100px).
+ * Va inserito dentro il contenitore [data-wire-scope] (position: relative) che avvolge le sezioni
+ * dopo la hero. Posizioni di icone e tracciato sono calcolate da animations.ts sulle sezioni reali:
+ * ogni vertice della curva coincide per costruzione con il centro della sua icona.
+ * Icone SVG importate al build (inline): nessun fetch, nessun layout shift.
+ */
+import Lampadina from '../assets/icons/lampadina.svg';
+import Interruttore from '../assets/icons/interruttore.svg';
+import Quadro from '../assets/icons/quadro.svg';
+import Contatore from '../assets/icons/contatore.svg';
+import Inverter from '../assets/icons/inverter.svg';
+import Pannello from '../assets/icons/pannello.svg';
+import Batteria from '../assets/icons/batteria.svg';
+import Traliccio from '../assets/icons/traliccio.svg';
+
+/** anchor = id della sezione, at = posizione verticale nella sezione (0 = inizio, 1 = fine). */
+const nodes = [
+  { Icon: Lampadina, anchor: 'servizi', at: 0.06, side: 'left', variant: 'lamp' },
+  { Icon: Interruttore, anchor: 'servizi', at: 0.62, side: 'right', variant: 'blue' },
+  { Icon: Quadro, anchor: 'perche-eos', at: 0.5, side: 'left', variant: 'blue' },
+  { Icon: Contatore, anchor: 'lavori', at: 0.45, side: 'right', variant: 'blue' },
+  { Icon: Inverter, anchor: 'calcolatore', at: 0.12, side: 'left', variant: 'blue' },
+  { Icon: Pannello, anchor: 'calcolatore', at: 0.7, side: 'right', variant: 'green' },
+  { Icon: Batteria, anchor: 'lavora-con-noi', at: 0.5, side: 'left', variant: 'green' },
+  { Icon: Traliccio, anchor: 'contatti', at: 0.9, side: 'right', variant: 'blue' },
+] as const;
+---
+
+<div class="wire" aria-hidden="true" data-wire>
+  <svg class="wire__svg" data-wire-svg xmlns="http://www.w3.org/2000/svg">
+    <path class="wire__tube" data-wire-tube></path>
+    <path class="wire__copper" data-wire-copper></path>
+  </svg>
+  {
+    nodes.map(({ Icon, anchor, at, side, variant }) => (
+      <div class:list={['wire__node', `wire__node--${variant}`]} data-wire-node data-anchor={anchor} data-at={at} data-side={side}>
+        <Icon width={64} height={64} />
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .wire {
+    display: none;
+  }
+
+  @media (min-width: 1100px) {
+    .wire {
+      display: block;
+      position: absolute;
+      inset: 0;
+      z-index: var(--z-wire);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      mask-image: linear-gradient(to bottom, transparent 0%, #000 3%, #000 97%, transparent 100%);
+    }
+
+    /* Visibile solo dopo che animations.ts ha calcolato le posizioni */
+    .wire:global(.is-ready) {
+      opacity: 1;
+    }
+  }
+
+  .wire__svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .wire__tube,
+  .wire__copper {
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .wire__tube {
+    stroke: var(--c-border-strong);
+    opacity: 0.5;
+  }
+
+  .wire__copper {
+    stroke: var(--c-sky);
+    filter: drop-shadow(0 0 4px var(--c-blue));
+  }
+
+  .wire__node {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 64px;
+    height: 64px;
+    transform: translate(-50%, -50%);
+    opacity: 0.85;
+    filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.06));
+    transition:
+      opacity 0.4s ease,
+      transform 0.4s ease,
+      filter 0.4s ease;
+  }
+
+  .wire__node :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Lampadina: colori originali dell'SVG, sempre accesa */
+  .wire__node--lamp {
+    opacity: 1;
+    filter: drop-shadow(0 0 14px rgb(245 158 11 / 0.85)) drop-shadow(0 0 26px rgb(217 119 6 / 0.4));
+  }
+
+  .wire__node:global(.is-active) {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.12);
+    filter: drop-shadow(0 0 14px rgb(56 189 248 / 0.85)) drop-shadow(0 0 24px rgb(0 68 189 / 0.4));
+  }
+
+  .wire__node--green:global(.is-active) {
+    filter: drop-shadow(0 0 16px rgb(16 185 129 / 0.9)) drop-shadow(0 0 28px rgb(5 150 105 / 0.5));
+  }
+
+  @media (max-width: 1279px) {
+    .wire__node {
+      width: 48px;
+      height: 48px;
+    }
+  }
+</style>

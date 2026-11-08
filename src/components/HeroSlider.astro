@@ -1,0 +1,234 @@
+---
+/**
+ * Hero a 5 slide. Mobile first: slide impilate in verticale (anche con reduced-motion o senza JS).
+ * Da 768px, se il movimento è consentito, animations.ts aggiunge .hero--horizontal e crea il pin
+ * con scorrimento orizzontale. Larghezze relative al contenitore (niente 100vw).
+ */
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { getImage } from 'astro:assets';
+import poster from '../assets/servizi/fotovoltaico.avif';
+
+const VIDEO_SRC = '/video/hero-fotovoltaico.mp4';
+// Il video compare da solo quando il file viene aggiunto in public/video/ (vedi README).
+const hasVideo = existsSync(join(process.cwd(), 'public', VIDEO_SRC));
+const posterImg = await getImage({ src: poster, width: 1600, format: 'webp', quality: 70 });
+---
+
+<section class="hero" id="home" aria-label="Presentazione" data-hero>
+  <div class="hero__track" data-hero-track>
+    <div class="hero__slide" data-hero-slide>
+      <h1 class="hero__statement">
+        Qual è <span class="spark">l'energia giusta</span> per te?
+      </h1>
+    </div>
+
+    <div class="hero__slide" data-hero-slide>
+      <div class="hero__content">
+        <h2>
+          Progettiamo e realizziamo il modo migliore di <span class="spark spark--red">produrre, utilizzare e gestire</span>{' '}
+          la tua energia.
+        </h2>
+        <p>
+          Dagli impianti elettrici alle energie rinnovabili, dalla sicurezza alla domotica, creiamo soluzioni integrate per
+          abitazioni, aziende e industrie.
+        </p>
+        <div class="hero__buttons">
+          <a href="/#contatti" class="btn btn--primary">Richiedi un sopralluogo</a>
+          <button type="button" class="btn btn--secondary" data-eosolar-open>Calcola il tuo impianto fotovoltaico</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__slide" data-hero-slide>
+      <div class="hero__content">
+        <p class="eyebrow">EOS Impianti</p>
+        <h2>Energia e competenza al servizio dei tuoi <span class="spark">progetti</span>.</h2>
+        <!-- TODO(EOS): confermare "oltre vent'anni" e "enti pubblici". -->
+        <p>
+          Da oltre vent'anni progettiamo e realizziamo impianti tecnologici per privati, aziende, industrie ed enti pubblici.
+          Radicati tra Alessandria e Genova, operiamo su tutto il territorio nazionale.
+        </p>
+        <div class="hero__buttons">
+          <a href="/#servizi" class="btn btn--secondary">Scopri i nostri servizi</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__slide" data-hero-slide>
+      <div class="hero__content">
+        <p class="eyebrow eyebrow--red">La nostra filosofia</p>
+        <h2>Ogni progetto ha la sua <span class="spark spark--red">energia</span>.</h2>
+        <p>
+          Non proponiamo soluzioni standard: analizziamo consumi e obiettivi per progettare impianti adatti a chi li vive ogni
+          giorno. Crediamo nelle tecnologie efficienti per ridurre i costi e aumentare l'autonomia energetica.
+        </p>
+        <div class="hero__buttons">
+          <a href="/#perche-eos" class="btn btn--secondary">Perché scegliere EOS</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__slide hero__slide--dark" data-hero-slide>
+      <div class="hero__media" aria-hidden="true">
+        {
+          hasVideo ? (
+            <video class="hero__video" muted loop playsinline preload="none" poster={posterImg.src} data-hero-video>
+              <source src={VIDEO_SRC} type="video/mp4" />
+            </video>
+          ) : (
+            <img class="hero__video" src={posterImg.src} alt="" width="1600" height={Math.round((1600 * poster.height) / poster.width)} loading="lazy" decoding="async" />
+          )
+        }
+        <div class="hero__overlay"></div>
+      </div>
+      <div class="hero__content hero__content--dark">
+        <p class="eyebrow eyebrow--green">Strumento interattivo</p>
+        <h2>Simula il tuo <span class="spark spark--light">impianto fotovoltaico</span> su misura.</h2>
+        <p>
+          Inserisci i tuoi consumi e scopri la potenza in kWp, la capacità di accumulo e il tempo di rientro più convenienti.
+        </p>
+        <div class="hero__buttons">
+          <button type="button" class="btn btn--primary btn--lg" data-eosolar-open>Calcola subito il tuo impianto</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    background: var(--c-bg);
+  }
+
+  /* ---------- Mobile / reduced-motion / no-JS: slide impilate ---------- */
+  .hero__slide {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(56px, 10vw, 96px) var(--gutter);
+    text-align: center;
+  }
+
+  .hero__slide + .hero__slide {
+    border-top: 1px solid var(--c-border);
+  }
+
+  .hero__slide:first-child {
+    min-height: calc(70svh - var(--header-h));
+  }
+
+  /* ---------- Desktop con movimento: slideshow orizzontale pinnato ---------- */
+  :global(.hero--horizontal) {
+    height: calc(100svh - var(--header-h-compact));
+    min-height: 520px;
+    overflow: hidden;
+  }
+
+  :global(.hero--horizontal) .hero__track {
+    display: flex;
+    height: 100%;
+    will-change: transform;
+  }
+
+  :global(.hero--horizontal) .hero__slide {
+    flex: 0 0 100%;
+    min-width: 0;
+    height: 100%;
+    min-height: 0;
+    border: none;
+  }
+
+  .hero__statement {
+    max-width: var(--container-wide);
+    margin-inline: auto;
+    font-size: clamp(2.1rem, 4.8vw, 4.6rem);
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .hero__content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: var(--container-wide);
+    margin-inline: auto;
+  }
+
+  .hero__content h2 {
+    margin-bottom: 20px;
+    font-size: clamp(1.6rem, 3.4vw, 2.6rem);
+    line-height: 1.25;
+  }
+
+  .hero__content p:not(.eyebrow) {
+    max-width: 1150px;
+    margin: 0 auto 30px;
+    font-size: clamp(1rem, 1.4vw, 1.22rem);
+  }
+
+  .eyebrow {
+    margin-bottom: 8px;
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--c-blue);
+  }
+
+  .eyebrow--red {
+    color: var(--c-red);
+  }
+
+  .eyebrow--green {
+    color: #34d399; /* su sfondo scuro: contrasto AA */
+  }
+
+  .hero__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .btn--lg {
+    padding: 16px 34px;
+    font-size: 1.05rem;
+  }
+
+  /* ---------- Slide 5: video / poster scuro ---------- */
+  .hero__slide--dark {
+    overflow: hidden;
+    background: var(--c-ink);
+  }
+
+  .hero__media {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.45;
+  }
+
+  .hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgb(11 17 32 / 0.88) 0%, rgb(15 23 42 / 0.92) 100%);
+  }
+
+  .hero__content--dark h2 {
+    color: #fff;
+  }
+
+  .hero__content--dark p:not(.eyebrow) {
+    color: var(--c-text-on-dark);
+  }
+</style>

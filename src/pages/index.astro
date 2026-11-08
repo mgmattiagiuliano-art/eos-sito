@@ -1,17 +1,40 @@
 ---
 import Base from '../layouts/Base.astro';
+import HeroSlider from '../components/HeroSlider.astro';
+import WireTrack from '../components/WireTrack.astro';
+import Services from '../components/Services.astro';
+import WhyEos from '../components/WhyEos.astro';
+import Gallery from '../components/Gallery.astro';
 import EOSolar from '../components/eosolar/EOSolar.astro';
+import Careers from '../components/Careers.astro';
+import Contact from '../components/Contact.astro';
 ---
 
 <Base structuredData>
-  <!-- Le sezioni della home (hero, servizi, …) arrivano in Fase 4. -->
-  <section class="container section" id="calcolatore" aria-labelledby="eosolar-title">
-    <EOSolar />
-  </section>
+  <HeroSlider />
+
+  <!-- Contenitore relativo delle sezioni dopo la hero: il cavo è posizionato qui dentro,
+       quindi lo spacer del pin della hero non lo sposta. -->
+  <div class="wire-scope" data-wire-scope>
+    <WireTrack />
+    <Services />
+    <WhyEos />
+    <Gallery />
+    <section class="section container" id="calcolatore" aria-labelledby="eosolar-title">
+      <EOSolar />
+    </section>
+    <Careers />
+    <Contact />
+  </div>
 </Base>
 
 <style>
-  .section {
-    padding-block: 80px;
+  .wire-scope {
+    position: relative;
   }
 </style>
+
+<script>
+  import { initAnimations } from '../scripts/animations';
+  void initAnimations();
+</script>
