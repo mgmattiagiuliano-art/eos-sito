@@ -1,0 +1,25 @@
+---
+import { DEFAULT_PARAMS } from '../../lib/eosolar/defaults';
+---
+
+<div class="eosolar-teaser">
+  <div class="eosolar-teaser__head">
+    <img src="/logo.png" alt="" width="970" height="257" class="eosolar-teaser__logo" loading="lazy" decoding="async" />
+    <h2 id="eosolar-title" class="eosolar-teaser__title">Ottimizzatore fotovoltaico e accumulo EOSolar</h2>
+  </div>
+  <p class="eosolar-teaser__sub">Stima il dimensionamento più conveniente (kWp + batteria) a partire dai tuoi consumi.</p>
+  <p class="eosolar-teaser__desc">
+    Inserisci i consumi mensili e scopri quale combinazione di pannelli e accumulo massimizza il valore attuale
+    netto dell'investimento in {DEFAULT_PARAMS.anni} anni, con tempo di rientro e analisi di sensibilità.
+  </p>
+  <p class="eosolar-disclaimer">
+    <strong>Stima indicativa.</strong> Modello mensile semplificato: la fascia F1 è approssimata ai consumi
+    diurni e la produzione usa ore equivalenti medie. Il risultato non sostituisce il sopralluogo e il progetto di un
+    tecnico EOS.
+  </p>
+  <div>
+    <button type="button" class="btn btn--primary" data-eosolar-open>
+      <span data-eosolar-open-label>Accedi al calcolatore fotovoltaico</span>
+    </button>
+  </div>
+</div>

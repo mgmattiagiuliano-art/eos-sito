@@ -125,11 +125,17 @@ button {
   color: #fff;
   border-radius: var(--radius-sm);
   font-weight: 700;
-  transform: translateY(-200%);
+}
+
+.skip-link:not(:focus) {
+  clip-path: inset(50%);
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .skip-link:focus {
-  transform: none;
   color: #fff;
 }
 
@@ -219,4 +225,13 @@ button {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* Blocca lo scroll della pagina quando una modale è aperta */
+:root:has(dialog[open]) {
+  overflow: hidden;
 }

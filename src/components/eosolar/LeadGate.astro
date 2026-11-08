@@ -1,0 +1,66 @@
+---
+import Modal from '../Modal.astro';
+import { company } from '../../data/site';
+import { HONEYPOT_FIELD } from '../../lib/forms/submit';
+
+const formName = 'lead-calcolatore-fotovoltaico';
+---
+
+<Modal id="eosolar-lead" title="Accedi al calcolatore fotovoltaico">
+  <!-- TODO(EOS): verificare che la finalità descritta coincida con l'informativa privacy. -->
+  <p class="eosolar-gate__intro">
+    Lasciaci la tua email per sbloccare la simulazione completa. La useremo solo per ricontattarti in merito al tuo
+    impianto.
+  </p>
+
+  <form
+    name={formName}
+    method="POST"
+    data-netlify="true"
+    netlify-honeypot={HONEYPOT_FIELD}
+    class="eosolar-gate__form"
+    data-eosolar-lead-form
+    novalidate
+  >
+    <input type="hidden" name="form-name" value={formName} />
+    <p class="eosolar-hp" aria-hidden="true">
+      <label>Non compilare questo campo <input name={HONEYPOT_FIELD} tabindex="-1" autocomplete="off" /></label>
+    </p>
+
+    <div class="eosolar-field">
+      <label for="eosolar-lead-email">Indirizzo email <span aria-hidden="true">*</span></label>
+      <input
+        id="eosolar-lead-email"
+        type="email"
+        name="email"
+        required
+        autocomplete="email"
+        placeholder="nome@esempio.it"
+        aria-describedby="eosolar-lead-email-err"
+      />
+      <p id="eosolar-lead-email-err" class="eosolar-field__error" data-error-for="email" hidden></p>
+    </div>
+
+    <div class="eosolar-check">
+      <input id="eosolar-lead-privacy" type="checkbox" name="privacy" value="accettata" required aria-describedby="eosolar-lead-privacy-err" />
+      <label for="eosolar-lead-privacy">
+        Ho letto l'<a href="/privacy" target="_blank" rel="noopener">informativa privacy</a> e acconsento al
+        trattamento dei miei dati per essere ricontattato. <span aria-hidden="true">*</span>
+      </label>
+    </div>
+    <p id="eosolar-lead-privacy-err" class="eosolar-field__error" data-error-for="privacy" hidden></p>
+
+    <div class="eosolar-alert eosolar-alert--error" role="alert" data-lead-error hidden>
+      <p data-lead-error-msg></p>
+      <p>
+        In alternativa chiamaci al <a href={company.phone.href}>{company.phone.display}</a> o scrivi a{' '}
+        <a href={`mailto:${company.email}`}>{company.email}</a>.
+      </p>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block" data-lead-submit>
+      <span data-lead-submit-label>Sblocca il calcolatore</span>
+    </button>
+    <p class="eosolar-gate__note">* Campi obbligatori</p>
+  </form>
+</Modal>

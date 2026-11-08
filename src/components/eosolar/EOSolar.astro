@@ -1,0 +1,23 @@
+---
+/**
+ * Calcolatore fotovoltaico EOSolar: teaser + lead gate + dashboard.
+ * Stili in eosolar.css (globale, classi con prefisso .eosolar-): i risultati sono clonati da
+ * <template> a runtime e Chart.js crea elementi propri, quindi lo scoping di Astro non serve.
+ */
+import './eosolar.css';
+import Teaser from './Teaser.astro';
+import LeadGate from './LeadGate.astro';
+import Dashboard from './Dashboard.astro';
+---
+
+<div class="eosolar" data-eosolar>
+  <Teaser />
+  <Dashboard />
+</div>
+<LeadGate />
+
+<script>
+  import { initEosolar } from './ui';
+  const root = document.querySelector<HTMLElement>('[data-eosolar]');
+  if (root) initEosolar(root);
+</script>

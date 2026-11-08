@@ -1,0 +1,512 @@
+/*
+ * Stili del calcolatore EOSolar. Globali ma con prefisso .eosolar- (vedi CLAUDE.md, regola 3):
+ * coprono anche gli elementi clonati da <template> a runtime. Solo token da tokens.css.
+ */
+.eosolar {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+}
+
+/* ---------- Teaser ---------- */
+.eosolar-teaser {
+  padding: clamp(24px, 4vw, 36px) clamp(16px, 3vw, 28px);
+  border: 2px solid var(--c-blue);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--c-surface) 0%, var(--c-bg) 100%);
+  box-shadow: 0 10px 25px -5px rgb(0 68 189 / 0.08);
+  text-align: center;
+}
+
+.eosolar-teaser__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 16px;
+  margin-bottom: 14px;
+}
+
+.eosolar-teaser__logo {
+  height: 48px;
+  width: auto;
+}
+
+.eosolar-teaser__title {
+  font-size: clamp(1.25rem, 3vw, 1.55rem);
+}
+
+.eosolar-teaser__sub {
+  font-weight: 600;
+  color: var(--c-ink);
+  margin-bottom: 10px;
+}
+
+.eosolar-teaser__desc {
+  max-width: 720px;
+  margin: 0 auto 18px;
+  font-size: 0.95rem;
+}
+
+.eosolar-disclaimer {
+  display: inline-block;
+  max-width: 760px;
+  margin-bottom: 22px;
+  padding: 10px 16px;
+  border: 1px solid var(--c-success-border);
+  border-radius: 8px;
+  background: var(--c-success-bg);
+  color: var(--c-success-text);
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.eosolar-disclaimer--block {
+  display: block;
+  max-width: none;
+  margin-block: 8px 16px;
+}
+
+/* ---------- Dashboard e tab ---------- */
+.eosolar-dashboard {
+  margin-top: 30px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .eosolar-dashboard:not([hidden]) {
+    animation: eosolar-in 0.4s ease;
+  }
+
+  @keyframes eosolar-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+}
+
+.eosolar-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--c-border);
+}
+
+.eosolar-tab {
+  flex: 1 1 auto;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--c-text);
+  font-family: var(--font-heading);
+  font-size: 0.92rem;
+  font-weight: 700;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.eosolar-tab:hover {
+  background: var(--c-border);
+  color: var(--c-ink);
+}
+
+.eosolar-tab[aria-selected='true'] {
+  background: var(--c-ink);
+  color: #fff;
+}
+
+[role='tabpanel']:focus-visible {
+  outline-offset: 6px;
+}
+
+/* ---------- Card, campi ---------- */
+.eosolar-card {
+  min-width: 0;
+  margin-bottom: 20px;
+  padding: clamp(16px, 3vw, 22px);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+}
+
+.eosolar-card__title {
+  margin-bottom: 12px;
+  padding: 0;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--c-ink);
+}
+
+.eosolar-card__sub {
+  margin: -4px 0 16px;
+  font-size: 0.85rem;
+  color: var(--c-text-muted);
+}
+
+.eosolar-subset {
+  min-width: 0;
+  margin-top: 18px;
+  border: none;
+}
+
+.eosolar-subset legend {
+  margin-bottom: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--c-ink);
+}
+
+.eosolar-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 16px;
+}
+
+.eosolar-grid-12 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+@media (min-width: 520px) {
+  .eosolar-grid-12 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .eosolar-grid-12 {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 6px;
+  }
+}
+
+.eosolar-params {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: 14px;
+}
+
+.eosolar-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.eosolar-field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--c-ink);
+}
+
+.eosolar-field input,
+.eosolar-field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--c-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--c-bg);
+  font-size: 0.95rem;
+}
+
+.eosolar-field input[aria-invalid='true'] {
+  border-color: var(--c-error-text);
+}
+
+.eosolar-field--sm label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.eosolar-field--sm input {
+  padding: 6px 2px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.eosolar-field__error {
+  margin-top: 2px;
+  color: var(--c-error-text);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.eosolar-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.88rem;
+}
+
+.eosolar-check input {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  accent-color: var(--c-blue);
+}
+
+.eosolar-toggle {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  padding: 12px;
+  border: 1px dashed var(--c-border-strong);
+  border-radius: var(--radius-sm);
+}
+
+.eosolar-summary {
+  margin-top: 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.eosolar-details {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--c-border);
+}
+
+.eosolar-details summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: var(--c-blue);
+  cursor: pointer;
+}
+
+/* ---------- Tabelle ---------- */
+.eosolar-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.eosolar-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  text-align: left;
+}
+
+.eosolar-table th,
+.eosolar-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--c-border);
+  white-space: nowrap;
+}
+
+.eosolar-table thead th {
+  background: var(--c-bg);
+  color: var(--c-ink);
+  font-weight: 700;
+}
+
+.eosolar-table tbody th {
+  font-weight: 700;
+  color: var(--c-ink);
+}
+
+.eosolar-table tbody tr:first-child td:first-child {
+  font-weight: 700;
+}
+
+.eosolar-table .num {
+  text-align: right;
+}
+
+.eosolar-table th.num {
+  font-family: inherit;
+}
+
+/* ---------- Avvisi ---------- */
+.eosolar-alert {
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  border: 1px solid;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.eosolar-alert ul {
+  padding-left: 1.2em;
+}
+
+.eosolar-alert--error {
+  border-color: var(--c-error-border);
+  background: var(--c-error-bg);
+  color: var(--c-error-text);
+}
+
+.eosolar-alert--warn {
+  border-color: var(--c-warn-border);
+  background: var(--c-warn-bg);
+  color: var(--c-warn-text);
+}
+
+.eosolar-alert a {
+  color: inherit;
+  font-weight: 700;
+}
+
+/* ---------- Risultati ---------- */
+.eosolar-hero {
+  margin-bottom: 20px;
+  padding: clamp(20px, 3vw, 26px);
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--c-ink) 0%, var(--c-ink-2) 100%);
+  color: #fff;
+}
+
+.eosolar-hero__badge {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--c-green-chart);
+}
+
+.eosolar-hero__value {
+  margin: 4px 0 8px;
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.eosolar-hero__text {
+  color: var(--c-text-on-dark-muted);
+  line-height: 1.55;
+}
+
+.eosolar-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.eosolar-metric {
+  padding: 16px;
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
+  background: var(--c-bg);
+}
+
+.eosolar-metric__title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--c-text-muted);
+}
+
+.eosolar-metric__value {
+  margin: 6px 0 4px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--c-ink);
+}
+
+.eosolar-metric__desc {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--c-text-muted);
+}
+
+/* ---------- Grafici ---------- */
+.eosolar-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 18px;
+}
+
+.eosolar-chart {
+  min-width: 0;
+  margin-bottom: 20px;
+  padding: 18px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+}
+
+.eosolar-chart figcaption {
+  margin-bottom: 14px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--c-ink);
+}
+
+.eosolar-chart__box {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+/* ---------- Simulazione libera ---------- */
+.eosolar-slider {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  margin: 14px 0;
+}
+
+.eosolar-slider label {
+  font-weight: 700;
+  color: var(--c-ink);
+}
+
+.eosolar-slider input[type='range'] {
+  width: 100%;
+  min-height: 32px;
+  accent-color: var(--c-green-chart);
+}
+
+.eosolar-slider output {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--c-ink);
+}
+
+@media (min-width: 640px) {
+  .eosolar-slider {
+    grid-template-columns: 160px 1fr 110px;
+    align-items: center;
+    gap: 20px;
+  }
+}
+
+/* ---------- Lead gate ---------- */
+.eosolar-gate__intro {
+  margin-bottom: 18px;
+  font-size: 0.95rem;
+}
+
+.eosolar-gate__form {
+  display: grid;
+  gap: 14px;
+}
+
+.eosolar-gate__note {
+  font-size: 0.78rem;
+  color: var(--c-text-muted);
+}
+
+/* Honeypot: fuori schermo, non display:none (alcuni bot lo ignorano) */
+.eosolar-hp {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

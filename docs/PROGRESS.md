@@ -8,8 +8,8 @@
 |---|---|---|
 | 0 Analisi e piano | — | ✅ |
 | 1 Scaffold | `claude/eos-impianti-refactor-n2nhdt` | ✅ pushato |
-| 2 Motore EOSolar | `claude/eos-fase-2-motore` | ✅ in attesa di ok |
-| 3 UI calcolatore | `claude/eos-fase-3-ui-calcolatore` | ⏳ |
+| 2 Motore EOSolar | `claude/eos-fase-2-motore` | ✅ pushato |
+| 3 UI calcolatore | `claude/eos-fase-3-ui-calcolatore` | ✅ in attesa di ok |
 | 4 Pagina e animazioni | `claude/eos-fase-4-pagina` | ⏳ |
 | 5 Privacy, SEO, rifinitura | `claude/eos-fase-5-privacy-seo` | ⏳ |
 | 6 Verifica e consegna | `claude/eos-fase-6-consegna` | ⏳ |
@@ -31,7 +31,10 @@
 | # | Descrizione | Stato |
 |---|---|---|
 | 1–6 | hero mobile, 100vw, cavo, stroke, icone fetch, stato icone | Fase 4 |
-| 7, 9, 16, 17 | stili innerHTML, tab ARIA, disclaimer, lead gate | Fase 3 |
+| 7 | stili non applicati a innerHTML | ✅ F3 (`eosolar.css` globale con prefisso `.eosolar-`, risultati clonati da `<template>` + `textContent`) |
+| 9 | `switchEosTab` con `event` globale | ✅ F3 (`data-tab`, tablist/tab/tabpanel, frecce/Home/End, `activateTab(id)`) |
+| 16 | disclaimer | ✅ F3 (teaser + risultati; rimossi "irraggiamento satellitare" e "stima precisa") |
+| 17 | lead gate | ✅ F3 (`submitForm`, errore + Riprova + contatti, nessuno sblocco su errore) |
 | 8 | token CSS duplicati | ✅ F1 (`tokens.css` unico, sistema `.btn` unico) |
 | 10 | criterio ottimo → max NPV entro vincoli, `CRITERIO_OTTIMO`, top 3 | ✅ F2 |
 | 11 | degrado batteria, sostituzioni inverter/batteria, O&M inflazionato | ✅ F2 |
@@ -41,7 +44,7 @@
 | 15 | ritiro dedicato, IVA, detrazione parametrizzati e disattivati | ✅ F2 |
 | 18–21 | form privacy/honeypot/CV, cookie, pagine legali, SEO | Fase 5 (adapter + honeypot già in F1) |
 | 22 | bilancio energetico non chiuso | ✅ F2 |
-| 23 | SCR etichettato "diretto" | ✅ F2 (SCR = (diretto+carica)/produzione); etichetta UI in F3 |
+| 23 | SCR etichettato "diretto" | ✅ F2–F3 ("Autoconsumo" = (diretto+carica)/produzione) |
 | 24 | payback "25" se non si rientra | ✅ F2 (`null` → "oltre 25 anni") |
 | 25 | vincoli ignorati in silenzio | ✅ F2 (`vincoliRispettati`) |
 | 26 | curva NPV solo senza batteria | ✅ F2 (`npvCurve(tutti, kWh)`) |
@@ -66,7 +69,16 @@ Caso di riferimento (3.800 kWh/anno, default handoff):
 
 Con RID off l'immissione vale 0 € e l'ottimo NPV resta piccolo: dipende dal default prudente, non più dal criterio. Decisione per EOS: valore di default del ritiro dedicato.
 
+## UI calcolatore (Fase 3) — riferimento
+`src/components/eosolar/`: `EOSolar.astro` (entry), `Teaser`, `LeadGate` (usa `Modal.astro` = `<dialog>` nativo), `Dashboard` (3 tab + `<template>`), `fields.ts` (campi parametri, build + lettura), `ui.ts` (controller), `charts.ts` (Chart.js, import dinamico, colori dai token, destroy/ricrea per canvas), `eosolar.css`.
+- Qualsiasi elemento `[data-eosolar-open]` nella pagina apre il gate o, se già sbloccato (`localStorage eos:eosolar:unlocked`), porta alla dashboard. In Fase 4 usarlo nei bottoni della hero.
+- Formattazione: `src/lib/eosolar/format.ts` (it-IT con `useGrouping: 'always'`).
+- `PUBLIC_FORMS_SIMULATE_ERROR=true` per provare l'errore del gate.
+- Astro 7: un solo dev server alla volta (gira in background): fermarlo con `npx astro dev stop`.
+- Verificato con Playwright a 360/1280: flusso gate → risultati identici ai test (NPV 3.607 €, payback 8,0, MIRR 9,5%), nessuno scroll orizzontale, nessun errore console, nessuna richiesta esterna.
+
 ## TODO(EOS) raccolti
+- Testo finalità del lead gate coerente con l'informativa privacy.
 - Dominio definitivo (`PUBLIC_SITE_URL`), coordinate GPS, "oltre 20 anni", "enti pubblici".
 - Listini CAPEX FV/batteria (IVA esclusa?), tariffa, inflazione generale, ore equivalenti locali, profilo F1.
 - Normativa: ritiro dedicato (prezzo), IVA agevolata, detrazione (aliquota, anni).

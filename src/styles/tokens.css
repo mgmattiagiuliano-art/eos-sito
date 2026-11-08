@@ -33,6 +33,9 @@
   --c-error-bg: #fef2f2;
   --c-error-border: #fecaca;
   --c-error-text: #991b1b;
+  --c-warn-bg: #fffbeb;
+  --c-warn-border: #fde68a;
+  --c-warn-text: #92400e;
 
   /* Tipografia */
   --font-heading: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;

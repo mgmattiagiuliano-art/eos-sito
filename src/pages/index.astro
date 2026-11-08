@@ -1,18 +1,17 @@
 ---
 import Base from '../layouts/Base.astro';
+import EOSolar from '../components/eosolar/EOSolar.astro';
 ---
 
 <Base structuredData>
-  <!-- Fase 1: segnaposto. Le sezioni (hero, servizi, calcolatore, …) arrivano nelle fasi 3-4. -->
-  <section class="container placeholder">
-    <h1>EOS Impianti s.n.c.</h1>
-    <p>Sito in costruzione: scaffold della Fase 1.</p>
+  <!-- Le sezioni della home (hero, servizi, …) arrivano in Fase 4. -->
+  <section class="container section" id="calcolatore" aria-labelledby="eosolar-title">
+    <EOSolar />
   </section>
 </Base>
 
 <style>
-  .placeholder {
+  .section {
     padding-block: 80px;
-    min-height: 60vh;
   }
 </style>
