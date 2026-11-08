@@ -16,6 +16,7 @@ import Footer from '../components/Footer.astro';
 import CookieBanner from '../components/CookieBanner.astro';
 // Font del titolo principale (LCP): preload per evitare il cambio di font visibile
 import headingFont from '@fontsource/montserrat/files/montserrat-latin-900-normal.woff2?url';
+import subheadingFont from '@fontsource/montserrat/files/montserrat-latin-800-normal.woff2?url';
 import { company, fullAddress, seo } from '../data/site';
 
 interface Props {
@@ -85,6 +86,7 @@ const jsonLd = {
     <meta name="theme-color" content="#0F172A" />
 
     <link rel="preload" href={headingFont} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={subheadingFont} as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />

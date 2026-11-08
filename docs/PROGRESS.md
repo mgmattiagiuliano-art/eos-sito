@@ -11,8 +11,8 @@
 | 2 Motore EOSolar | `claude/eos-fase-2-motore` | ✅ pushato |
 | 3 UI calcolatore | `claude/eos-fase-3-ui-calcolatore` | ✅ pushato |
 | 4 Pagina e animazioni | `claude/eos-fase-4-pagina` | ✅ pushato |
-| 5 Privacy, SEO, rifinitura | `claude/eos-fase-5-privacy-seo` | ✅ in attesa di ok |
-| 6 Verifica e consegna | `claude/eos-fase-6-consegna` | ⏳ |
+| 5 Privacy, SEO, rifinitura | `claude/eos-fase-5-privacy-seo` | ✅ pushato |
+| 6 Verifica e consegna | `claude/eos-fase-6-consegna` | ✅ in attesa di ok |
 
 ## Decisioni prese (Fase 0, approvate)
 1. Immagini e icone in `src/assets/` (per `astro:assets` e SVG inline); in `public/` solo URL fissi. `CLAUDE.md` aggiornato.
@@ -105,6 +105,14 @@ Con RID off l'immissione vale 0 € e l'ottimo NPV resta piccolo: dipende dal de
 - Test consenso in `preview` (in `dev` la toolbar di Astro copre i bottoni del banner): 0 richieste esterne prima della scelta, anche scorrendo; rifiuto persistente; revoca toglie l'iframe.
 - Preload solo del font del titolo (Montserrat 900): la prima slide non ha immagini, l'LCP è il testo.
 - Pagine: `/`, `/privacy/`, `/cookie/`, `/404` (noindex), `robots.txt`, sitemap (3 URL).
+
+## Verifica e consegna (Fase 6)
+- Lighthouse 13 in `preview`, mobile e desktop: 100/100/100/100 su `/`, `/privacy/`, `/cookie/` (404: SEO 66 voluto, noindex).
+  - Prima delle correzioni la home mobile era Perf 90 (LCP 3,4 s) e A11y 97: preload anche di Montserrat 800 (LCP mobile = h2 slide 2), CSS inline (`inlineStylesheets: 'always'`), `--c-red-text` per l'eyebrow rossa (contrasto).
+- Playwright a 360/768/1100/1440 × motion/reduced: nessun overflow (7 punti di scroll, dashboard sbloccata, 3 tab, menu mobile), console pulita, 0 richieste a terze parti.
+- Clone pulito senza `.env`: `npm ci` + `npm run dev` → 200; build ok.
+- `netlify.toml` (build, Node 22, provider netlify, header di sicurezza, cache `/_astro`), `README.md` completo con elenco TODO(EOS).
+- Per eseguire Lighthouse senza aggiungere dipendenze: installarlo in una cartella temporanea e usare `CHROME_PATH` del Chromium di Playwright.
 
 ## TODO(EOS) raccolti
 - Privacy: legale rappresentante, PEC, DPO, fornitori (hosting, form, email), trasferimenti extra UE, tempi di conservazione, base giuridica del lead, validazione del testo da un consulente.

@@ -7,6 +7,7 @@
   /* Brand */
   --c-red: #e52320;
   --c-red-hover: #c81e1b;
+  --c-red-text: #c81e1b; /* rosso per testo piccolo su fondo chiaro: contrasto AA */
   --c-blue: #0044bd;
   --c-blue-hover: #003399;
   --c-green: #33a652;

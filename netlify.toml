@@ -1,0 +1,25 @@
+# Deploy su Netlify. Il sito resta statico e portabile: questo file serve solo a Netlify.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  # I form usano Netlify Forms (rilevati al build dagli attributi data-netlify dei <form>)
+  PUBLIC_FORMS_PROVIDER = "netlify"
+  # TODO(EOS): dominio definitivo (serve per canonical, sitemap e og:image assolute)
+  PUBLIC_SITE_URL = "https://www.eosimpianti.it"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+
+# File con hash nel nome: cache lunga
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

@@ -23,6 +23,7 @@ export default defineConfig({
   trailingSlash: 'ignore',
   integrations: [sitemap()],
   build: {
-    inlineStylesheets: 'auto',
+    // Sito di poche pagine: CSS inline = nessuna richiesta che blocca il rendering
+    inlineStylesheets: 'always',
   },
 });
