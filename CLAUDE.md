@@ -72,3 +72,10 @@ Prima di dichiarare finito un compito: `check`, `test` e `build` devono passare.
 - Fasi piccole e verificabili; a fine fase riassumi cosa è cambiato e cosa resta.
 - Se una richiesta contraddice questo file, chiedi prima di procedere.
 - Nessuna dipendenza nuova senza motivarla in una riga.
+
+## Memoria di lavoro (per sessioni Claude Code)
+- **A inizio sessione leggi `docs/PROGRESS.md`**: stato delle fasi, decisioni prese, problemi aperti, TODO(EOS). È il riassunto: non rifare l'analisi.
+- `docs/handoff.md` è il prototipo (40k token): **non rileggerlo intero**, apri solo le righe che servono (indice in PROGRESS.md).
+- Una fase = un branch `claude/eos-fase-N-<nome>`, creato dal branch della fase precedente; commit e push a fine fase.
+- A fine fase: `check`, `test`, `build`, `lint` verdi → aggiorna `docs/PROGRESS.md` → commit → push → fermati e aspetta l'ok.
+- Risparmio token: niente rilettura di file appena scritti, output dei comandi filtrati (`grep`/`tail`), screenshot solo quando servono.
