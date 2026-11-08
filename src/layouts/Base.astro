@@ -13,6 +13,9 @@ import '../styles/global.css';
 
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import CookieBanner from '../components/CookieBanner.astro';
+// Font del titolo principale (LCP): preload per evitare il cambio di font visibile
+import headingFont from '@fontsource/montserrat/files/montserrat-latin-900-normal.woff2?url';
 import { company, fullAddress, seo } from '../data/site';
 
 interface Props {
@@ -77,10 +80,11 @@ const jsonLd = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {!noindex && <link rel="canonical" href={canonical} />}
     {noindex && <meta name="robots" content="noindex, follow" />}
     <meta name="theme-color" content="#0F172A" />
 
+    <link rel="preload" href={headingFont} as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
@@ -110,5 +114,6 @@ const jsonLd = {
       <slot />
     </main>
     <Footer />
+    <CookieBanner />
   </body>
 </html>

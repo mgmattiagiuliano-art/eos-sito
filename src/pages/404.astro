@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import { company } from '../data/site';
+---
+
+<Base title="Pagina non trovata" description="La pagina richiesta non esiste o è stata spostata." noindex>
+  <section class="notfound container">
+    <p class="notfound__code num" aria-hidden="true">404</p>
+    <h1>Pagina non trovata</h1>
+    <p>La pagina che cerchi non esiste o è stata spostata.</p>
+    <div class="notfound__actions">
+      <a class="btn btn--primary" href="/">Torna alla home</a>
+      <a class="btn btn--secondary" href="/#contatti">Contattaci</a>
+    </div>
+    <p class="notfound__hint">Oppure chiamaci al <a href={company.phone.href}>{company.phone.display}</a>.</p>
+  </section>
+</Base>
+
+<style>
+  .notfound {
+    padding-block: 80px;
+    text-align: center;
+  }
+
+  .notfound__code {
+    font-size: clamp(4rem, 15vw, 7rem);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--c-blue);
+  }
+
+  .notfound h1 {
+    margin: 12px 0;
+  }
+
+  .notfound__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin: 24px 0 16px;
+  }
+
+  .notfound__hint {
+    font-size: 0.9rem;
+  }
+</style>

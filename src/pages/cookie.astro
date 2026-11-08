@@ -1,0 +1,70 @@
+---
+import Legal from '../layouts/Legal.astro';
+import { company } from '../data/site';
+---
+
+<Legal
+  title="Cookie policy"
+  description="Cookie, archiviazione locale e contenuti di terze parti usati dal sito di EOS Impianti s.n.c. e come gestire il consenso."
+  updated="TODO(EOS): data di validazione del testo"
+>
+  <p>
+    Questa pagina spiega quali cookie e quali strumenti di archiviazione locale usa il sito, in conformità all'art. 122 del
+    D.Lgs. 196/2003 e alle Linee guida del Garante Privacy del 10 giugno 2021.
+  </p>
+  <p>
+    <button type="button" class="btn btn--secondary" data-cookie-preferences>Gestisci le preferenze cookie</button>
+  </p>
+
+  <h2>Strumenti tecnici (sempre attivi)</h2>
+  <p>
+    Il sito non usa cookie di profilazione né strumenti di statistica. Usa soltanto l'archiviazione locale del browser
+    (localStorage) per finalità strettamente tecniche, che non richiedono consenso:
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th scope="col">Nome</th><th scope="col">Finalità</th><th scope="col">Durata</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>eos:consent</code></td><td>Ricordare la tua scelta sui cookie</td><td>Fino alla cancellazione dei dati del browser o a una nuova scelta</td></tr>
+        <tr><td><code>eos:eosolar:unlocked</code></td><td>Ricordare che hai già sbloccato il calcolatore fotovoltaico</td><td>Fino alla cancellazione dei dati del browser</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><span class="todo">TODO(EOS): aggiungere eventuali cookie tecnici impostati dal fornitore di hosting.</span></p>
+
+  <h2>Contenuti di terze parti (solo con consenso)</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th scope="col">Servizio</th><th scope="col">Dove</th><th scope="col">Fornitore</th><th scope="col">Informativa</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Google Maps</td>
+          <td>Mappa nella sezione contatti</td>
+          <td>Google Ireland Ltd.</td>
+          <td><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    Finché non dai il consenso la mappa non viene caricata e il browser non contatta i server di Google. Puoi dare il
+    consenso dal banner, da «Gestisci le preferenze cookie» oppure cliccando «Mostra la mappa». Scorrere la pagina o
+    chiudere il banner non equivale a dare il consenso.
+  </p>
+
+  <h2>Come revocare il consenso</h2>
+  <p>
+    Puoi cambiare la tua scelta in qualsiasi momento con il pulsante «Preferenze cookie» in fondo a ogni pagina. Puoi
+    anche cancellare cookie e dati dei siti dalle impostazioni del browser.
+  </p>
+
+  <h2>Titolare</h2>
+  <p>
+    {company.legalName} — <a href={`mailto:${company.email}`}>{company.email}</a>. Per il trattamento dei dati personali vedi
+    l'<a href="/privacy/">informativa privacy</a>.
+  </p>
+</Legal>

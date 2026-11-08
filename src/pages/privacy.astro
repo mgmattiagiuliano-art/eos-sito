@@ -1,0 +1,119 @@
+---
+/**
+ * Informativa privacy (artt. 13–14 GDPR). Struttura completa; i dati che solo EOS può fornire
+ * sono marcati TODO(EOS) e visibili in pagina finché non vengono compilati e validati.
+ */
+import Legal from '../layouts/Legal.astro';
+import { company, fullAddress } from '../data/site';
+---
+
+<Legal
+  title="Informativa privacy"
+  description="Come EOS Impianti s.n.c. tratta i dati personali raccolti tramite il sito: contatti, calcolatore fotovoltaico e candidature."
+  updated="TODO(EOS): data di validazione del testo"
+>
+  <p>
+    Questa informativa descrive come vengono trattati i dati personali raccolti tramite questo sito, ai sensi degli artt. 13
+    e 14 del Regolamento (UE) 2016/679 («GDPR») e del D.Lgs. 196/2003 come modificato dal D.Lgs. 101/2018.
+  </p>
+  <p><span class="todo">TODO(EOS): far verificare l'intero testo da un consulente privacy prima della pubblicazione.</span></p>
+
+  <h2>1. Titolare del trattamento</h2>
+  <p>
+    {company.legalName}, {fullAddress}, P.IVA {company.vatNumber}.<br />
+    Email: <a href={`mailto:${company.email}`}>{company.email}</a> · Telefono: <a href={company.phone.href}>{company.phone.display}</a><br />
+    <span class="todo">TODO(EOS): PEC e legale rappresentante.</span>
+  </p>
+  <p><span class="todo">TODO(EOS): indicare se è stato nominato un Responsabile della protezione dei dati (DPO) e i suoi contatti, oppure eliminare questa riga.</span></p>
+
+  <h2>2. Dati trattati, finalità e basi giuridiche</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th scope="col">Dove</th><th scope="col">Dati</th><th scope="col">Finalità</th><th scope="col">Base giuridica</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Modulo «Richiedi una consulenza»</td>
+          <td>Nome e cognome, email, telefono (facoltativo), messaggio</td>
+          <td>Rispondere alla richiesta, organizzare sopralluoghi e preventivi</td>
+          <td>Misure precontrattuali su richiesta dell'interessato (art. 6.1.b GDPR)</td>
+        </tr>
+        <tr>
+          <td>Calcolatore fotovoltaico</td>
+          <td>Email</td>
+          <td>Accesso al calcolatore e ricontatto in merito alla simulazione</td>
+          <td>
+            Consenso (art. 6.1.a GDPR) <span class="todo">TODO(EOS): confermare la base giuridica e la finalità (anche
+            l'eventuale invio di comunicazioni commerciali, che richiederebbe un consenso separato).</span>
+          </td>
+        </tr>
+        <tr>
+          <td>Modulo «Lavora con noi»</td>
+          <td>Nome e cognome, email, telefono, curriculum vitae, presentazione</td>
+          <td>Valutazione della candidatura e selezione del personale</td>
+          <td>Misure precontrattuali su richiesta dell'interessato (art. 6.1.b GDPR); art. 111-bis D.Lgs. 196/2003 per i dati contenuti nel CV</td>
+        </tr>
+        <tr>
+          <td>Navigazione</td>
+          <td>Dati tecnici (indirizzo IP, log del server) trattati dal fornitore di hosting</td>
+          <td>Sicurezza e funzionamento del sito</td>
+          <td>Legittimo interesse (art. 6.1.f GDPR)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Non inviare nel curriculum dati non necessari, in particolare dati appartenenti a categorie particolari (art. 9 GDPR).</p>
+
+  <h2>3. Il calcolatore fotovoltaico</h2>
+  <p>
+    I consumi e i parametri inseriti nel calcolatore vengono elaborati solo nel tuo browser e non sono inviati a EOS. Viene
+    trasmessa soltanto l'email indicata per sbloccare il calcolatore.
+  </p>
+
+  <h2>4. Modalità del trattamento e destinatari</h2>
+  <p>
+    I dati sono trattati con strumenti elettronici da personale autorizzato di {company.legalName}. Possono essere trattati,
+    in qualità di responsabili del trattamento (art. 28 GDPR), dai fornitori dei servizi tecnici necessari:
+  </p>
+  <ul>
+    <li><span class="todo">TODO(EOS): fornitore di hosting del sito (es. Netlify, Inc.) e sede.</span></li>
+    <li><span class="todo">TODO(EOS): fornitore del servizio di raccolta dei moduli (Netlify Forms o altro).</span></li>
+    <li><span class="todo">TODO(EOS): fornitore della casella email.</span></li>
+  </ul>
+  <p>I dati non sono diffusi né venduti a terzi.</p>
+
+  <h2>5. Trasferimenti fuori dall'Unione europea</h2>
+  <p>
+    <span class="todo">TODO(EOS): indicare se i fornitori sopra elencati trasferiscono dati fuori dallo Spazio economico
+    europeo e su quale garanzia (decisione di adeguatezza, EU-US Data Privacy Framework, clausole contrattuali tipo).</span>
+  </p>
+
+  <h2>6. Conservazione</h2>
+  <ul>
+    <li>Richieste di contatto e lead del calcolatore: <span class="todo">TODO(EOS): periodo di conservazione.</span></li>
+    <li>Candidature: <span class="todo">TODO(EOS): periodo di conservazione dei curriculum.</span></li>
+    <li>Log tecnici: <span class="todo">TODO(EOS): periodo indicato dal fornitore di hosting.</span></li>
+  </ul>
+
+  <h2>7. Natura del conferimento</h2>
+  <p>
+    Il conferimento dei dati contrassegnati come obbligatori è necessario per rispondere alla richiesta o valutare la
+    candidatura: senza questi dati non è possibile dar seguito alla richiesta.
+  </p>
+
+  <h2>8. I tuoi diritti</h2>
+  <p>
+    Puoi chiedere in ogni momento l'accesso ai tuoi dati, la rettifica, la cancellazione, la limitazione del trattamento, la
+    portabilità e opporti al trattamento (artt. 15–22 GDPR). Se il trattamento si basa sul consenso, puoi revocarlo in
+    qualsiasi momento senza pregiudicare la liceità del trattamento precedente. Per esercitare i diritti scrivi a
+    <a href={`mailto:${company.email}`}>{company.email}</a>.
+  </p>
+  <p>
+    Hai inoltre diritto di proporre reclamo al Garante per la protezione dei dati personali
+    (<a href="https://www.garanteprivacy.it" target="_blank" rel="noopener">www.garanteprivacy.it</a>).
+  </p>
+
+  <h2>9. Cookie</h2>
+  <p>Per l'uso di cookie e di contenuti di terze parti consulta la <a href="/cookie/">cookie policy</a>.</p>
+</Legal>

@@ -35,7 +35,7 @@ const mapLink = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
       <!-- Google Maps: nessuna richiesta a Google finché l'utente non lo chiede (consenso esplicito). -->
       <div class="map" data-map data-map-src={mapEmbed}>
         <div class="map__placeholder" data-map-placeholder>
-          <p>La mappa è fornita da Google Maps, che può installare cookie di terze parti. Viene caricata solo se lo chiedi.</p>
+          <p>La mappa è fornita da Google Maps, che può installare cookie di terze parti. Viene caricata solo con il tuo consenso: cliccando «Mostra la mappa» lo accetti per questa categoria (puoi revocarlo da «Preferenze cookie»).</p>
           <button type="button" class="btn btn--secondary" data-map-load>Mostra la mappa</button>
           <a href={mapLink} target="_blank" rel="noopener">Apri in Google Maps<span class="visually-hidden"> (nuova scheda)</span></a>
         </div>
@@ -75,7 +75,7 @@ const mapLink = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
           <div class="form__check">
             <input id="ct-privacy" type="checkbox" name="privacy" value="accettata" data-validate="consent" aria-describedby="ct-privacy-err" />
             <label for="ct-privacy">
-              Ho letto l'<a href="/privacy" target="_blank" rel="noopener">informativa privacy</a> e acconsento al trattamento
+              Ho letto l'<a href="/privacy/" target="_blank" rel="noopener">informativa privacy</a> e acconsento al trattamento
               dei miei dati per ricevere una risposta. *
             </label>
           </div>
@@ -167,16 +167,32 @@ const mapLink = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
   const form = document.querySelector<HTMLFormElement>('[data-site-form="contatti-ufficiali"]');
   if (form) initForm(form, 'contatti-ufficiali');
 
-  // Click-to-load: l'iframe di Google Maps viene creato solo su richiesta esplicita.
-  // In Fase 5 il consenso viene anche ricordato e collegato al banner cookie.
+  // Google Maps solo con consenso alla categoria "mappe" (banner cookie o click esplicito qui).
+  import { hasConsent, onConsentChange, readConsent, saveConsent } from '../lib/consent';
+
   document.querySelectorAll<HTMLElement>('[data-map]').forEach((map) => {
-    map.querySelector('[data-map-load]')?.addEventListener('click', () => {
+    const placeholder = map.querySelector<HTMLElement>('[data-map-placeholder]')!;
+
+    const load = () => {
+      if (map.querySelector('iframe')) return;
       const iframe = document.createElement('iframe');
       iframe.src = map.dataset.mapSrc ?? '';
       iframe.title = 'Mappa della sede di EOS Impianti';
       iframe.loading = 'lazy';
       iframe.referrerPolicy = 'no-referrer-when-downgrade';
       map.replaceChildren(iframe);
+    };
+    // Revoca: l'iframe viene rimosso (eventuali cookie già installati da Google si gestiscono dal browser)
+    const unload = () => {
+      if (map.querySelector('iframe')) map.replaceChildren(placeholder);
+    };
+
+    // Cliccare "Mostra la mappa" è un consenso specifico e informato per questa categoria
+    placeholder.querySelector('[data-map-load]')?.addEventListener('click', () => {
+      saveConsent({ ...(readConsent() ?? { maps: false }), maps: true });
     });
+
+    if (hasConsent('maps')) load();
+    onConsentChange((c) => (c.maps ? load() : unload()));
   });
 </script>

@@ -1,0 +1,202 @@
+---
+/**
+ * Banner cookie conforme alle linee guida del Garante (10/06/2021):
+ * - nessuna terza parte prima della scelta; scorrere la pagina NON è consenso;
+ * - "Rifiuta" ha la stessa evidenza di "Accetta"; "Personalizza" per categoria;
+ * - la scelta si può cambiare in ogni momento (pulsante "Preferenze cookie" nel footer).
+ */
+---
+
+<section class="cookie" aria-labelledby="cookie-title" data-cookie-banner hidden>
+  <h2 id="cookie-title" class="cookie__title" tabindex="-1">Cookie e contenuti di terze parti</h2>
+  <p class="cookie__text">
+    Questo sito usa solo strumenti tecnici necessari al suo funzionamento. Con il tuo consenso carichiamo anche la mappa di
+    Google Maps, che può installare cookie di terze parti. Puoi cambiare scelta in qualsiasi momento da «Preferenze
+    cookie» in fondo alla pagina. Dettagli nella <a href="/cookie/">cookie policy</a>.
+  </p>
+
+  <fieldset class="cookie__custom" data-cookie-custom hidden>
+    <legend class="visually-hidden">Scegli le categorie</legend>
+    <div class="cookie__option">
+      <input id="cookie-necessary" type="checkbox" checked disabled />
+      <label for="cookie-necessary"><strong>Necessari</strong> — preferenze e funzionamento del sito. Sempre attivi.</label>
+    </div>
+    <div class="cookie__option">
+      <input id="cookie-maps" type="checkbox" data-cookie-category="maps" />
+      <label for="cookie-maps"><strong>Mappe</strong> — Google Maps nella sezione contatti (terza parte: Google).</label>
+    </div>
+  </fieldset>
+
+  <div class="cookie__actions">
+    <button type="button" class="cookie__btn" data-cookie-action="reject">Rifiuta</button>
+    <button type="button" class="cookie__btn" data-cookie-action="customize" aria-expanded="false">Personalizza</button>
+    <button type="button" class="cookie__btn" data-cookie-action="save" hidden>Salva le preferenze</button>
+    <button type="button" class="cookie__btn" data-cookie-action="accept">Accetta tutto</button>
+  </div>
+</section>
+
+<style>
+  .cookie {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    z-index: var(--z-cookie);
+    max-width: 900px;
+    max-height: calc(100dvh - 32px);
+    margin-inline: auto;
+    overflow: auto;
+    padding: 20px 24px;
+    border: 1px solid rgb(255 255 255 / 0.15);
+    border-radius: var(--radius-md);
+    background: var(--c-ink);
+    color: var(--c-text-on-dark);
+    box-shadow: 0 10px 30px rgb(0 0 0 / 0.3);
+  }
+
+  .cookie__title {
+    margin-bottom: 6px;
+    font-size: 1.05rem;
+    color: #fff;
+  }
+
+  .cookie__title:focus {
+    outline: none;
+  }
+
+  .cookie__text {
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .cookie a {
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .cookie__custom {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 12px;
+    border: 1px solid rgb(255 255 255 / 0.2);
+    border-radius: var(--radius-sm);
+  }
+
+  .cookie__option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.85rem;
+  }
+
+  .cookie__option input {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
+    accent-color: var(--c-sky);
+  }
+
+  .cookie__actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  /* Stessa evidenza per tutte le scelte (nessun "dark pattern" sull'accetta) */
+  .cookie__btn {
+    min-height: 44px;
+    padding: 10px 16px;
+    border: 1px solid rgb(255 255 255 / 0.6);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: #fff;
+    font-family: var(--font-heading);
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+
+  .cookie__btn:hover {
+    background: rgb(255 255 255 / 0.12);
+  }
+
+  .cookie :focus-visible {
+    outline-color: #fff;
+  }
+
+  @media (max-width: 559px) {
+    .cookie {
+      left: 8px;
+      right: 8px;
+      bottom: 8px;
+      padding: 14px 16px;
+    }
+
+    .cookie__text {
+      font-size: 0.8rem;
+    }
+
+    .cookie__actions {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .cookie__btn {
+      padding: 8px 4px;
+      font-size: 0.78rem;
+    }
+  }
+</style>
+
+<script>
+  import { NO_CONSENT, onConsentChange, readConsent, saveConsent } from '../lib/consent';
+
+  const banner = document.querySelector<HTMLElement>('[data-cookie-banner]');
+  if (banner) {
+    const custom = banner.querySelector<HTMLElement>('[data-cookie-custom]')!;
+    const mapsBox = banner.querySelector<HTMLInputElement>('[data-cookie-category="maps"]')!;
+    const btn = (a: string) => banner.querySelector<HTMLButtonElement>(`[data-cookie-action="${a}"]`)!;
+    const title = banner.querySelector<HTMLElement>('#cookie-title')!;
+
+    const setCustomOpen = (open: boolean) => {
+      custom.hidden = !open;
+      btn('customize').setAttribute('aria-expanded', String(open));
+      btn('customize').hidden = open;
+      btn('save').hidden = !open;
+    };
+
+    const show = (customOpen: boolean, focus: boolean) => {
+      mapsBox.checked = (readConsent() ?? NO_CONSENT).maps;
+      setCustomOpen(customOpen);
+      banner.hidden = false;
+      if (focus) title.focus();
+    };
+
+    const close = (choice: { maps: boolean }) => {
+      saveConsent(choice);
+      banner.hidden = true;
+    };
+
+    btn('reject').addEventListener('click', () => close({ maps: false }));
+    btn('accept').addEventListener('click', () => close({ maps: true }));
+    btn('save').addEventListener('click', () => close({ maps: mapsBox.checked }));
+    btn('customize').addEventListener('click', () => {
+      setCustomOpen(true);
+      mapsBox.focus();
+    });
+
+    // Una scelta fatta altrove (es. "Mostra la mappa") chiude il banner
+    onConsentChange(() => (banner.hidden = true));
+
+    // Nessuna scelta salvata → il banner compare (senza rubare il focus)
+    if (!readConsent()) show(false, false);
+
+    // "Preferenze cookie" nel footer o nella cookie policy
+    document.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('[data-cookie-preferences]')) show(true, true);
+    });
+  }
+</script>

@@ -10,8 +10,8 @@
 | 1 Scaffold | `claude/eos-impianti-refactor-n2nhdt` | ✅ pushato |
 | 2 Motore EOSolar | `claude/eos-fase-2-motore` | ✅ pushato |
 | 3 UI calcolatore | `claude/eos-fase-3-ui-calcolatore` | ✅ pushato |
-| 4 Pagina e animazioni | `claude/eos-fase-4-pagina` | ✅ in attesa di ok |
-| 5 Privacy, SEO, rifinitura | `claude/eos-fase-5-privacy-seo` | ⏳ |
+| 4 Pagina e animazioni | `claude/eos-fase-4-pagina` | ✅ pushato |
+| 5 Privacy, SEO, rifinitura | `claude/eos-fase-5-privacy-seo` | ✅ in attesa di ok |
 | 6 Verifica e consegna | `claude/eos-fase-6-consegna` | ⏳ |
 
 ## Decisioni prese (Fase 0, approvate)
@@ -47,7 +47,10 @@
 | 13 | sensibilità su tariffa + inflazione + produttività ±10% | ✅ F2 |
 | 14 | MIRR (reinvestimento = tasso di sconto) | ✅ F2 |
 | 15 | ritiro dedicato, IVA, detrazione parametrizzati e disattivati | ✅ F2 |
-| 18–21 | form privacy/honeypot/CV, cookie, pagine legali, SEO | Fase 5 (adapter + honeypot già in F1) |
+| 18 | privacy, honeypot, CV nei 3 form | ✅ F3–F4 |
+| 19 | cookie banner, Maps dopo consenso, video locale, font | ✅ F5 banner Accetta/Rifiuta/Personalizza + `src/lib/consent.ts`; Maps solo con consenso (anche revocabile); font F1; **video: manca il file** |
+| 20 | pagine legali | ✅ F5 `/privacy/`, `/cookie/` con TODO(EOS) visibili; link con slash finale |
+| 21 | URL assoluti, og-image, sitemap, robots, canonical, favicon | ✅ F1+F5 (`og-image.jpg` 1200×630 generata; `robots.txt` da route; niente canonical sulla 404) |
 | 22 | bilancio energetico non chiuso | ✅ F2 |
 | 23 | SCR etichettato "diretto" | ✅ F2–F3 ("Autoconsumo" = (diretto+carica)/produzione) |
 | 24 | payback "25" se non si rientra | ✅ F2 (`null` → "oltre 25 anni") |
@@ -96,7 +99,15 @@ Con RID off l'immissione vale 0 € e l'ottimo NPV resta piccolo: dipende dal de
 - Video slide 5: compare da solo se esiste `public/video/hero-fotovoltaico.mp4` (altrimenti poster).
 - `<Picture>` con `fallbackFormat="jpg"`: senza, le sorgenti AVIF generavano fallback PNG da 2 MB.
 
+## Privacy, SEO (Fase 5) — riferimento
+- Consenso: `localStorage eos:consent` `{v, date, maps}`; evento `eos:consent-change`. Nuove terze parti → nuova categoria + `CONSENT_VERSION++`.
+- `[data-cookie-preferences]` riapre il banner (footer, pagina cookie).
+- Test consenso in `preview` (in `dev` la toolbar di Astro copre i bottoni del banner): 0 richieste esterne prima della scelta, anche scorrendo; rifiuto persistente; revoca toglie l'iframe.
+- Preload solo del font del titolo (Montserrat 900): la prima slide non ha immagini, l'LCP è il testo.
+- Pagine: `/`, `/privacy/`, `/cookie/`, `/404` (noindex), `robots.txt`, sitemap (3 URL).
+
 ## TODO(EOS) raccolti
+- Privacy: legale rappresentante, PEC, DPO, fornitori (hosting, form, email), trasferimenti extra UE, tempi di conservazione, base giuridica del lead, validazione del testo da un consulente.
 - Descrizioni reali delle foto dei lavori (alt e didascalie lightbox).
 - Testo finalità del lead gate coerente con l'informativa privacy.
 - Dominio definitivo (`PUBLIC_SITE_URL`), coordinate GPS, "oltre 20 anni", "enti pubblici".

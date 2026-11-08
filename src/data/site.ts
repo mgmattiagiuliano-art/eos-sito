@@ -57,6 +57,6 @@ export const nav: NavItem[] = [
 ];
 
 export const legalLinks = [
-  { label: 'Privacy policy', href: '/privacy' },
-  { label: 'Cookie policy', href: '/cookie' },
+  { label: 'Privacy policy', href: '/privacy/' },
+  { label: 'Cookie policy', href: '/cookie/' },
 ] as const;

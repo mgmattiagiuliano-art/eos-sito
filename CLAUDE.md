@@ -51,7 +51,7 @@ src/
   pages/        index.astro, privacy.astro, cookie.astro, 404.astro
   styles/       tokens.css, global.css
   assets/       servizi/, lavori/ (ottimizzate da astro:assets), icons/ (SVG importati inline al build)
-public/         logo.png, favicon.png, apple-touch-icon.png, video/, og-image.jpg, robots.txt
+public/         logo.png, favicon.png, apple-touch-icon.png, video/, og-image.jpg (robots.txt è generato da src/pages/robots.txt.ts con l'URL di `site`)
 ```
 Le immagini da ottimizzare e le icone SVG stanno in `src/assets/` perché `astro:assets` e l'import degli SVG come componenti funzionano solo su file importati da `src/`. In `public/` resta solo ciò che deve avere un URL fisso.
 
