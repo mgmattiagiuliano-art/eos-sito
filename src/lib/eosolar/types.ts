@@ -63,10 +63,17 @@ export interface CostCurves {
   batteria: CostPoint[];
 }
 
+/** Dati del sito di installazione. */
+export interface SiteInput {
+  /** Potenza massima installabile (kWp): spazio disponibile su tetto o a terra. null = nessun limite. */
+  kwpMax: number | null;
+}
+
 export interface ModelConfig {
   consumi: ConsumptionInput;
   params: EconomicParams;
   costi: CostCurves;
+  sito: SiteInput;
 }
 
 /** Bilancio energetico di un mese (kWh). produzione = autoconsumo + carica + immissione. */
@@ -132,10 +139,19 @@ export interface Constraints {
   minAutoconsumo: number;
 }
 
+/** Perché la ricerca si ferma a una certa potenza. */
+export type KwpLimitReason = 'produzione' | 'installabile' | 'simulatore';
+
 export interface OptimizationResult {
   criterio: string;
   /** Migliori candidati (max 3), il primo è l'ottimo. */
   migliori: SimulationResult[];
+  /** Candidato con il MIRR più alto tra quelli con NPV positivo (stesso insieme di `migliori`); null se nessuno. */
+  migliorRendimento: SimulationResult | null;
+  /** Potenza massima esplorata e vincolo che la determina. */
+  limiteKwp: { valore: number; motivo: KwpLimitReason };
+  /** true se l'ottimo coincide con il limite di potenza installabile o del simulatore. */
+  ottimoAlLimite: boolean;
   /** false se nessun candidato rispetta i vincoli: `migliori` ignora allora i vincoli. */
   vincoliRispettati: boolean;
   candidatiValidi: number;

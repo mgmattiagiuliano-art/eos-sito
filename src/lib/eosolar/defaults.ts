@@ -2,17 +2,33 @@
  * Default e costanti del calcolatore. Unica fonte per motore, UI e test.
  * I valori economici vengono dal prototipo approvato: vanno confermati da EOS.
  */
-import type { Constraints, CostCurves, ConsumptionInput, EconomicParams } from './types';
+import type { Constraints, CostCurves, ConsumptionInput, EconomicParams, SiteInput } from './types';
 
 export const MESI = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'] as const;
 /** Giorni per mese (anno non bisestile): limitano i cicli giornalieri della batteria. */
 export const GIORNI_MESE = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31] as const;
 
-/** Spazio di ricerca: UNICA fonte per ottimizzatore e slider della simulazione libera. */
+/**
+ * Spazio di ricerca: UNICA fonte per ottimizzatore e slider della simulazione libera.
+ * La potenza FV usa una griglia a passo variabile (vedi GRIGLIA_KWP): fine sulle taglie domestiche,
+ * più larga per gli impianti aziendali. La batteria usa una lista di taglie.
+ */
 export const RANGE = {
-  kwp: { min: 1, max: 20, step: 0.5 },
-  kwhBatteria: { min: 0, max: 15, step: 2.5 },
+  kwp: { min: 1, max: 1000 },
+  // TODO(EOS): oltre 15 kWh il costo resta quello dell'ultimo punto della curva (400 €/kWh): servono prezzi per accumuli grandi.
+  kwhBatteria: [0, 2.5, 5, 7.5, 10, 12.5, 15, 20, 30, 50, 75, 100],
 } as const;
+
+/** Passo della griglia kWp per fascia: fino a `fino` kWp si procede a passi di `passo`. */
+export const GRIGLIA_KWP = [
+  { fino: 10, passo: 0.5 },
+  { fino: 30, passo: 1 },
+  { fino: 100, passo: 2.5 },
+  { fino: 300, passo: 5 },
+  { fino: 1000, passo: 10 },
+] as const;
+
+export const DEFAULT_SITO: SiteInput = { kwpMax: null };
 
 /** Criterio di ottimo concordato: massimo NPV entro i vincoli. */
 export const CRITERIO_OTTIMO = 'npv' as const;
@@ -50,6 +66,9 @@ export const DEFAULT_COSTI: CostCurves = {
     { size: 10, unitCost: 1500 },
     { size: 15, unitCost: 1400 },
     { size: 20, unitCost: 1350 },
+    // TODO(EOS): valori segnaposto per 50 e 100 kWp, da sostituire con il listino EOS (modificabili nei parametri avanzati).
+    { size: 50, unitCost: 1200 },
+    { size: 100, unitCost: 1100 },
   ],
   batteria: [
     { size: 2.5, unitCost: 700 },

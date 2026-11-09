@@ -13,7 +13,7 @@
  * prezzi dell'anno 1 e indicizzati con (1 + inflazione)^(n − 1) nell'anno n in cui avvengono.
  */
 import { totalCost } from './costs';
-import { GIORNI_MESE } from './defaults';
+import { GIORNI_MESE, RANGE } from './defaults';
 import { cumulativeDiscounted, discountedPayback, mirr, npv } from './finance';
 import type {
   Capex,
@@ -186,18 +186,57 @@ export function validate(config: ModelConfig): ValidationIssue[] {
   if (!(consumi.flessibilita >= 0 && consumi.flessibilita <= 1)) {
     err('flessibilita', 'La flessibilità deve essere tra 0% e 100%.');
   }
-  const numerici: [string, number][] = [
-    ['tariffaAcquisto', params.tariffaAcquisto],
-    ['inflazioneEnergia', params.inflazioneEnergia],
-    ['inflazioneGenerale', params.inflazioneGenerale],
-    ['tassoSconto', params.tassoSconto],
-    ['degradoFV', params.degradoFV],
+  // Parametri economici: [campo, valore, minimo, massimo, messaggio]
+  const intervalli: [string, number, number, number, string][] = [
+    ['tariffaAcquisto', params.tariffaAcquisto, 0, 5, 'Il prezzo dell’energia deve essere tra 0 e 5 €/kWh.'],
+    ['inflazioneEnergia', params.inflazioneEnergia, -0.2, 0.5, 'L’inflazione energetica deve essere tra −20% e 50%.'],
+    ['inflazioneGenerale', params.inflazioneGenerale, -0.2, 0.5, 'L’inflazione generale deve essere tra −20% e 50%.'],
+    ['tassoSconto', params.tassoSconto, -0.99, 1, 'Il tasso di sconto deve essere maggiore di −100% e al massimo 100%.'],
+    ['degradoFV', params.degradoFV, 0, 0.2, 'Il degrado dei pannelli deve essere tra 0% e 20% annuo.'],
+    ['degradoBatteria', params.degradoBatteria, 0, 0.5, 'Il degrado della batteria deve essere tra 0% e 50% annuo.'],
+    ['dodBatteria', params.dodBatteria, 0.01, 1, 'La profondità di scarica deve essere tra 1% e 100%.'],
+    ['rendimentoBatteria', params.rendimentoBatteria, 0.01, 1, 'Il rendimento della batteria deve essere tra 1% e 100%.'],
+    ['oemPerc', params.oemPerc, 0, 0.5, 'L’O&M deve essere tra 0% e 50% del CAPEX.'],
+    ['inverterPerc', params.inverterPerc, 0, 2, 'Il costo di sostituzione dell’inverter deve essere tra 0% e 200%.'],
+    ['batteriaSostPerc', params.batteriaSostPerc, 0, 2, 'Il costo di sostituzione della batteria deve essere tra 0% e 200%.'],
   ];
-  for (const [campo, v] of numerici) {
-    if (!Number.isFinite(v)) err(campo, 'Valore non valido.');
+  for (const [campo, v, min, max, messaggio] of intervalli) {
+    if (!(Number.isFinite(v) && v >= min && v <= max)) err(campo, messaggio);
   }
-  if (params.tassoSconto <= -1) err('tassoSconto', 'Il tasso di sconto deve essere maggiore di −100%.');
+  const annoValido = (n: number) => Number.isInteger(n) && n >= 1 && n <= params.anni;
+  if (!(Number.isInteger(params.anni) && params.anni >= 1 && params.anni <= 40)) err('anni', 'L’orizzonte deve essere tra 1 e 40 anni.');
+  if (!annoValido(params.annoInverter)) {
+    err('annoInverter', `L’anno di sostituzione dell’inverter deve essere un intero tra 1 e ${params.anni}.`);
+  }
+  if (!annoValido(params.annoBatteriaSost)) {
+    err('annoBatteriaSost', `L’anno di sostituzione della batteria deve essere un intero tra 1 e ${params.anni}.`);
+  }
+  const { ritiroDedicato: rid, iva, detrazione: det } = params;
+  if (rid.attivo && !(Number.isFinite(rid.prezzo) && rid.prezzo >= 0 && rid.prezzo <= 5)) {
+    err('ritiroDedicato', 'Il prezzo dell’energia immessa deve essere tra 0 e 5 €/kWh.');
+  }
+  if (iva.attivo && !(Number.isFinite(iva.aliquota) && iva.aliquota >= 0 && iva.aliquota <= 1)) {
+    err('iva', 'L’aliquota IVA deve essere tra 0% e 100%.');
+  }
+  if (det.attivo && !(Number.isFinite(det.aliquota) && det.aliquota >= 0 && det.aliquota <= 1)) {
+    err('detrazione', 'L’aliquota della detrazione deve essere tra 0% e 100%.');
+  }
+  if (det.attivo && !(Number.isInteger(det.anni) && det.anni >= 1 && det.anni <= params.anni)) {
+    err('detrazione', `Gli anni della detrazione devono essere un intero tra 1 e ${params.anni}.`);
+  }
 
+  // Curve dei costi: taglie crescenti, costi unitari finiti e non negativi
+  for (const [nome, punti] of [['fv', config.costi.fv], ['batteria', config.costi.batteria]] as const) {
+    const ordinati = punti.every((pt, i) => i === 0 || pt.size > punti[i - 1]!.size);
+    if (punti.length === 0 || !ordinati || !punti.every((pt) => Number.isFinite(pt.unitCost) && pt.unitCost >= 0)) {
+      err(`costi.${nome}`, `I costi di riferimento ${nome === 'fv' ? 'del fotovoltaico' : 'della batteria'} devono essere valori non negativi.`);
+    }
+  }
+
+  const kwpMax = config.sito.kwpMax;
+  if (kwpMax !== null && !(Number.isFinite(kwpMax) && kwpMax >= RANGE.kwp.min)) {
+    err('kwpMax', `La potenza massima installabile deve essere almeno ${RANGE.kwp.min} kWp (lascia vuoto se non la conosci).`);
+  }
   const totF1 = sum(consumi.consumiF1);
   if (Number.isFinite(totF1) && totF1 > consumi.consumoAnnuo) {
     issues.push({

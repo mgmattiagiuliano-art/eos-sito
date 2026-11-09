@@ -1,0 +1,15 @@
+---
+import Modal from '../Modal.astro';
+---
+
+<Modal id="eosolar-admin" title="Parametri avanzati">
+  <p class="eosolar-gate__intro">Inserisci la password per modificare costi di riferimento, parametri tecnici e opzioni fiscali.</p>
+  <form class="eosolar-gate__form" data-eosolar-admin-form novalidate>
+    <div class="eosolar-field">
+      <label for="eosolar-admin-pw">Password</label>
+      <input id="eosolar-admin-pw" type="password" name="password" autocomplete="current-password" required aria-describedby="eosolar-admin-pw-err" />
+      <p id="eosolar-admin-pw-err" class="eosolar-field__error" data-admin-error hidden>Password non corretta.</p>
+    </div>
+    <button type="submit" class="btn btn--primary btn--block">Sblocca</button>
+  </form>
+</Modal>

@@ -288,6 +288,63 @@
   cursor: pointer;
 }
 
+/* ---------- Potenza massima installabile ---------- */
+.eosolar-field--limit {
+  max-width: 420px;
+  margin-top: 16px;
+}
+
+/* ---------- Parametri avanzati protetti ---------- */
+.eosolar-admin__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--c-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--c-bg);
+  font-size: 0.9rem;
+}
+
+.eosolar-admin__bar[hidden] {
+  display: none;
+}
+
+.eosolar-admin__bar p {
+  flex: 1 1 220px;
+  margin: 0;
+}
+
+.eosolar-admin__bar--open {
+  border-color: var(--c-green);
+}
+
+.eosolar-field input:disabled,
+.eosolar-table--edit input:disabled,
+.eosolar-check input:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.eosolar-table--edit input {
+  width: 100%;
+  max-width: 110px;
+  min-height: 40px;
+  padding: 6px 8px;
+  border: 1px solid var(--c-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--c-bg);
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  text-align: right;
+}
+
+.eosolar-table--edit tbody th {
+  font-weight: 600;
+}
+
 /* ---------- Tabelle ---------- */
 .eosolar-table-wrap {
   width: 100%;
