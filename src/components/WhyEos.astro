@@ -1,9 +1,16 @@
 ---
 // TODO(EOS): confermare "20+ anni di esperienza" (ripreso dal prototipo).
-const features = [
+// Dato sulla sicurezza fornito da EOS (fonte INAIL), 9/11/2026.
+const features: { value: string; title: string; text: string; source?: string }[] = [
   { value: '20+', title: 'Anni di esperienza', text: 'Competenza consolidata nel settore civile e industriale.' },
   { value: '100%', title: 'Su misura', text: "Progetti nati dall'analisi dei consumi reali." },
   { value: '1', title: 'Unico referente', text: 'Dalla prima consulenza alla manutenzione nel tempo.' },
+  {
+    value: '0',
+    title: 'Infortuni negli ultimi 3 anni',
+    text: 'La sicurezza dei nostri tecnici e dei cantieri viene prima di tutto.',
+    source: 'Fonte: INAIL',
+  },
   { value: 'AL · GE', title: 'Radicamento e operatività', text: 'Radicati tra Alessandria e Genova, operativi su tutto il territorio nazionale.' },
 ];
 ---
@@ -21,6 +28,7 @@ const features = [
             <p class="features__value">{f.value}</p>
             <h3 class="features__title">{f.title}</h3>
             <p class="features__text">{f.text}</p>
+            {f.source && <p class="features__source">{f.source}</p>}
           </li>
         ))
       }
@@ -29,12 +37,19 @@ const features = [
 </section>
 
 <style>
+  /* 5 voci: una riga su desktop; su schermi stretti l'ultima riga resta centrata */
   .features {
     list-style: none;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 24px;
     text-align: center;
+  }
+
+  .features > li {
+    flex: 1 1 170px;
+    max-width: 230px;
   }
 
   .features__value {
@@ -53,5 +68,12 @@ const features = [
 
   .features__text {
     font-size: 0.88rem;
+  }
+
+  .features__source {
+    margin-top: 4px;
+    font-size: 0.75rem;
+    font-style: italic;
+    color: var(--c-text-muted);
   }
 </style>

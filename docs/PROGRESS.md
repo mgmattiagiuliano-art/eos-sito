@@ -125,6 +125,8 @@ Con RID off l'immissione vale 0 € e l'ottimo NPV resta piccolo: dipende dal de
 
 - 09/11/2026: rilascio su Netlify. `claude/eos-fase-6-consegna` portato a `claude/eos-rilascio` (opzione B scelta dall'utente: Netlify resta sul production branch attuale). Password parametri avanzati ancora `admin` (cambiabile con `PUBLIC_EOSOLAR_ADMIN_PASSWORD` su Netlify).
 
+- "Perché EOS": aggiunta voce Sicurezza (0 infortuni negli ultimi 3 anni, fonte INAIL, dato fornito da EOS); layout flex centrato a 5 voci.
+
 ## TODO(EOS) raccolti
 - Privacy: legale rappresentante, PEC, DPO, fornitori (hosting, form, email), trasferimenti extra UE, tempi di conservazione, base giuridica del lead, validazione del testo da un consulente.
 - Descrizioni reali delle foto dei lavori (alt e didascalie lightbox).
