@@ -1,0 +1,27 @@
+---
+/**
+ * Icona "i" con spiegazione (toggletip). Usa l'attributo nativo `popover`: apertura al clic/tocco,
+ * chiusura con Esc, clic fuori o pulsante "Chiudi". Nessun JavaScript.
+ */
+import { HELP, type HelpKey } from './help';
+
+interface Props {
+  /** Chiave del testo in help.ts. */
+  k: HelpKey;
+  /** Nome del campo, letto dagli screen reader ("Informazioni su …"). */
+  label: string;
+  /** Suffisso per id univoci quando la stessa chiave compare più volte. */
+  suffix?: string;
+}
+const { k, label, suffix = '' } = Astro.props;
+const id = `eosolar-info-${k}${suffix}`;
+---
+
+<button type="button" class="eosolar-info" popovertarget={id} aria-label={`Informazioni su: ${label}`}>
+  <span aria-hidden="true">i</span>
+</button>
+<div id={id} popover class="eosolar-tip" role="dialog" aria-label={label}>
+  <p class="eosolar-tip__title">{label}</p>
+  <p>{HELP[k]}</p>
+  <button type="button" class="eosolar-tip__close" popovertarget={id} popovertargetaction="hide">Chiudi</button>
+</div>

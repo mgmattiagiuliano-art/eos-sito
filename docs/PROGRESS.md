@@ -13,6 +13,7 @@
 | 4 Pagina e animazioni | `claude/eos-fase-4-pagina` | ✅ pushato |
 | 5 Privacy, SEO, rifinitura | `claude/eos-fase-5-privacy-seo` | ✅ pushato |
 | 6 Verifica e consegna | `claude/eos-fase-6-consegna` | ✅ in attesa di ok |
+| 7 Calcolatore: PMI, costi, password | `claude/eos-fase-7-calcolatore` | ✅ pushato, non deployato |
 
 ## Decisioni prese (Fase 0, approvate)
 1. Immagini e icone in `src/assets/` (per `astro:assets` e SVG inline); in `public/` solo URL fissi. `CLAUDE.md` aggiornato.
@@ -131,3 +132,23 @@ Con RID off l'immissione vale 0 € e l'ottimo NPV resta piccolo: dipende dal de
 ## Problemi aperti
 - `npm audit`: 10 moderate in `minimatch` (solo devDependencies del tooling). Non risolvibile senza `--force`.
 - `/privacy`, `/cookie`, `og-image.jpg` mancanti fino alla Fase 5.
+
+## Calcolatore (Fase 7) — riferimento
+Basata sull'audit `docs/AUDIT_SIMULATORE.md` (branch `audit-simulatore`, v2).
+- Dopo l'email si apre il tab ① "Dati e consumi" (nessun calcolo automatico con i default).
+- Niente tetto a 20 kWp: griglia kWp a passo variabile 1–1.000 kWp (`GRIGLIA_KWP`, `kwpGrid`); batteria 0–15 kWh a passi di 2,5 (decisione EOS).
+- Nuovo input facoltativo "Potenza massima installabile" (`config.sito.kwpMax`); la griglia termina esattamente su quel valore.
+- L'ottimizzatore non simula potenze oltre il vincolo di produzione (`kwpLimit`); avviso se l'ottimo coincide con la potenza installabile o con il limite del simulatore (`ottimoAlLimite`).
+- Criterio invariato (massimo NPV entro i vincoli) + riga "massimo rendimento percentuale" (MIRR massimo tra i candidati con NPV > 0, `migliorRendimento`).
+- Curva costi FV con nodi 50 e 100 kWp (1.200 e 1.100 €/kWp, approvati da EOS). Costi batteria fino a 15 kWh, modificabili.
+- Costi di riferimento, parametri tecnici, ritiro/IVA/detrazione: modificabili solo dopo password (`src/lib/eosolar/admin.ts`, default "admin", sovrascrivibile con `PUBLIC_EOSOLAR_ADMIN_PASSWORD`). Controllo solo lato browser: non è una protezione di sicurezza. Sblocco valido per la sessione (`sessionStorage eos:eosolar:admin`).
+- Validazione estesa a tutti i parametri, ai costi e alla potenza installabile.
+- Grafico NPV con asse x lineare (griglia a passo variabile).
+- Verificato con Playwright a 360/1280: flusso email → tab ①, password errata/corretta, caso 100.000 kWh con limite 60 kWp, slider; nessun errore console, nessuno scroll orizzontale.
+- Deciso: ritiro dedicato spento di default (si attiva dai parametri avanzati).
+- Deciso: listini **IVA esclusa**, IVA spenta di default; gli importi nei risultati riportano sempre "IVA esclusa" (o "IVA x% inclusa" se attivata).
+- Costo fisso per impianto (`costi.fissoImpianto`, default provvisorio 1.000 € IVA esclusa, TODO(EOS)), modificabile nei parametri avanzati. Si somma solo se kWp > 0; escluso dalla base della sostituzione inverter. Non cambia l'ottimo per NPV, evita che il "massimo rendimento" proponga 1 kWp.
+- Icone "i" (`Info.astro`, testi in `help.ts`): attributo nativo `popover`, nessun JS; Esc, clic fuori e "Chiudi".
+- Link a PVGIS sopra le ore equivalenti (solo link esterno, nessuna risorsa caricata). URL `pvg_tools/en/` non verificabile dal cloud (dominio bloccato dal proxy): controllarlo.
+- Risultati a livelli (`ResultView.astro` + `results.ts`, usati da entrambi i tab): 1) configurazione + investimento, risparmio primo anno, rientro, guadagno netto + CTA sopralluogo; 2) indicatori energetici e 2 grafici; 3) approfondimenti richiudibili: confronto configurazioni (top 3, massimo rendimento, alternativa con/senza accumulo), sensibilità, curva NPV (disegnata all'apertura), bilancio mensile, flussi annuali, ipotesi del calcolo.
+- Decisioni aperte (vedi audit §9): PVGIS automatico, modello orario.

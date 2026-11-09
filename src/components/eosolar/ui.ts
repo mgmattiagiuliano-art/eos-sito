@@ -4,32 +4,33 @@
  */
 import {
   CRITERIO_OTTIMO,
+  RANGE,
   VINCOLI,
   defaultConfig,
-  npvCurve,
+  kwpGrid,
   optimize,
   sensitivity,
   simulate,
   validate,
   type ModelConfig,
-  type SimulationResult,
+  type OptimizationResult,
 } from '../../lib/eosolar';
-import {
-  fmtConfig,
-  fmtEur,
-  fmtEurKwh,
-  fmtKwh,
-  fmtKwhBatt,
-  fmtKwp,
-  fmtMirr,
-  fmtPct,
-  fmtYears,
-} from '../../lib/eosolar/format';
+import { fmtKwh, fmtKwhBatt, fmtKwp, fmtPct } from '../../lib/eosolar/format';
+import { renderCharts, renderCompare, renderNpvLayer, renderResult, renderSensitivity } from './results';
+import { checkAdminPassword } from '../../lib/eosolar/admin';
 import { FormSubmitError, submitForm } from '../../lib/forms/submit';
 import { closeModal, openModal } from '../../lib/ui/dialog';
 
 const UNLOCK_KEY = 'eos:eosolar:unlocked';
+/** Sblocco dei parametri avanzati: vale solo per la sessione del browser. */
+const ADMIN_KEY = 'eos:eosolar:admin';
 type TabId = 'input' | 'ottimale' | 'manuale';
+
+const LIMITE_LABEL = {
+  produzione: 'limite di produzione rispetto ai consumi',
+  installabile: 'potenza massima installabile',
+  simulatore: 'limite del simulatore',
+} as const;
 
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -43,6 +44,21 @@ function storageGet(key: string): string | null {
 function storageSet(key: string, value: string): void {
   try {
     localStorage.setItem(key, value);
+  } catch {
+    /* storage non disponibile: lo sblocco vale solo per questa pagina */
+  }
+}
+function sessionGet(key: string): string | null {
+  try {
+    return sessionStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+function sessionSet(key: string, value: string | null): void {
+  try {
+    if (value === null) sessionStorage.removeItem(key);
+    else sessionStorage.setItem(key, value);
   } catch {
     /* storage non disponibile: lo sblocco vale solo per questa pagina */
   }
@@ -66,6 +82,15 @@ export function initEosolar(root: HTMLElement): void {
 
   let unlocked = storageGet(UNLOCK_KEY) === '1';
   let lastConfig: ModelConfig | null = null;
+  let lastOpt: OptimizationResult | null = null;
+  const optView = q('[data-result="opt"]')!;
+  const manView = q('[data-result="man"]')!;
+  // La curva NPV sta in un livello richiudibile: Chart.js non può misurare un canvas nascosto,
+  // quindi la disegniamo all'apertura.
+  const npvLayer = optView.querySelector<HTMLDetailsElement>('[data-r="layer-curve"]');
+  npvLayer?.addEventListener('toggle', async () => {
+    if (npvLayer.open && lastOpt) renderNpvLayer(optView, lastOpt, await charts());
+  });
   let chartsModule: Promise<typeof import('./charts')> | null = null;
   const charts = () => (chartsModule ??= import('./charts'));
 
@@ -88,7 +113,21 @@ export function initEosolar(root: HTMLElement): void {
       const [k, field] = (el.dataset.toggleValue ?? '').split('.') as ['ritiroDedicato' | 'iva' | 'detrazione', string];
       (cfg.params[k] as unknown as Record<string, number>)[field] = num(el) * Number(el.dataset.scale ?? 1);
     }
+    // Curve dei costi (modificabili solo con i parametri avanzati sbloccati)
+    for (const curva of ['fv', 'batteria'] as const) {
+      const inputs = qa<HTMLInputElement>(`[data-cost="${curva}"]`);
+      if (inputs.length) cfg.costi[curva] = inputs.map((el) => ({ size: Number(el.dataset.size), unitCost: num(el) }));
+    }
+    const fisso = q<HTMLInputElement>('[data-cost-fisso]');
+    if (fisso) cfg.costi.fissoImpianto = num(fisso);
+    cfg.sito.kwpMax = readKwpMax();
     return cfg;
+  }
+
+  /** Potenza massima installabile: campo vuoto = nessun limite. */
+  function readKwpMax(): number | null {
+    const el = q<HTMLInputElement>('[data-kwp-max]');
+    return !el || el.value.trim() === '' ? null : num(el);
   }
 
   // ---------------- Rendering helpers ----------------
@@ -105,20 +144,6 @@ export function initEosolar(root: HTMLElement): void {
     if (!container || !wrapper) return;
     container.replaceChildren(...items.map((text) => fill('li', { text })));
     wrapper.hidden = items.length === 0;
-  }
-
-  function renderMetrics(container: HTMLElement | null, r: SimulationResult, anni: number): void {
-    if (!container) return;
-    const m = (title: string, value: string, desc: string) => fill('metric', { title, value, desc });
-    container.replaceChildren(
-      m('Investimento', fmtEur(r.capex.totale), `FV ${fmtEur(r.capex.fv)} · batteria ${fmtEur(r.capex.batteria)}`),
-      m('NPV (valore attuale netto)', fmtEur(r.npv), `Guadagno netto attualizzato in ${anni} anni.`),
-      m('Payback attualizzato', fmtYears(r.paybackAttualizzato, anni), "Tempo di rientro dell'investimento."),
-      m('MIRR', fmtMirr(r.mirr), 'Rendimento annuo, reinvestimento al tasso di sconto.'),
-      m('Copertura dei consumi', fmtPct(r.ssr), 'Quota del fabbisogno coperta da impianto e batteria.'),
-      m('Autoconsumo', fmtPct(r.scr), 'Quota della produzione usata in casa o accumulata.'),
-      m('Produzione anno 1', fmtKwh(r.anno1.produzione), `Immessa in rete: ${fmtKwh(r.anno1.immissione)}.`),
-    );
   }
 
   function warningsFor(cfg: ModelConfig): string[] {
@@ -181,12 +206,12 @@ export function initEosolar(root: HTMLElement): void {
     const res = optimize(cfg);
     const best = res.migliori[0]!;
     const anni = cfg.params.anni;
+    lastOpt = res;
 
-    q('[data-out="config"]')!.textContent = fmtConfig(best.kwp, best.kwhBatteria);
-    q('[data-out="statement"]')!.textContent =
-      `Per un fabbisogno di ${fmtKwh(cfg.consumi.consumoAnnuo)}/anno la configurazione con il valore attuale netto più alto è ` +
-      `${fmtConfig(best.kwp, best.kwhBatteria)}: investimento ${fmtEur(best.capex.totale)}, copertura dei consumi ${fmtPct(best.ssr)}, ` +
-      `NPV ${fmtEur(best.npv)} in ${anni} anni, rientro ${best.paybackAttualizzato === null ? `oltre ${anni} anni` : `in ${fmtYears(best.paybackAttualizzato, anni)}`}.`;
+    const statement =
+      `Per un fabbisogno di ${fmtKwh(cfg.consumi.consumoAnnuo)} l’anno è la configurazione con il guadagno netto (NPV) più alto ` +
+      `tra quelle che rispettano i vincoli. Copre il ${fmtPct(best.ssr)} dei consumi.`;
+    renderResult(optView, best, cfg, statement);
 
     const warnings = warningsFor(cfg);
     if (!res.vincoliRispettati) {
@@ -195,52 +220,28 @@ export function initEosolar(root: HTMLElement): void {
           'la classifica li ignora. Contattaci per una valutazione su misura.',
       );
     }
+    if (res.ottimoAlLimite) {
+      warnings.push(
+        res.limiteKwp.motivo === 'installabile'
+          ? `La configurazione migliore coincide con la potenza massima installabile (${fmtKwp(res.limiteKwp.valore)}): con più spazio disponibile il valore potrebbe crescere ancora.`
+          : `La configurazione migliore coincide con il limite del simulatore (${fmtKwp(res.limiteKwp.valore)}): per impianti di questa taglia contattaci per uno studio dedicato.`,
+      );
+    }
     if (best.npv < 0) warnings.push("Con questi dati nessuna configurazione ha un NPV positivo nell'orizzonte considerato.");
-    renderList(q('[data-out="warnings-list"]'), q('[data-out="warnings"]'), warnings);
+    renderList(optView.querySelector('[data-r="warnings-list"]'), optView.querySelector('[data-r="warnings"]'), warnings);
 
-    q('[data-out="criterio"]')!.textContent =
+    const criterio =
       `Criterio: ${CRITERIO_OTTIMO === 'npv' ? 'massimo NPV' : CRITERIO_OTTIMO}, con produzione ≤ ${fmtPct(VINCOLI.maxProduzioneSuConsumo)} del consumo annuo e autoconsumo ≥ ${fmtPct(VINCOLI.minAutoconsumo)}. ` +
+      `Potenza esplorata fino a ${fmtKwp(Math.min(res.limiteKwp.valore, RANGE.kwp.max))} (${LIMITE_LABEL[res.limiteKwp.motivo]}). ` +
       `Configurazioni valide: ${res.candidatiValidi} su ${res.candidatiTotali}.`;
-
-    renderMetrics(q('[data-out="metrics"]'), best, anni);
-
-    q('[data-out="top"]')!.replaceChildren(
-      ...res.migliori.map((r, i) =>
-        fill('top-row', {
-          rank: String(i + 1),
-          config: fmtConfig(r.kwp, r.kwhBatteria),
-          capex: fmtEur(r.capex.totale),
-          npv: fmtEur(r.npv),
-          payback: fmtYears(r.paybackAttualizzato, anni),
-          mirr: fmtMirr(r.mirr),
-          ssr: fmtPct(r.ssr),
-        }),
-      ),
-    );
-
-    q('[data-out="sens"]')!.replaceChildren(
-      ...sensitivity(cfg, best.kwp, best.kwhBatteria).map((s) =>
-        fill('sens-row', {
-          scenario: s.scenario,
-          tariffa: fmtEurKwh(s.tariffaAcquisto),
-          inflazione: fmtPct(s.inflazioneEnergia, 1),
-          produttivita: s.fattoreProduttivita === 1 ? 'base' : `${s.fattoreProduttivita > 1 ? '+' : '−'}${fmtPct(Math.abs(s.fattoreProduttivita - 1))}`,
-          payback: fmtYears(s.paybackAttualizzato, anni),
-          npv: fmtEur(s.npv),
-        }),
-      ),
-    );
+    renderCompare(optView, res, cfg, criterio);
+    renderSensitivity(optView, sensitivity(cfg, best.kwp, best.kwhBatteria), anni);
 
     activateTab('ottimale');
 
     const c = await charts();
-    c.renderBars(q<HTMLCanvasElement>('[data-chart="bars-opt"]')!, best);
-    const curves = [{ label: 'Senza accumulo', points: npvCurve(res.tutti, 0) }];
-    if (best.kwhBatteria > 0) {
-      curves.unshift({ label: `Con ${fmtKwhBatt(best.kwhBatteria)} di accumulo`, points: npvCurve(res.tutti, best.kwhBatteria) });
-    }
-    c.renderNpvCurve(q<HTMLCanvasElement>('[data-chart="npv-curve"]')!, curves, best.kwp);
-    c.renderCashflow(q<HTMLCanvasElement>('[data-chart="cash-opt"]')!, best);
+    await renderCharts(optView, best, c);
+    if (npvLayer?.open) renderNpvLayer(optView, res, c);
     return true;
   }
 
@@ -254,23 +255,43 @@ export function initEosolar(root: HTMLElement): void {
   const sliderKwh = q<HTMLInputElement>('[data-slider="kwh"]');
   let manualFrame = 0;
 
+  // Gli slider scorrono gli indici delle stesse griglie dell'ottimizzatore (passo kWp variabile)
+  let gridKwp = kwpGrid();
+  const gridKwh: readonly number[] = RANGE.kwhBatteria;
+
+  /** Ricostruisce la griglia kWp quando cambia la potenza massima installabile, mantenendo la potenza scelta. */
+  function syncKwpSlider(): void {
+    if (!sliderKwp) return;
+    const corrente = gridKwp[Number(sliderKwp.value)] ?? 3;
+    const max = readKwpMax();
+    gridKwp = kwpGrid(max !== null && Number.isFinite(max) && max >= RANGE.kwp.min ? max : RANGE.kwp.max);
+    let idx = gridKwp.findIndex((k) => k >= corrente - 1e-9);
+    if (idx === -1) idx = gridKwp.length - 1;
+    sliderKwp.max = String(gridKwp.length - 1);
+    sliderKwp.value = String(idx);
+  }
+  q('[data-kwp-max]')?.addEventListener('change', () => {
+    syncKwpSlider();
+    if (!q('[data-panel="manuale"]')?.hidden) runManual();
+  });
+
   function runManual(): void {
     cancelAnimationFrame(manualFrame);
     manualFrame = requestAnimationFrame(async () => {
       if (!sliderKwp || !sliderKwh) return;
-      const kwp = Number(sliderKwp.value);
-      const kwh = Number(sliderKwh.value);
+      const kwp = gridKwp[Number(sliderKwp.value)] ?? gridKwp[0]!;
+      const kwh = gridKwh[Number(sliderKwh.value)] ?? 0;
       q('[data-slider-out="kwp"]')!.textContent = fmtKwp(kwp);
       q('[data-slider-out="kwh"]')!.textContent = fmtKwhBatt(kwh);
       sliderKwp.setAttribute('aria-valuetext', fmtKwp(kwp));
       sliderKwh.setAttribute('aria-valuetext', fmtKwhBatt(kwh));
 
       const cfg = readConfig();
+      const warnList = manView.querySelector<HTMLElement>('[data-r="warnings-list"]');
+      const warnBox = manView.querySelector<HTMLElement>('[data-r="warnings"]');
       const errors = validate(cfg).filter((i) => i.gravita === 'errore');
       if (errors.length) {
-        renderList(q('[data-out="man-warnings-list"]'), q('[data-out="man-warnings"]'), [
-          'Correggi i dati nel tab "Dati e consumi" per vedere la simulazione.',
-        ]);
+        renderList(warnList, warnBox, ['Correggi i dati nel tab "Dati e consumi" per vedere la simulazione.']);
         return;
       }
       const r = simulate(cfg, kwp, kwh);
@@ -279,11 +300,9 @@ export function initEosolar(root: HTMLElement): void {
         warnings.push(`La produzione supera il ${fmtPct(VINCOLI.maxProduzioneSuConsumo)} del consumo annuo.`);
       }
       if (r.scr < VINCOLI.minAutoconsumo) warnings.push(`Autoconsumo sotto il ${fmtPct(VINCOLI.minAutoconsumo)}.`);
-      renderList(q('[data-out="man-warnings-list"]'), q('[data-out="man-warnings"]'), warnings);
-      renderMetrics(q('[data-out="man-metrics"]'), r, cfg.params.anni);
-      const c = await charts();
-      c.renderBars(q<HTMLCanvasElement>('[data-chart="bars-man"]')!, r);
-      c.renderCashflow(q<HTMLCanvasElement>('[data-chart="cash-man"]')!, r);
+      renderList(warnList, warnBox, warnings);
+      renderResult(manView, r, cfg, `Copre il ${fmtPct(r.ssr)} dei consumi; produzione del primo anno ${fmtKwh(r.anno1.produzione)}.`);
+      await renderCharts(manView, r, await charts());
     });
   }
   sliderKwp?.addEventListener('input', runManual);
@@ -302,9 +321,9 @@ export function initEosolar(root: HTMLElement): void {
     unlocked = true;
     storageSet(UNLOCK_KEY, '1');
     showDashboard(true);
-    if (!lastConfig) await runOptimal();
-    // Il focus passa ai risultati (annunciati dagli screen reader), senza saltare con lo scroll
-    q('[data-panel="ottimale"]')?.focus({ preventScroll: true });
+    // Dopo l'email si parte dal tab 1: il cliente inserisce i propri dati e poi avvia il calcolo
+    activateTab('input');
+    q('[data-panel="input"]')?.focus({ preventScroll: true });
   }
 
   // Qualsiasi pulsante [data-eosolar-open] nella pagina (teaser, hero, …)
@@ -314,7 +333,7 @@ export function initEosolar(root: HTMLElement): void {
     e.preventDefault();
     if (unlocked) {
       showDashboard(true);
-      if (!lastConfig) void runOptimal();
+      if (!lastConfig) activateTab('input');
     } else {
       openModal('eosolar-lead', btn);
     }
@@ -323,6 +342,53 @@ export function initEosolar(root: HTMLElement): void {
   if (unlocked) showDashboard(false);
 
   if (leadForm && leadDialog) initLeadForm(leadForm, leadDialog, unlock);
+  initAdmin(root);
+}
+
+// ---------------- Parametri avanzati protetti da password ----------------
+function initAdmin(root: HTMLElement): void {
+  const dialog = document.getElementById('eosolar-admin') as HTMLDialogElement | null;
+  const form = dialog?.querySelector<HTMLFormElement>('[data-eosolar-admin-form]') ?? null;
+  const locked = root.querySelector<HTMLElement>('[data-admin-locked]');
+  const unlockedBar = root.querySelector<HTMLElement>('[data-admin-unlocked]');
+  const openBtn = root.querySelector<HTMLButtonElement>('[data-admin-open]');
+  const lockBtn = root.querySelector<HTMLButtonElement>('[data-admin-lock]');
+  if (!dialog || !form || !locked || !unlockedBar || !openBtn || !lockBtn) return;
+  const input = form.querySelector<HTMLInputElement>('input[name="password"]')!;
+  const error = form.querySelector<HTMLElement>('[data-admin-error]')!;
+
+  function setAdmin(on: boolean): void {
+    root.querySelectorAll<HTMLInputElement>('[data-admin]').forEach((el) => (el.disabled = !on));
+    locked!.hidden = on;
+    unlockedBar!.hidden = !on;
+    sessionSet(ADMIN_KEY, on ? '1' : null);
+  }
+
+  openBtn.addEventListener('click', () => {
+    form.reset();
+    error.hidden = true;
+    input.setAttribute('aria-invalid', 'false');
+    openModal('eosolar-admin', openBtn);
+    input.focus();
+  });
+  lockBtn.addEventListener('click', () => {
+    setAdmin(false);
+    openBtn.focus();
+  });
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!checkAdminPassword(input.value)) {
+      error.hidden = false;
+      input.setAttribute('aria-invalid', 'true');
+      input.select();
+      return;
+    }
+    setAdmin(true);
+    closeModal(dialog);
+    lockBtn.focus();
+  });
+
+  if (sessionGet(ADMIN_KEY) === '1') setAdmin(true);
 }
 
 // ---------------- Form del lead gate ----------------

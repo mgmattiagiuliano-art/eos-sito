@@ -6,6 +6,8 @@ import {
   defaultConfig,
   discountedPayback,
   gridValues,
+  kwpGrid,
+  kwpLimit,
   mirr,
   monthlyBalance,
   npv,
@@ -31,7 +33,8 @@ describe('interpolazione costi', () => {
     expect(unitCost(fv, 0.5)).toBe(2000);
     expect(unitCost(fv, 1)).toBe(2000);
     expect(unitCost(fv, 20)).toBe(1350);
-    expect(unitCost(fv, 25)).toBe(1350);
+    expect(unitCost(fv, 100)).toBe(1100);
+    expect(unitCost(fv, 250)).toBe(1100);
     expect(unitCost(bess, 1)).toBe(700);
     expect(unitCost(bess, 15)).toBe(400);
   });
@@ -154,6 +157,7 @@ describe('indicatori finanziari (calcolati a mano)', () => {
       ...cfg,
       consumi: { consumoAnnuo: 1200, consumiF1: Array(12).fill(100), oreEquivalenti: Array(12).fill(50), flessibilita: 0 },
       params: { ...cfg.params, inflazioneEnergia: 0, degradoFV: 0, oemPerc: 0, annoInverter: 99, anni: 25 },
+      costi: { ...cfg.costi, fissoImpianto: 0 },
     };
     const s = simulate(c, 1, 0);
     // 600 kWh/anno × 0,25 € = 150 €/anno; CAPEX 2000 €; NPV = −2000 + 150 × (1 − 1,06^−25)/0,06
@@ -170,9 +174,34 @@ describe('ottimizzatore', () => {
   const cfg = defaultConfig();
   const res = optimize(cfg);
 
-  it('la griglia usa lo stesso range dello slider', () => {
-    expect(gridValues(RANGE.kwp.min, RANGE.kwp.max, RANGE.kwp.step)).toHaveLength(39);
-    expect(res.candidatiTotali).toBe(39 * 7);
+  it('griglia kWp a passo variabile da 1 a 1000 kWp, senza tetto a 20 kWp', () => {
+    const g = kwpGrid();
+    expect(g[0]).toBe(RANGE.kwp.min);
+    expect(g[g.length - 1]).toBe(1000);
+    expect(g).toHaveLength(1 + 18 + 20 + 28 + 40 + 70);
+    expect(g.slice(0, 3)).toEqual([1, 1.5, 2]);
+    expect(g).toContain(10.5 - 0.5);
+    expect(g).toContain(11);
+    expect(g).toContain(32.5);
+    expect(g).toContain(105);
+    expect(g).toContain(310);
+    for (let i = 1; i < g.length; i++) expect(g[i]!).toBeGreaterThan(g[i - 1]!);
+    expect(gridValues(1, 2, 0.5)).toEqual([1, 1.5, 2]);
+  });
+
+  it('la griglia termina esattamente sulla potenza massima installabile', () => {
+    const g = kwpGrid(37);
+    expect(g.slice(-2)).toEqual([35, 37]);
+    expect(kwpGrid(40).slice(-1)).toEqual([40]);
+  });
+
+  it('non simula potenze oltre il vincolo di produzione', () => {
+    const limite = kwpLimit(cfg);
+    expect(limite.motivo).toBe('produzione');
+    close(limite.valore, (1.4 * 3800) / 1365);
+    const kwps = new Set(res.tutti.map((r) => r.kwp));
+    expect(Math.max(...kwps)).toBeLessThanOrEqual(limite.valore);
+    expect(res.candidatiTotali).toBe(kwps.size * RANGE.kwhBatteria.length);
   });
 
   it('i migliori rispettano i vincoli e l’ottimo ha l’NPV massimo tra i validi', () => {
@@ -189,6 +218,36 @@ describe('ottimizzatore', () => {
     expect(res.migliori).toHaveLength(3);
     expect(res.migliori[0]!.npv).toBeGreaterThanOrEqual(res.migliori[1]!.npv);
     expect(res.migliori[1]!.npv).toBeGreaterThanOrEqual(res.migliori[2]!.npv);
+  });
+
+  it('massimo rendimento: MIRR più alto tra i candidati con NPV positivo', () => {
+    const r = res.migliorRendimento!;
+    const validi = res.tutti.filter((x) => satisfiesConstraints(x, cfg.consumi.consumoAnnuo) && x.npv > 0 && x.mirr !== null);
+    expect(r.mirr).toBe(Math.max(...validi.map((x) => x.mirr!)));
+  });
+
+  it('impianti aziendali: l’ottimo può superare 20 kWp', () => {
+    const big = defaultConfig();
+    const k = 100000 / big.consumi.consumoAnnuo;
+    big.consumi.consumoAnnuo = 100000;
+    big.consumi.consumiF1 = big.consumi.consumiF1.map((v) => v * k);
+    const r = optimize(big);
+    expect(r.migliori[0]!.kwp).toBeGreaterThan(20);
+    expect(r.vincoliRispettati).toBe(true);
+  });
+
+  it('rispetta la potenza massima installabile e segnala quando l’ottimo la raggiunge', () => {
+    const big = defaultConfig();
+    const k = 100000 / big.consumi.consumoAnnuo;
+    big.consumi.consumoAnnuo = 100000;
+    big.consumi.consumiF1 = big.consumi.consumiF1.map((v) => v * k);
+    big.sito.kwpMax = 37;
+    const r = optimize(big);
+    expect(r.limiteKwp).toEqual({ valore: 37, motivo: 'installabile' });
+    expect(Math.max(...r.tutti.map((x) => x.kwp))).toBe(37);
+    expect(r.migliori[0]!.kwp).toBe(37);
+    expect(r.ottimoAlLimite).toBe(true);
+    expect(res.ottimoAlLimite).toBe(false);
   });
 
   it('segnala quando nessun candidato rispetta i vincoli', () => {
@@ -212,7 +271,61 @@ describe('sensibilità', () => {
   });
 });
 
+describe('curve dei costi', () => {
+  it('include i punti 50 e 100 kWp e interpola tra 20 e 50 kWp', () => {
+    const sizes = DEFAULT_COSTI.fv.map((c) => c.size);
+    expect(sizes).toContain(50);
+    expect(sizes).toContain(100);
+    const c20 = unitCost(DEFAULT_COSTI.fv, 20);
+    const c50 = unitCost(DEFAULT_COSTI.fv, 50);
+    close(unitCost(DEFAULT_COSTI.fv, 35), (c20 + c50) / 2);
+  });
+
+  it('costo fisso per impianto: si somma solo se c’è il fotovoltaico, escluso dalla base inverter', () => {
+    const cfg = defaultConfig();
+    expect(cfg.costi.fissoImpianto).toBe(1000);
+    const r = simulate(cfg, 3, 0);
+    expect(r.capex.fisso).toBe(1000);
+    expect(r.capex.netto).toBe(r.capex.fv + r.capex.fisso);
+    expect(simulate(cfg, 0, 5).capex.fisso).toBe(0);
+    const inverter = r.flussi.find((f) => f.anno === cfg.params.annoInverter)!.sostituzioni;
+    close(inverter, cfg.params.inverterPerc * r.capex.fv * Math.pow(1 + cfg.params.inflazioneGenerale, cfg.params.annoInverter - 1));
+    const senza = defaultConfig();
+    senza.costi.fissoImpianto = 0;
+    const r0 = simulate(senza, 3, 0);
+    // il costo fisso riduce l'NPV di sé stesso più l'O&M che genera
+    expect(r0.npv - r.npv).toBeGreaterThan(1000);
+  });
+
+  it('i costi modificati entrano nel CAPEX', () => {
+    const cfg = defaultConfig();
+    cfg.costi.fv = cfg.costi.fv.map((c) => ({ ...c, unitCost: c.unitCost * 2 }));
+    close(simulate(cfg, 3, 0).capex.fv, 2 * simulate(defaultConfig(), 3, 0).capex.fv);
+  });
+});
+
 describe('validazione', () => {
+  it('controlla tutti i parametri, i costi e la potenza installabile', () => {
+    const errore = (mut: (c: ModelConfig) => void, campo: string) => {
+      const cfg = defaultConfig();
+      mut(cfg);
+      return validate(cfg).some((i) => i.campo === campo && i.gravita === 'errore');
+    };
+    expect(errore((c) => (c.params.dodBatteria = Number.NaN), 'dodBatteria')).toBe(true);
+    expect(errore((c) => (c.params.rendimentoBatteria = 1.5), 'rendimentoBatteria')).toBe(true);
+    expect(errore((c) => (c.params.tariffaAcquisto = -0.1), 'tariffaAcquisto')).toBe(true);
+    expect(errore((c) => (c.params.degradoFV = -0.05), 'degradoFV')).toBe(true);
+    expect(errore((c) => (c.params.annoInverter = Number.NaN), 'annoInverter')).toBe(true);
+    expect(errore((c) => (c.params.annoBatteriaSost = 30), 'annoBatteriaSost')).toBe(true);
+    expect(errore((c) => (c.params.ritiroDedicato = { attivo: true, prezzo: Number.NaN }), 'ritiroDedicato')).toBe(true);
+    expect(errore((c) => (c.params.ritiroDedicato = { attivo: false, prezzo: Number.NaN }), 'ritiroDedicato')).toBe(false);
+    expect(errore((c) => (c.costi.fv[0]!.unitCost = -1), 'costi.fv')).toBe(true);
+    expect(errore((c) => (c.costi.batteria[0]!.unitCost = Number.NaN), 'costi.batteria')).toBe(true);
+    expect(errore((c) => (c.costi.fissoImpianto = -1), 'costi.fissoImpianto')).toBe(true);
+    expect(errore((c) => (c.sito.kwpMax = 0.5), 'kwpMax')).toBe(true);
+    expect(errore((c) => (c.sito.kwpMax = 50), 'kwpMax')).toBe(false);
+  });
+
   it('errori su input mancanti e avviso se F1 supera il totale', () => {
     const cfg = defaultConfig();
     expect(validate(cfg)).toEqual([]);

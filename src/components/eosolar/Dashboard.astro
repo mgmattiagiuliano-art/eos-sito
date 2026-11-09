@@ -1,7 +1,10 @@
 ---
 import { DEFAULT_CONSUMI, DEFAULT_COSTI, DEFAULT_PARAMS, MESI, OPZIONI_FLESSIBILITA, RANGE } from '../../lib/eosolar/defaults';
 import { fmtInt } from '../../lib/eosolar/format';
+import { kwpGrid } from '../../lib/eosolar/optimizer';
 import { ADVANCED_FIELDS, MAIN_FIELDS, displayValue, type ParamField } from './fields';
+import Info from './Info.astro';
+import ResultView from './ResultView.astro';
 
 const tabs = [
   { id: 'input', label: 'Dati e consumi' },
@@ -11,6 +14,15 @@ const tabs = [
 
 const p = DEFAULT_PARAMS;
 const fieldId = (f: ParamField) => `eosolar-p-${f.key}`;
+const fmtSize = (n: number) => String(n).replace('.', ',');
+
+// Slider della simulazione libera: indici sulle stesse griglie dell'ottimizzatore
+const gridKwp = kwpGrid();
+const gridKwh = RANGE.kwhBatteria;
+const startKwp = Math.max(0, gridKwp.indexOf(3));
+
+// Link esterno (nessuna risorsa caricata dalla pagina: nessun impatto GDPR)
+const PVGIS_URL = 'https://re.jrc.ec.europa.eu/pvg_tools/en/';
 ---
 
 <div class="eosolar-dashboard" data-eosolar-dashboard hidden>
@@ -40,11 +52,17 @@ const fieldId = (f: ParamField) => `eosolar-p-${f.key}`;
         <legend class="eosolar-card__title">Fabbisogno energetico</legend>
         <div class="eosolar-grid-2">
           <div class="eosolar-field">
-            <label for="eosolar-consumo">Consumo totale annuo (kWh)</label>
+            <div class="eosolar-field__head">
+              <label for="eosolar-consumo">Consumo totale annuo (kWh)</label>
+              <Info k="consumoAnnuo" label="Consumo totale annuo" />
+            </div>
             <input id="eosolar-consumo" type="number" inputmode="decimal" min="0" step="10" value={DEFAULT_CONSUMI.consumoAnnuo} data-consumo-annuo />
           </div>
           <div class="eosolar-field">
-            <label for="eosolar-flex">Consumi spostabili di giorno</label>
+            <div class="eosolar-field__head">
+              <label for="eosolar-flex">Consumi spostabili di giorno</label>
+              <Info k="flessibilita" label="Consumi spostabili di giorno" />
+            </div>
             <select id="eosolar-flex" data-flessibilita>
               {OPZIONI_FLESSIBILITA.map((o) => <option value={o.value} selected={o.value === DEFAULT_CONSUMI.flessibilita}>{o.label}</option>)}
             </select>
@@ -52,7 +70,9 @@ const fieldId = (f: ParamField) => `eosolar-p-${f.key}`;
         </div>
 
         <fieldset class="eosolar-subset">
-          <legend>Consumi diurni mensili in fascia F1 (kWh)</legend>
+          <legend>
+            Consumi diurni mensili in fascia F1 (kWh) <Info k="consumiF1" label="Consumi mensili in fascia F1" />
+          </legend>
           <div class="eosolar-grid-12">
             {
               MESI.map((m, i) => (
@@ -68,8 +88,15 @@ const fieldId = (f: ParamField) => `eosolar-p-${f.key}`;
       </fieldset>
 
       <fieldset class="eosolar-card">
-        <legend class="eosolar-card__title">Produzione: ore equivalenti mensili (kWh per kWp)</legend>
-        <p class="eosolar-card__sub">Valori medi per il basso Piemonte. Un tecnico EOS li verifica in base a orientamento e ombreggiamenti.</p>
+        <legend class="eosolar-card__title">
+          Produzione: ore equivalenti mensili (kWh per kWp) <Info k="oreEquivalenti" label="Ore equivalenti mensili" />
+        </legend>
+        <p class="eosolar-card__sub">
+          Valori medi per il basso Piemonte. Per il tuo tetto puoi calcolarli con
+          <a href={PVGIS_URL} target="_blank" rel="noopener noreferrer">PVGIS<span class="visually-hidden"> (si apre in una nuova scheda)</span></a>,
+          lo strumento gratuito della Commissione europea: scegli "Grid connected", potenza 1 kWp, perdite 14%, la tua
+          inclinazione e il tuo orientamento, poi riporta qui la produzione mensile (E_m).
+        </p>
         <div class="eosolar-grid-12">
           {
             MESI.map((m, i) => (
@@ -80,28 +107,27 @@ const fieldId = (f: ParamField) => `eosolar-p-${f.key}`;
             ))
           }
         </div>
-      </fieldset>
-
-      <section class="eosolar-card" aria-labelledby="eosolar-costi-title">
-        <h3 id="eosolar-costi-title" class="eosolar-card__title">Costi di riferimento</h3>
-        <p class="eosolar-card__sub">Costi chiavi in mano medi, IVA esclusa, interpolati sulla taglia scelta.</p>
-        <div class="eosolar-grid-2">
-          <div class="eosolar-table-wrap">
-            <table class="eosolar-table">
-              <caption class="visually-hidden">Costo dell'impianto fotovoltaico per taglia</caption>
-              <thead><tr><th scope="col">Taglia FV</th><th scope="col" class="num">€/kWp</th></tr></thead>
-              <tbody>{DEFAULT_COSTI.fv.map((c) => <tr><td>{c.size} kWp</td><td class="num">{fmtInt(c.unitCost)} €</td></tr>)}</tbody>
-            </table>
+        <div class="eosolar-field eosolar-field--limit">
+          <div class="eosolar-field__head">
+            <label for="eosolar-kwpmax">Potenza massima installabile (kWp, facoltativa)</label>
+            <Info k="kwpMax" label="Potenza massima installabile" />
           </div>
-          <div class="eosolar-table-wrap">
-            <table class="eosolar-table">
-              <caption class="visually-hidden">Costo della batteria per capacità</caption>
-              <thead><tr><th scope="col">Batteria</th><th scope="col" class="num">€/kWh utile</th></tr></thead>
-              <tbody>{DEFAULT_COSTI.batteria.map((c) => <tr><td>{String(c.size).replace('.', ',')} kWh</td><td class="num">{fmtInt(c.unitCost)} €</td></tr>)}</tbody>
-            </table>
-          </div>
+          <input
+            id="eosolar-kwpmax"
+            type="number"
+            inputmode="decimal"
+            min={RANGE.kwp.min}
+            max={RANGE.kwp.max}
+            step="0.5"
+            placeholder="Nessun limite"
+            data-kwp-max
+            aria-describedby="eosolar-kwpmax-help"
+          />
+          <p id="eosolar-kwpmax-help" class="eosolar-card__sub">
+            Se la lasci vuota la ricerca arriva fino a {fmtInt(RANGE.kwp.max)} kWp, entro il limite di produzione rispetto ai consumi.
+          </p>
         </div>
-      </section>
+      </fieldset>
 
       <fieldset class="eosolar-card">
         <legend class="eosolar-card__title">Parametri economici</legend>
@@ -109,21 +135,102 @@ const fieldId = (f: ParamField) => `eosolar-p-${f.key}`;
           {
             MAIN_FIELDS.map((f) => (
               <div class="eosolar-field">
-                <label for={fieldId(f)}>{f.label} ({f.unit})</label>
+                <div class="eosolar-field__head">
+                  <label for={fieldId(f)}>{f.label} ({f.unit})</label>
+                  <Info k={f.key} label={f.label} />
+                </div>
                 <input id={fieldId(f)} type="number" inputmode="decimal" step={f.step} min={f.min} max={f.max} value={displayValue(f)} data-param={f.key} data-scale={f.scale} />
               </div>
             ))
           }
         </div>
+      </fieldset>
+
+      <!-- Parametri avanzati: modificabili solo dopo la password (controllo lato browser, vedi src/lib/eosolar/admin.ts) -->
+      <fieldset class="eosolar-card eosolar-admin">
+        <legend class="eosolar-card__title">Parametri avanzati</legend>
+        <div class="eosolar-admin__bar" data-admin-locked>
+          <p><span aria-hidden="true">🔒</span> Costi di riferimento, parametri tecnici e opzioni fiscali sono riservati a EOS.</p>
+          <button type="button" class="btn btn--secondary" data-admin-open>Sblocca con password</button>
+        </div>
+        <div class="eosolar-admin__bar eosolar-admin__bar--open" data-admin-unlocked hidden>
+          <p><span aria-hidden="true">🔓</span> Parametri avanzati modificabili per questa sessione.</p>
+          <button type="button" class="btn btn--secondary" data-admin-lock>Blocca di nuovo</button>
+        </div>
 
         <details class="eosolar-details">
-          <summary>Parametri avanzati</summary>
+          <summary>Costi di riferimento (IVA esclusa)</summary>
+          <p class="eosolar-card__sub">
+            Costo chiavi in mano per kWp o per kWh, interpolato linearmente sulla taglia; oltre l'ultimo punto resta costante.
+          </p>
+          <div class="eosolar-field eosolar-field--limit">
+            <div class="eosolar-field__head">
+              <label for="eosolar-cost-fisso">Costo fisso per impianto (€)</label>
+              <Info k="fissoImpianto" label="Costo fisso per impianto" />
+            </div>
+            <input id="eosolar-cost-fisso" type="number" inputmode="decimal" min="0" step="50" value={DEFAULT_COSTI.fissoImpianto} data-cost-fisso data-admin disabled />
+          </div>
+          <div class="eosolar-grid-2">
+            <div class="eosolar-table-wrap">
+              <table class="eosolar-table eosolar-table--edit">
+                <caption class="visually-hidden">Costo dell'impianto fotovoltaico per taglia</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Taglia FV <Info k="costiFV" label="Costi del fotovoltaico" /></th>
+                    <th scope="col" class="num">€/kWp</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    DEFAULT_COSTI.fv.map((c) => (
+                      <tr>
+                        <th scope="row"><label for={`eosolar-cost-fv-${c.size}`}>{fmtSize(c.size)} kWp</label></th>
+                        <td class="num">
+                          <input id={`eosolar-cost-fv-${c.size}`} type="number" inputmode="decimal" min="0" step="10" value={c.unitCost} data-cost="fv" data-size={c.size} data-admin disabled />
+                        </td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
+            </div>
+            <div class="eosolar-table-wrap">
+              <table class="eosolar-table eosolar-table--edit">
+                <caption class="visually-hidden">Costo della batteria per capacità</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Batteria <Info k="costiBatteria" label="Costi della batteria" /></th>
+                    <th scope="col" class="num">€/kWh</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    DEFAULT_COSTI.batteria.map((c) => (
+                      <tr>
+                        <th scope="row"><label for={`eosolar-cost-batt-${c.size}`}>{fmtSize(c.size)} kWh</label></th>
+                        <td class="num">
+                          <input id={`eosolar-cost-batt-${c.size}`} type="number" inputmode="decimal" min="0" step="10" value={c.unitCost} data-cost="batteria" data-size={c.size} data-admin disabled />
+                        </td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </details>
+
+        <details class="eosolar-details">
+          <summary>Parametri tecnici e di manutenzione</summary>
           <div class="eosolar-params">
             {
               ADVANCED_FIELDS.map((f) => (
                 <div class="eosolar-field">
-                  <label for={fieldId(f)}>{f.label} ({f.unit})</label>
-                  <input id={fieldId(f)} type="number" inputmode="decimal" step={f.step} min={f.min} max={f.max} value={displayValue(f)} data-param={f.key} data-scale={f.scale} />
+                  <div class="eosolar-field__head">
+                    <label for={fieldId(f)}>{f.label} ({f.unit})</label>
+                    <Info k={f.key} label={f.label} />
+                  </div>
+                  <input id={fieldId(f)} type="number" inputmode="decimal" step={f.step} min={f.min} max={f.max} value={displayValue(f)} data-param={f.key} data-scale={f.scale} data-admin disabled />
                 </div>
               ))
             }
@@ -139,36 +246,39 @@ const fieldId = (f: ParamField) => `eosolar-p-${f.key}`;
           <div class="eosolar-params">
             <div class="eosolar-toggle">
               <div class="eosolar-check">
-                <input id="eosolar-rid-on" type="checkbox" data-toggle="ritiroDedicato" checked={p.ritiroDedicato.attivo} />
+                <input id="eosolar-rid-on" type="checkbox" data-toggle="ritiroDedicato" checked={p.ritiroDedicato.attivo} data-admin disabled />
                 <label for="eosolar-rid-on">Valorizza l'energia immessa (ritiro dedicato)</label>
+                <Info k="ritiroDedicato" label="Valore dell'energia immessa" />
               </div>
               <div class="eosolar-field">
                 <label for="eosolar-rid-prezzo">Prezzo energia immessa (€/kWh)</label>
-                <input id="eosolar-rid-prezzo" type="number" inputmode="decimal" step="0.01" min="0" value={p.ritiroDedicato.prezzo} data-toggle-value="ritiroDedicato.prezzo" data-scale="1" />
+                <input id="eosolar-rid-prezzo" type="number" inputmode="decimal" step="0.01" min="0" value={p.ritiroDedicato.prezzo} data-toggle-value="ritiroDedicato.prezzo" data-scale="1" data-admin disabled />
               </div>
             </div>
             <div class="eosolar-toggle">
               <div class="eosolar-check">
-                <input id="eosolar-iva-on" type="checkbox" data-toggle="iva" checked={p.iva.attivo} />
+                <input id="eosolar-iva-on" type="checkbox" data-toggle="iva" checked={p.iva.attivo} data-admin disabled />
                 <label for="eosolar-iva-on">Applica l'IVA a investimento e costi</label>
+                <Info k="iva" label="IVA" />
               </div>
               <div class="eosolar-field">
                 <label for="eosolar-iva-aliquota">Aliquota IVA (%)</label>
-                <input id="eosolar-iva-aliquota" type="number" inputmode="decimal" step="1" min="0" max="100" value={p.iva.aliquota * 100} data-toggle-value="iva.aliquota" data-scale="0.01" />
+                <input id="eosolar-iva-aliquota" type="number" inputmode="decimal" step="1" min="0" max="100" value={p.iva.aliquota * 100} data-toggle-value="iva.aliquota" data-scale="0.01" data-admin disabled />
               </div>
             </div>
             <div class="eosolar-toggle">
               <div class="eosolar-check">
-                <input id="eosolar-detr-on" type="checkbox" data-toggle="detrazione" checked={p.detrazione.attivo} />
+                <input id="eosolar-detr-on" type="checkbox" data-toggle="detrazione" checked={p.detrazione.attivo} data-admin disabled />
                 <label for="eosolar-detr-on">Considera una detrazione fiscale</label>
+                <Info k="detrazione" label="Detrazione fiscale" />
               </div>
               <div class="eosolar-field">
                 <label for="eosolar-detr-aliquota">Aliquota detrazione (%)</label>
-                <input id="eosolar-detr-aliquota" type="number" inputmode="decimal" step="1" min="0" max="100" value={p.detrazione.aliquota * 100} data-toggle-value="detrazione.aliquota" data-scale="0.01" />
+                <input id="eosolar-detr-aliquota" type="number" inputmode="decimal" step="1" min="0" max="100" value={p.detrazione.aliquota * 100} data-toggle-value="detrazione.aliquota" data-scale="0.01" data-admin disabled />
               </div>
               <div class="eosolar-field">
                 <label for="eosolar-detr-anni">Anni di recupero</label>
-                <input id="eosolar-detr-anni" type="number" inputmode="numeric" step="1" min="1" max="25" value={p.detrazione.anni} data-toggle-value="detrazione.anni" data-scale="1" />
+                <input id="eosolar-detr-anni" type="number" inputmode="numeric" step="1" min="1" max="25" value={p.detrazione.anni} data-toggle-value="detrazione.anni" data-scale="1" data-admin disabled />
               </div>
             </div>
           </div>
@@ -186,68 +296,7 @@ const fieldId = (f: ParamField) => `eosolar-p-${f.key}`;
 
   <!-- ============ TAB 2: OTTIMALE ============ -->
   <div role="tabpanel" id="eosolar-panel-ottimale" aria-labelledby="eosolar-tab-ottimale" data-panel="ottimale" tabindex="0" hidden>
-    <div class="eosolar-hero" aria-live="polite">
-      <p class="eosolar-hero__badge">Configurazione consigliata</p>
-      <p class="eosolar-hero__value" data-out="config">—</p>
-      <p class="eosolar-hero__text" data-out="statement">Inserisci i dati e avvia il calcolo.</p>
-    </div>
-
-    <div class="eosolar-alert eosolar-alert--warn" data-out="warnings" hidden>
-      <ul data-out="warnings-list"></ul>
-    </div>
-
-    <section class="eosolar-card" aria-labelledby="eosolar-kpi-title">
-      <h3 id="eosolar-kpi-title" class="eosolar-card__title">Indicatori principali</h3>
-      <div class="eosolar-metrics" data-out="metrics"></div>
-    </section>
-
-    <section class="eosolar-card" aria-labelledby="eosolar-top-title">
-      <h3 id="eosolar-top-title" class="eosolar-card__title">Migliori configurazioni</h3>
-      <p class="eosolar-card__sub" data-out="criterio"></p>
-      <div class="eosolar-table-wrap">
-        <table class="eosolar-table">
-          <thead>
-            <tr><th scope="col">#</th><th scope="col">Configurazione</th><th scope="col" class="num">Investimento</th><th scope="col" class="num">NPV</th><th scope="col" class="num">Payback att.</th><th scope="col" class="num">MIRR</th><th scope="col" class="num">Copertura</th></tr>
-          </thead>
-          <tbody data-out="top"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="eosolar-card" aria-labelledby="eosolar-sens-title">
-      <h3 id="eosolar-sens-title" class="eosolar-card__title">Analisi di sensibilità</h3>
-      <p class="eosolar-card__sub">Ogni scenario varia insieme prezzo dell'energia, inflazione energetica e produttività dell'impianto.</p>
-      <div class="eosolar-table-wrap">
-        <table class="eosolar-table">
-          <thead>
-            <tr><th scope="col">Scenario</th><th scope="col" class="num">Prezzo energia</th><th scope="col" class="num">Inflazione energetica</th><th scope="col" class="num">Produttività</th><th scope="col" class="num">Payback att.</th><th scope="col" class="num">NPV</th></tr>
-          </thead>
-          <tbody data-out="sens"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <div class="eosolar-charts">
-      <figure class="eosolar-chart">
-        <figcaption>Produzione e consumi mensili (anno 1)</figcaption>
-        <div class="eosolar-chart__box"><canvas data-chart="bars-opt" role="img" aria-label="Grafico a barre di produzione, consumo e autoconsumo mensili"></canvas></div>
-      </figure>
-      <figure class="eosolar-chart">
-        <figcaption>NPV al variare della potenza</figcaption>
-        <div class="eosolar-chart__box"><canvas data-chart="npv-curve" role="img" aria-label="Curva del valore attuale netto in funzione dei kWp"></canvas></div>
-      </figure>
-    </div>
-    <figure class="eosolar-chart">
-      <figcaption>Flusso di cassa cumulato attualizzato</figcaption>
-      <div class="eosolar-chart__box"><canvas data-chart="cash-opt" role="img" aria-label="Grafico del flusso di cassa cumulato attualizzato negli anni"></canvas></div>
-    </figure>
-
-    <p class="eosolar-disclaimer eosolar-disclaimer--block">
-      <strong>Stima indicativa, non vincolante.</strong> Modello mensile semplificato con valori medi: la fascia F1 è
-      approssimata ai consumi diurni, la batteria è simulata con un ciclo al giorno, prezzi e inflazione sono ipotesi.
-      Il dimensionamento definitivo richiede il sopralluogo di un tecnico EOS.
-    </p>
-    <a class="btn btn--secondary" href="/#contatti">Richiedi un sopralluogo</a>
+    <ResultView variant="opt" />
   </div>
 
   <!-- ============ TAB 3: MANUALE ============ -->
@@ -256,52 +305,21 @@ const fieldId = (f: ParamField) => `eosolar-p-${f.key}`;
       <h3 class="eosolar-card__title">Scegli potenza e accumulo</h3>
       <div class="eosolar-slider">
         <label for="eosolar-slider-kwp">Potenza fotovoltaico</label>
-        <input id="eosolar-slider-kwp" type="range" min={RANGE.kwp.min} max={RANGE.kwp.max} step={RANGE.kwp.step} value="3" data-slider="kwp" aria-describedby="eosolar-slider-kwp-out" />
+        <input id="eosolar-slider-kwp" type="range" min="0" max={gridKwp.length - 1} step="1" value={startKwp} data-slider="kwp" aria-describedby="eosolar-slider-kwp-out" />
         <output id="eosolar-slider-kwp-out" class="num" for="eosolar-slider-kwp" data-slider-out="kwp">3,0 kWp</output>
       </div>
       <div class="eosolar-slider">
         <label for="eosolar-slider-kwh">Accumulo</label>
-        <input id="eosolar-slider-kwh" type="range" min={RANGE.kwhBatteria.min} max={RANGE.kwhBatteria.max} step={RANGE.kwhBatteria.step} value="0" data-slider="kwh" aria-describedby="eosolar-slider-kwh-out" />
+        <input id="eosolar-slider-kwh" type="range" min="0" max={gridKwh.length - 1} step="1" value="0" data-slider="kwh" aria-describedby="eosolar-slider-kwh-out" />
         <output id="eosolar-slider-kwh-out" class="num" for="eosolar-slider-kwh" data-slider-out="kwh">0,0 kWh</output>
       </div>
-      <p class="eosolar-card__sub">I risultati si aggiornano mentre muovi i cursori, con i dati del primo tab.</p>
+      <p class="eosolar-card__sub">
+        I risultati si aggiornano mentre muovi i cursori, con i dati del primo tab. Il passo della potenza cresce con la
+        taglia (0,5 kWp fino a 10 kWp, poi 1, 2,5, 5 e 10 kWp) ed è limitato dalla potenza massima installabile.
+      </p>
     </div>
-
-    <div class="eosolar-alert eosolar-alert--warn" data-out="man-warnings" hidden>
-      <ul data-out="man-warnings-list"></ul>
-    </div>
-    <div class="eosolar-metrics" data-out="man-metrics" aria-live="polite"></div>
-    <div class="eosolar-charts">
-      <figure class="eosolar-chart">
-        <figcaption>Produzione e consumi mensili (anno 1)</figcaption>
-        <div class="eosolar-chart__box"><canvas data-chart="bars-man" role="img" aria-label="Grafico a barre di produzione, consumo e autoconsumo mensili"></canvas></div>
-      </figure>
-      <figure class="eosolar-chart">
-        <figcaption>Flusso di cassa cumulato attualizzato</figcaption>
-        <div class="eosolar-chart__box"><canvas data-chart="cash-man" role="img" aria-label="Grafico del flusso di cassa cumulato attualizzato negli anni"></canvas></div>
-      </figure>
-    </div>
+    <ResultView variant="man" />
   </div>
 
-  <!-- Template per i risultati: clonati e riempiti con textContent (niente innerHTML) -->
-  <template data-tpl="metric">
-    <div class="eosolar-metric">
-      <p class="eosolar-metric__title" data-f="title"></p>
-      <p class="eosolar-metric__value num" data-f="value"></p>
-      <p class="eosolar-metric__desc" data-f="desc"></p>
-    </div>
-  </template>
-  <template data-tpl="top-row">
-    <tr>
-      <td data-f="rank"></td><td data-f="config"></td><td class="num" data-f="capex"></td><td class="num" data-f="npv"></td>
-      <td class="num" data-f="payback"></td><td class="num" data-f="mirr"></td><td class="num" data-f="ssr"></td>
-    </tr>
-  </template>
-  <template data-tpl="sens-row">
-    <tr>
-      <th scope="row" data-f="scenario"></th><td class="num" data-f="tariffa"></td><td class="num" data-f="inflazione"></td>
-      <td class="num" data-f="produttivita"></td><td class="num" data-f="payback"></td><td class="num" data-f="npv"></td>
-    </tr>
-  </template>
   <template data-tpl="li"><li data-f="text"></li></template>
 </div>

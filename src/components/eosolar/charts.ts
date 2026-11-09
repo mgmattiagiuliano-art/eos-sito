@@ -19,6 +19,8 @@ import {
 } from 'chart.js';
 import { MESI } from '../../lib/eosolar/defaults';
 import { fmtEur, fmtKwh } from '../../lib/eosolar/format';
+
+const fmtNum = (n: number) => n.toLocaleString('it-IT', { maximumFractionDigits: 1 });
 import type { SimulationResult } from '../../lib/eosolar/types';
 
 Chart.register(BarController, BarElement, LineController, LineElement, PointElement, CategoryScale, LinearScale, Legend, Tooltip, Filler);
@@ -80,14 +82,13 @@ export function renderNpvCurve(
   kwpOttimo: number,
 ): void {
   const palette = [token('--c-green-chart', '#10b981'), token('--c-blue', '#0044bd')];
-  const labels = curves[0]?.points.map((p) => p.kwp) ?? [];
+  // Asse x lineare: la griglia kWp ha passo variabile, le etichette a categoria la deformerebbero
   draw(canvas, {
     type: 'line',
     data: {
-      labels: labels.map((k) => `${String(k).replace('.', ',')}`),
       datasets: curves.map((c, i) => ({
         label: c.label,
-        data: c.points.map((p) => p.npv),
+        data: c.points.map((p) => ({ x: p.kwp, y: p.npv })),
         borderColor: palette[i % palette.length],
         backgroundColor: palette[i % palette.length],
         borderWidth: 3,
@@ -97,10 +98,21 @@ export function renderNpvCurve(
     },
     options: {
       scales: {
-        x: { title: { display: true, text: 'Potenza (kWp)' } },
+        x: {
+          type: 'linear',
+          title: { display: true, text: 'Potenza (kWp)' },
+          ticks: { callback: (v) => fmtNum(Number(v)) },
+        },
         y: { ticks: { callback: (v) => fmtEur(Number(v)) } },
       },
-      plugins: { tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${fmtEur(c.parsed.y ?? 0)}` } } },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            title: (items) => `${fmtNum(items[0]?.parsed.x ?? 0)} kWp`,
+            label: (c) => `${c.dataset.label}: ${fmtEur(c.parsed.y ?? 0)}`,
+          },
+        },
+      },
     },
   });
 }
