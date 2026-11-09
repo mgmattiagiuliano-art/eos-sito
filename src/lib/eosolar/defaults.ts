@@ -70,6 +70,8 @@ export const DEFAULT_COSTI: CostCurves = {
     { size: 50, unitCost: 1200 },
     { size: 100, unitCost: 1100 },
   ],
+  // TODO(EOS): costo fisso per impianto provvisorio (pratiche, allaccio, quadro, sopralluogo), modificabile nei parametri avanzati.
+  fissoImpianto: 1000,
   batteria: [
     { size: 2.5, unitCost: 700 },
     { size: 5, unitCost: 550 },

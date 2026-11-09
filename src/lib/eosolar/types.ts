@@ -61,6 +61,8 @@ export interface EconomicParams {
 export interface CostCurves {
   fv: CostPoint[];
   batteria: CostPoint[];
+  /** Costo fisso per impianto (€, IVA esclusa): pratiche, allaccio, quadro, sopralluogo. Si somma se kWp > 0. */
+  fissoImpianto: number;
 }
 
 /** Dati del sito di installazione. */
@@ -106,9 +108,12 @@ export interface CashFlowYear {
 }
 
 export interface Capex {
+  /** Moduli e inverter: kWp × costo unitario interpolato. */
   fv: number;
   batteria: number;
-  /** Imponibile (fv + batteria). */
+  /** Costo fisso per impianto. */
+  fisso: number;
+  /** Imponibile (fv + batteria + fisso). */
   netto: number;
   /** Totale con IVA se attiva. */
   totale: number;

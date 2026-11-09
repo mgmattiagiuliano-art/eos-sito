@@ -142,4 +142,8 @@ Basata sull'audit `docs/AUDIT_SIMULATORE.md` (branch `audit-simulatore`, v2).
 - Verificato con Playwright a 360/1280: flusso email → tab ①, password errata/corretta, caso 100.000 kWh con limite 60 kWp, slider; nessun errore console, nessuno scroll orizzontale.
 - Deciso: ritiro dedicato spento di default (si attiva dai parametri avanzati).
 - Deciso: listini **IVA esclusa**, IVA spenta di default; gli importi nei risultati riportano sempre "IVA esclusa" (o "IVA x% inclusa" se attivata).
-- Decisioni aperte (vedi audit §9): esposizione (PVGIS), modello orario.
+- Costo fisso per impianto (`costi.fissoImpianto`, default provvisorio 1.000 € IVA esclusa, TODO(EOS)), modificabile nei parametri avanzati. Si somma solo se kWp > 0; escluso dalla base della sostituzione inverter. Non cambia l'ottimo per NPV, evita che il "massimo rendimento" proponga 1 kWp.
+- Icone "i" (`Info.astro`, testi in `help.ts`): attributo nativo `popover`, nessun JS; Esc, clic fuori e "Chiudi".
+- Link a PVGIS sopra le ore equivalenti (solo link esterno, nessuna risorsa caricata). URL `pvg_tools/en/` non verificabile dal cloud (dominio bloccato dal proxy): controllarlo.
+- Risultati a livelli (`ResultView.astro` + `results.ts`, usati da entrambi i tab): 1) configurazione + investimento, risparmio primo anno, rientro, guadagno netto + CTA sopralluogo; 2) indicatori energetici e 2 grafici; 3) approfondimenti richiudibili: confronto configurazioni (top 3, massimo rendimento, alternativa con/senza accumulo), sensibilità, curva NPV (disegnata all'apertura), bilancio mensile, flussi annuali, ipotesi del calcolo.
+- Decisioni aperte (vedi audit §9): PVGIS automatico, modello orario.

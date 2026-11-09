@@ -4,13 +4,14 @@
  */
 import { DEFAULT_PARAMS } from '../../lib/eosolar/defaults';
 import type { EconomicParams } from '../../lib/eosolar/types';
+import type { HelpKey } from './help';
 
 type NumericKey = {
   [K in keyof EconomicParams]: EconomicParams[K] extends number ? K : never;
 }[keyof EconomicParams];
 
 export interface ParamField {
-  key: NumericKey;
+  key: NumericKey & HelpKey;
   label: string;
   unit: string;
   /** Il campo mostra valore × 1/scale (es. percentuali: scale 0,01). */
@@ -20,7 +21,7 @@ export interface ParamField {
   max?: number;
 }
 
-const pct = (key: NumericKey, label: string, step = 0.1, max = 100): ParamField => ({
+const pct = (key: NumericKey & HelpKey, label: string, step = 0.1, max = 100): ParamField => ({
   key,
   label,
   unit: '%',

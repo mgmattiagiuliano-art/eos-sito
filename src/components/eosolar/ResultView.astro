@@ -1,0 +1,207 @@
+---
+/**
+ * Vista dei risultati a livelli, usata dal tab "Dimensionamento ottimale" (variant="opt")
+ * e dalla "Simulazione libera" (variant="man").
+ *  1. In evidenza: configurazione + 4 numeri chiave + invito al sopralluogo.
+ *  2. In sintesi: indicatori energetici e due grafici.
+ *  3. Approfondimenti: sezioni richiudibili con confronti, tabelle e ipotesi.
+ * Tutti i contenuti dinamici sono riempiti da ui.ts con textContent (selettori [data-r]).
+ */
+interface Props {
+  variant: 'opt' | 'man';
+}
+const { variant } = Astro.props;
+const opt = variant === 'opt';
+const id = (s: string) => `eosolar-${variant}-${s}`;
+---
+
+<div class="eosolar-result" data-result={variant}>
+  <!-- ===== Livello 1: in evidenza ===== -->
+  <section class="eosolar-hero" aria-live="polite" aria-labelledby={id('hero-config')}>
+    <p class="eosolar-hero__badge">{opt ? 'Configurazione consigliata' : 'Configurazione scelta'}</p>
+    <p class="eosolar-hero__value" id={id('hero-config')} data-r="config">—</p>
+    <p class="eosolar-hero__text" data-r="statement">
+      {opt ? 'Inserisci i dati nel tab 1 e avvia il calcolo.' : 'Muovi i cursori per vedere i risultati.'}
+    </p>
+    <dl class="eosolar-kpis" data-r="kpis" hidden>
+      <div class="eosolar-kpi">
+        <dt>Investimento</dt>
+        <dd class="num" data-r="kpi-capex"></dd>
+        <dd class="eosolar-kpi__note" data-r="kpi-capex-note"></dd>
+      </div>
+      <div class="eosolar-kpi">
+        <dt>Risparmio il primo anno</dt>
+        <dd class="num" data-r="kpi-risparmio"></dd>
+        <dd class="eosolar-kpi__note" data-r="kpi-risparmio-note"></dd>
+      </div>
+      <div class="eosolar-kpi">
+        <dt>Rientro dell'investimento</dt>
+        <dd class="num" data-r="kpi-payback"></dd>
+        <dd class="eosolar-kpi__note">tempo di ritorno attualizzato</dd>
+      </div>
+      <div class="eosolar-kpi">
+        <dt data-r="kpi-npv-label">Guadagno netto</dt>
+        <dd class="num" data-r="kpi-npv"></dd>
+        <dd class="eosolar-kpi__note">valore attuale netto (NPV)</dd>
+      </div>
+    </dl>
+    <div class="eosolar-hero__actions" data-r="actions" hidden>
+      <a class="btn btn--primary" href="/#contatti">Richiedi un sopralluogo gratuito</a>
+    </div>
+  </section>
+
+  <div class="eosolar-alert eosolar-alert--warn" data-r="warnings" hidden>
+    <ul data-r="warnings-list"></ul>
+  </div>
+
+  <div data-r="body" hidden>
+    <!-- ===== Livello 2: in sintesi ===== -->
+    <section class="eosolar-card" aria-labelledby={id('sintesi')}>
+      <h3 id={id('sintesi')} class="eosolar-card__title">Energia e rendimento</h3>
+      <div class="eosolar-metrics" data-r="metrics"></div>
+    </section>
+
+    <div class="eosolar-charts">
+      <figure class="eosolar-chart">
+        <figcaption>Produzione e consumi mensili (primo anno)</figcaption>
+        <div class="eosolar-chart__box"><canvas data-r="chart-bars" role="img" aria-label="Grafico a barre di produzione, consumo e autoconsumo mensili"></canvas></div>
+      </figure>
+      <figure class="eosolar-chart">
+        <figcaption>Flusso di cassa cumulato attualizzato</figcaption>
+        <div class="eosolar-chart__box"><canvas data-r="chart-cash" role="img" aria-label="Grafico del flusso di cassa cumulato attualizzato negli anni"></canvas></div>
+      </figure>
+    </div>
+
+    <!-- ===== Livello 3: approfondimenti ===== -->
+    <h3 class="eosolar-layers__title">Approfondimenti</h3>
+    <div class="eosolar-layers">
+      {
+        opt && (
+          <details class="eosolar-layer">
+            <summary>Confronto con altre configurazioni</summary>
+            <div class="eosolar-layer__body">
+              <p class="eosolar-card__sub" data-r="criterio" />
+              <div class="eosolar-table-wrap">
+                <table class="eosolar-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Configurazione</th>
+                      <th scope="col" class="num">
+                        Investimento <span class="eosolar-th-note" data-r="iva-col">IVA esclusa</span>
+                      </th>
+                      <th scope="col" class="num">NPV</th>
+                      <th scope="col" class="num">Rientro</th>
+                      <th scope="col" class="num">MIRR</th>
+                      <th scope="col" class="num">Copertura</th>
+                    </tr>
+                  </thead>
+                  <tbody data-r="compare" />
+                </table>
+              </div>
+              <p class="eosolar-card__sub" data-r="rendimento" hidden />
+            </div>
+          </details>
+        )
+      }
+      {
+        opt && (
+          <details class="eosolar-layer">
+            <summary>Analisi di sensibilità</summary>
+            <div class="eosolar-layer__body">
+              <p class="eosolar-card__sub">
+                Ogni scenario varia insieme prezzo dell'energia, inflazione energetica e produttività dell'impianto.
+              </p>
+              <div class="eosolar-table-wrap">
+                <table class="eosolar-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Scenario</th>
+                      <th scope="col" class="num">Prezzo energia</th>
+                      <th scope="col" class="num">Inflazione energetica</th>
+                      <th scope="col" class="num">Produttività</th>
+                      <th scope="col" class="num">Rientro</th>
+                      <th scope="col" class="num">NPV</th>
+                    </tr>
+                  </thead>
+                  <tbody data-r="sens" />
+                </table>
+              </div>
+            </div>
+          </details>
+        )
+      }
+      {
+        opt && (
+          <details class="eosolar-layer" data-r="layer-curve">
+            <summary>Valore al variare della potenza</summary>
+            <div class="eosolar-layer__body">
+              <p class="eosolar-card__sub">
+                NPV di ogni potenza esplorata, senza accumulo e con l'accumulo consigliato. Il punto evidenzia la
+                configurazione consigliata.
+              </p>
+              <div class="eosolar-chart__box">
+                <canvas data-r="chart-npv" role="img" aria-label="Curva del valore attuale netto in funzione dei kWp" />
+              </div>
+            </div>
+          </details>
+        )
+      }
+      <details class="eosolar-layer">
+        <summary>Bilancio energetico mese per mese</summary>
+        <div class="eosolar-layer__body">
+          <p class="eosolar-card__sub">Primo anno, in kWh. Produzione = autoconsumo diretto + carica della batteria + immissione in rete.</p>
+          <div class="eosolar-table-wrap">
+            <table class="eosolar-table eosolar-table--compact">
+              <thead>
+                <tr>
+                  <th scope="col">Mese</th>
+                  <th scope="col" class="num">Produzione</th>
+                  <th scope="col" class="num">Consumo</th>
+                  <th scope="col" class="num">Autoconsumo diretto</th>
+                  <th scope="col" class="num">Da batteria</th>
+                  <th scope="col" class="num">Immessa</th>
+                  <th scope="col" class="num">Prelevata</th>
+                </tr>
+              </thead>
+              <tbody data-r="months"></tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+      <details class="eosolar-layer">
+        <summary>Flussi di cassa anno per anno</summary>
+        <div class="eosolar-layer__body">
+          <p class="eosolar-card__sub">Importi in euro dell'anno in cui avvengono. L'ultima colonna è il cumulato attualizzato al tasso di sconto.</p>
+          <div class="eosolar-table-wrap">
+            <table class="eosolar-table eosolar-table--compact">
+              <thead>
+                <tr>
+                  <th scope="col">Anno</th>
+                  <th scope="col" class="num">Risparmio</th>
+                  <th scope="col" class="num">Vendita</th>
+                  <th scope="col" class="num">Manutenzione</th>
+                  <th scope="col" class="num">Sostituzioni</th>
+                  <th scope="col" class="num">Detrazione</th>
+                  <th scope="col" class="num">Flusso netto</th>
+                  <th scope="col" class="num">Cumulato att.</th>
+                </tr>
+              </thead>
+              <tbody data-r="flows"></tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+      <details class="eosolar-layer">
+        <summary>Ipotesi del calcolo</summary>
+        <div class="eosolar-layer__body">
+          <ul class="eosolar-assumptions" data-r="assumptions"></ul>
+          <p class="eosolar-disclaimer eosolar-disclaimer--block">
+            <strong>Stima indicativa, non vincolante.</strong> Modello mensile semplificato con valori medi: la fascia F1 è
+            approssimata ai consumi diurni, la batteria è simulata con un ciclo al giorno, prezzi e inflazione sono ipotesi.
+            Il dimensionamento definitivo richiede il sopralluogo di un tecnico EOS.
+          </p>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>

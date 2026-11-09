@@ -31,10 +31,11 @@ const sum = (xs: readonly number[]) => xs.reduce((a, b) => a + b, 0);
 export function computeCapex(config: ModelConfig, kwp: number, kwhBatteria: number): Capex {
   const fv = totalCost(config.costi.fv, kwp);
   const batteria = totalCost(config.costi.batteria, kwhBatteria);
-  const netto = fv + batteria;
+  const fisso = kwp > 0 ? config.costi.fissoImpianto : 0;
+  const netto = fv + batteria + fisso;
   const { iva } = config.params;
   const totale = iva.attivo ? netto * (1 + iva.aliquota) : netto;
-  return { fv, batteria, netto, totale };
+  return { fv, batteria, fisso, netto, totale };
 }
 
 /**
@@ -231,6 +232,10 @@ export function validate(config: ModelConfig): ValidationIssue[] {
     if (punti.length === 0 || !ordinati || !punti.every((pt) => Number.isFinite(pt.unitCost) && pt.unitCost >= 0)) {
       err(`costi.${nome}`, `I costi di riferimento ${nome === 'fv' ? 'del fotovoltaico' : 'della batteria'} devono essere valori non negativi.`);
     }
+  }
+
+  if (!(Number.isFinite(config.costi.fissoImpianto) && config.costi.fissoImpianto >= 0)) {
+    err('costi.fissoImpianto', 'Il costo fisso per impianto deve essere un valore non negativo.');
   }
 
   const kwpMax = config.sito.kwpMax;

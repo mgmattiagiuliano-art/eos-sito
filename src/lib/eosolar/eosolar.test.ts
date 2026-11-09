@@ -157,6 +157,7 @@ describe('indicatori finanziari (calcolati a mano)', () => {
       ...cfg,
       consumi: { consumoAnnuo: 1200, consumiF1: Array(12).fill(100), oreEquivalenti: Array(12).fill(50), flessibilita: 0 },
       params: { ...cfg.params, inflazioneEnergia: 0, degradoFV: 0, oemPerc: 0, annoInverter: 99, anni: 25 },
+      costi: { ...cfg.costi, fissoImpianto: 0 },
     };
     const s = simulate(c, 1, 0);
     // 600 kWh/anno × 0,25 € = 150 €/anno; CAPEX 2000 €; NPV = −2000 + 150 × (1 − 1,06^−25)/0,06
@@ -280,6 +281,22 @@ describe('curve dei costi', () => {
     close(unitCost(DEFAULT_COSTI.fv, 35), (c20 + c50) / 2);
   });
 
+  it('costo fisso per impianto: si somma solo se c’è il fotovoltaico, escluso dalla base inverter', () => {
+    const cfg = defaultConfig();
+    expect(cfg.costi.fissoImpianto).toBe(1000);
+    const r = simulate(cfg, 3, 0);
+    expect(r.capex.fisso).toBe(1000);
+    expect(r.capex.netto).toBe(r.capex.fv + r.capex.fisso);
+    expect(simulate(cfg, 0, 5).capex.fisso).toBe(0);
+    const inverter = r.flussi.find((f) => f.anno === cfg.params.annoInverter)!.sostituzioni;
+    close(inverter, cfg.params.inverterPerc * r.capex.fv * Math.pow(1 + cfg.params.inflazioneGenerale, cfg.params.annoInverter - 1));
+    const senza = defaultConfig();
+    senza.costi.fissoImpianto = 0;
+    const r0 = simulate(senza, 3, 0);
+    // il costo fisso riduce l'NPV di sé stesso più l'O&M che genera
+    expect(r0.npv - r.npv).toBeGreaterThan(1000);
+  });
+
   it('i costi modificati entrano nel CAPEX', () => {
     const cfg = defaultConfig();
     cfg.costi.fv = cfg.costi.fv.map((c) => ({ ...c, unitCost: c.unitCost * 2 }));
@@ -304,6 +321,7 @@ describe('validazione', () => {
     expect(errore((c) => (c.params.ritiroDedicato = { attivo: false, prezzo: Number.NaN }), 'ritiroDedicato')).toBe(false);
     expect(errore((c) => (c.costi.fv[0]!.unitCost = -1), 'costi.fv')).toBe(true);
     expect(errore((c) => (c.costi.batteria[0]!.unitCost = Number.NaN), 'costi.batteria')).toBe(true);
+    expect(errore((c) => (c.costi.fissoImpianto = -1), 'costi.fissoImpianto')).toBe(true);
     expect(errore((c) => (c.sito.kwpMax = 0.5), 'kwpMax')).toBe(true);
     expect(errore((c) => (c.sito.kwpMax = 50), 'kwpMax')).toBe(false);
   });

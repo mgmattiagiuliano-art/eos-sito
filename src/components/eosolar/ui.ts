@@ -8,25 +8,15 @@ import {
   VINCOLI,
   defaultConfig,
   kwpGrid,
-  npvCurve,
   optimize,
   sensitivity,
   simulate,
   validate,
   type ModelConfig,
-  type SimulationResult,
+  type OptimizationResult,
 } from '../../lib/eosolar';
-import {
-  fmtConfig,
-  fmtEur,
-  fmtEurKwh,
-  fmtKwh,
-  fmtKwhBatt,
-  fmtKwp,
-  fmtMirr,
-  fmtPct,
-  fmtYears,
-} from '../../lib/eosolar/format';
+import { fmtKwh, fmtKwhBatt, fmtKwp, fmtPct } from '../../lib/eosolar/format';
+import { renderCharts, renderCompare, renderNpvLayer, renderResult, renderSensitivity } from './results';
 import { checkAdminPassword } from '../../lib/eosolar/admin';
 import { FormSubmitError, submitForm } from '../../lib/forms/submit';
 import { closeModal, openModal } from '../../lib/ui/dialog';
@@ -92,6 +82,15 @@ export function initEosolar(root: HTMLElement): void {
 
   let unlocked = storageGet(UNLOCK_KEY) === '1';
   let lastConfig: ModelConfig | null = null;
+  let lastOpt: OptimizationResult | null = null;
+  const optView = q('[data-result="opt"]')!;
+  const manView = q('[data-result="man"]')!;
+  // La curva NPV sta in un livello richiudibile: Chart.js non può misurare un canvas nascosto,
+  // quindi la disegniamo all'apertura.
+  const npvLayer = optView.querySelector<HTMLDetailsElement>('[data-r="layer-curve"]');
+  npvLayer?.addEventListener('toggle', async () => {
+    if (npvLayer.open && lastOpt) renderNpvLayer(optView, lastOpt, await charts());
+  });
   let chartsModule: Promise<typeof import('./charts')> | null = null;
   const charts = () => (chartsModule ??= import('./charts'));
 
@@ -119,6 +118,8 @@ export function initEosolar(root: HTMLElement): void {
       const inputs = qa<HTMLInputElement>(`[data-cost="${curva}"]`);
       if (inputs.length) cfg.costi[curva] = inputs.map((el) => ({ size: Number(el.dataset.size), unitCost: num(el) }));
     }
+    const fisso = q<HTMLInputElement>('[data-cost-fisso]');
+    if (fisso) cfg.costi.fissoImpianto = num(fisso);
     cfg.sito.kwpMax = readKwpMax();
     return cfg;
   }
@@ -143,26 +144,6 @@ export function initEosolar(root: HTMLElement): void {
     if (!container || !wrapper) return;
     container.replaceChildren(...items.map((text) => fill('li', { text })));
     wrapper.hidden = items.length === 0;
-  }
-
-  /** I costi di riferimento sono IVA esclusa: lo diciamo sempre accanto agli importi. */
-  function notaIva(cfg: ModelConfig): string {
-    return cfg.params.iva.attivo ? `IVA ${fmtPct(cfg.params.iva.aliquota)} inclusa` : 'IVA esclusa';
-  }
-
-  function renderMetrics(container: HTMLElement | null, r: SimulationResult, cfg: ModelConfig): void {
-    if (!container) return;
-    const anni = cfg.params.anni;
-    const m = (title: string, value: string, desc: string) => fill('metric', { title, value, desc });
-    container.replaceChildren(
-      m(`Investimento (${notaIva(cfg)})`, fmtEur(r.capex.totale), `FV ${fmtEur(r.capex.fv)} · batteria ${fmtEur(r.capex.batteria)}`),
-      m('NPV (valore attuale netto)', fmtEur(r.npv), `Guadagno netto attualizzato in ${anni} anni.`),
-      m('Payback attualizzato', fmtYears(r.paybackAttualizzato, anni), "Tempo di rientro dell'investimento."),
-      m('MIRR', fmtMirr(r.mirr), 'Rendimento annuo, reinvestimento al tasso di sconto.'),
-      m('Copertura dei consumi', fmtPct(r.ssr), 'Quota del fabbisogno coperta da impianto e batteria.'),
-      m('Autoconsumo', fmtPct(r.scr), 'Quota della produzione usata in casa o accumulata.'),
-      m('Produzione anno 1', fmtKwh(r.anno1.produzione), `Immessa in rete: ${fmtKwh(r.anno1.immissione)}.`),
-    );
   }
 
   function warningsFor(cfg: ModelConfig): string[] {
@@ -225,12 +206,12 @@ export function initEosolar(root: HTMLElement): void {
     const res = optimize(cfg);
     const best = res.migliori[0]!;
     const anni = cfg.params.anni;
+    lastOpt = res;
 
-    q('[data-out="config"]')!.textContent = fmtConfig(best.kwp, best.kwhBatteria);
-    q('[data-out="statement"]')!.textContent =
-      `Per un fabbisogno di ${fmtKwh(cfg.consumi.consumoAnnuo)}/anno la configurazione con il valore attuale netto più alto è ` +
-      `${fmtConfig(best.kwp, best.kwhBatteria)}: investimento ${fmtEur(best.capex.totale)} (${notaIva(cfg)}), copertura dei consumi ${fmtPct(best.ssr)}, ` +
-      `NPV ${fmtEur(best.npv)} in ${anni} anni, rientro ${best.paybackAttualizzato === null ? `oltre ${anni} anni` : `in ${fmtYears(best.paybackAttualizzato, anni)}`}.`;
+    const statement =
+      `Per un fabbisogno di ${fmtKwh(cfg.consumi.consumoAnnuo)} l’anno è la configurazione con il guadagno netto (NPV) più alto ` +
+      `tra quelle che rispettano i vincoli. Copre il ${fmtPct(best.ssr)} dei consumi.`;
+    renderResult(optView, best, cfg, statement);
 
     const warnings = warningsFor(cfg);
     if (!res.vincoliRispettati) {
@@ -247,66 +228,20 @@ export function initEosolar(root: HTMLElement): void {
       );
     }
     if (best.npv < 0) warnings.push("Con questi dati nessuna configurazione ha un NPV positivo nell'orizzonte considerato.");
-    renderList(q('[data-out="warnings-list"]'), q('[data-out="warnings"]'), warnings);
+    renderList(optView.querySelector('[data-r="warnings-list"]'), optView.querySelector('[data-r="warnings"]'), warnings);
 
-    q('[data-out="criterio"]')!.textContent =
+    const criterio =
       `Criterio: ${CRITERIO_OTTIMO === 'npv' ? 'massimo NPV' : CRITERIO_OTTIMO}, con produzione ≤ ${fmtPct(VINCOLI.maxProduzioneSuConsumo)} del consumo annuo e autoconsumo ≥ ${fmtPct(VINCOLI.minAutoconsumo)}. ` +
       `Potenza esplorata fino a ${fmtKwp(Math.min(res.limiteKwp.valore, RANGE.kwp.max))} (${LIMITE_LABEL[res.limiteKwp.motivo]}). ` +
       `Configurazioni valide: ${res.candidatiValidi} su ${res.candidatiTotali}.`;
-
-    const rendimento = q('[data-out="rendimento"]');
-    if (rendimento) {
-      const r = res.migliorRendimento;
-      const diversa = r !== null && (r.kwp !== best.kwp || r.kwhBatteria !== best.kwhBatteria);
-      rendimento.hidden = r === null;
-      if (r) {
-        rendimento.textContent = diversa
-          ? `Massimo rendimento percentuale: ${fmtConfig(r.kwp, r.kwhBatteria)}, MIRR ${fmtMirr(r.mirr)}, investimento ${fmtEur(r.capex.totale)} (${notaIva(cfg)}), ` +
-            `NPV ${fmtEur(r.npv)}, payback ${fmtYears(r.paybackAttualizzato, anni)}. Rende di più per ogni euro investito, ma genera un guadagno complessivo minore.`
-          : `La configurazione consigliata è anche quella con il rendimento percentuale più alto (MIRR ${fmtMirr(r.mirr)}).`;
-      }
-    }
-
-    renderMetrics(q('[data-out="metrics"]'), best, cfg);
-    q('[data-out="iva-col"]')!.textContent = notaIva(cfg);
-
-    q('[data-out="top"]')!.replaceChildren(
-      ...res.migliori.map((r, i) =>
-        fill('top-row', {
-          rank: String(i + 1),
-          config: fmtConfig(r.kwp, r.kwhBatteria),
-          capex: fmtEur(r.capex.totale),
-          npv: fmtEur(r.npv),
-          payback: fmtYears(r.paybackAttualizzato, anni),
-          mirr: fmtMirr(r.mirr),
-          ssr: fmtPct(r.ssr),
-        }),
-      ),
-    );
-
-    q('[data-out="sens"]')!.replaceChildren(
-      ...sensitivity(cfg, best.kwp, best.kwhBatteria).map((s) =>
-        fill('sens-row', {
-          scenario: s.scenario,
-          tariffa: fmtEurKwh(s.tariffaAcquisto),
-          inflazione: fmtPct(s.inflazioneEnergia, 1),
-          produttivita: s.fattoreProduttivita === 1 ? 'base' : `${s.fattoreProduttivita > 1 ? '+' : '−'}${fmtPct(Math.abs(s.fattoreProduttivita - 1))}`,
-          payback: fmtYears(s.paybackAttualizzato, anni),
-          npv: fmtEur(s.npv),
-        }),
-      ),
-    );
+    renderCompare(optView, res, cfg, criterio);
+    renderSensitivity(optView, sensitivity(cfg, best.kwp, best.kwhBatteria), anni);
 
     activateTab('ottimale');
 
     const c = await charts();
-    c.renderBars(q<HTMLCanvasElement>('[data-chart="bars-opt"]')!, best);
-    const curves = [{ label: 'Senza accumulo', points: npvCurve(res.tutti, 0) }];
-    if (best.kwhBatteria > 0) {
-      curves.unshift({ label: `Con ${fmtKwhBatt(best.kwhBatteria)} di accumulo`, points: npvCurve(res.tutti, best.kwhBatteria) });
-    }
-    c.renderNpvCurve(q<HTMLCanvasElement>('[data-chart="npv-curve"]')!, curves, best.kwp);
-    c.renderCashflow(q<HTMLCanvasElement>('[data-chart="cash-opt"]')!, best);
+    await renderCharts(optView, best, c);
+    if (npvLayer?.open) renderNpvLayer(optView, res, c);
     return true;
   }
 
@@ -352,11 +287,11 @@ export function initEosolar(root: HTMLElement): void {
       sliderKwh.setAttribute('aria-valuetext', fmtKwhBatt(kwh));
 
       const cfg = readConfig();
+      const warnList = manView.querySelector<HTMLElement>('[data-r="warnings-list"]');
+      const warnBox = manView.querySelector<HTMLElement>('[data-r="warnings"]');
       const errors = validate(cfg).filter((i) => i.gravita === 'errore');
       if (errors.length) {
-        renderList(q('[data-out="man-warnings-list"]'), q('[data-out="man-warnings"]'), [
-          'Correggi i dati nel tab "Dati e consumi" per vedere la simulazione.',
-        ]);
+        renderList(warnList, warnBox, ['Correggi i dati nel tab "Dati e consumi" per vedere la simulazione.']);
         return;
       }
       const r = simulate(cfg, kwp, kwh);
@@ -365,11 +300,9 @@ export function initEosolar(root: HTMLElement): void {
         warnings.push(`La produzione supera il ${fmtPct(VINCOLI.maxProduzioneSuConsumo)} del consumo annuo.`);
       }
       if (r.scr < VINCOLI.minAutoconsumo) warnings.push(`Autoconsumo sotto il ${fmtPct(VINCOLI.minAutoconsumo)}.`);
-      renderList(q('[data-out="man-warnings-list"]'), q('[data-out="man-warnings"]'), warnings);
-      renderMetrics(q('[data-out="man-metrics"]'), r, cfg);
-      const c = await charts();
-      c.renderBars(q<HTMLCanvasElement>('[data-chart="bars-man"]')!, r);
-      c.renderCashflow(q<HTMLCanvasElement>('[data-chart="cash-man"]')!, r);
+      renderList(warnList, warnBox, warnings);
+      renderResult(manView, r, cfg, `Copre il ${fmtPct(r.ssr)} dei consumi; produzione del primo anno ${fmtKwh(r.anno1.produzione)}.`);
+      await renderCharts(manView, r, await charts());
     });
   }
   sliderKwp?.addEventListener('input', runManual);
