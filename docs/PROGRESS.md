@@ -140,4 +140,5 @@ Basata sull'audit `docs/AUDIT_SIMULATORE.md` (branch `audit-simulatore`, v2).
 - Validazione estesa a tutti i parametri, ai costi e alla potenza installabile.
 - Grafico NPV con asse x lineare (griglia a passo variabile).
 - Verificato con Playwright a 360/1280: flusso email → tab ①, password errata/corretta, caso 100.000 kWh con limite 60 kWp, slider; nessun errore console, nessuno scroll orizzontale.
-- Decisioni aperte (vedi audit §9): IVA/listini e tipo cliente, valore di default dell'energia immessa, prezzi 50/100 kWp, esposizione (PVGIS), modello orario.
+- Deciso: listini **IVA esclusa**, IVA spenta di default; gli importi nei risultati riportano sempre "IVA esclusa" (o "IVA x% inclusa" se attivata).
+- Decisioni aperte (vedi audit §9): valore di default dell'energia immessa, prezzi 50/100 kWp, esposizione (PVGIS), modello orario.

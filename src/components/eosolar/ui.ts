@@ -145,11 +145,17 @@ export function initEosolar(root: HTMLElement): void {
     wrapper.hidden = items.length === 0;
   }
 
-  function renderMetrics(container: HTMLElement | null, r: SimulationResult, anni: number): void {
+  /** I costi di riferimento sono IVA esclusa: lo diciamo sempre accanto agli importi. */
+  function notaIva(cfg: ModelConfig): string {
+    return cfg.params.iva.attivo ? `IVA ${fmtPct(cfg.params.iva.aliquota)} inclusa` : 'IVA esclusa';
+  }
+
+  function renderMetrics(container: HTMLElement | null, r: SimulationResult, cfg: ModelConfig): void {
     if (!container) return;
+    const anni = cfg.params.anni;
     const m = (title: string, value: string, desc: string) => fill('metric', { title, value, desc });
     container.replaceChildren(
-      m('Investimento', fmtEur(r.capex.totale), `FV ${fmtEur(r.capex.fv)} · batteria ${fmtEur(r.capex.batteria)}`),
+      m(`Investimento (${notaIva(cfg)})`, fmtEur(r.capex.totale), `FV ${fmtEur(r.capex.fv)} · batteria ${fmtEur(r.capex.batteria)}`),
       m('NPV (valore attuale netto)', fmtEur(r.npv), `Guadagno netto attualizzato in ${anni} anni.`),
       m('Payback attualizzato', fmtYears(r.paybackAttualizzato, anni), "Tempo di rientro dell'investimento."),
       m('MIRR', fmtMirr(r.mirr), 'Rendimento annuo, reinvestimento al tasso di sconto.'),
@@ -223,7 +229,7 @@ export function initEosolar(root: HTMLElement): void {
     q('[data-out="config"]')!.textContent = fmtConfig(best.kwp, best.kwhBatteria);
     q('[data-out="statement"]')!.textContent =
       `Per un fabbisogno di ${fmtKwh(cfg.consumi.consumoAnnuo)}/anno la configurazione con il valore attuale netto più alto è ` +
-      `${fmtConfig(best.kwp, best.kwhBatteria)}: investimento ${fmtEur(best.capex.totale)}, copertura dei consumi ${fmtPct(best.ssr)}, ` +
+      `${fmtConfig(best.kwp, best.kwhBatteria)}: investimento ${fmtEur(best.capex.totale)} (${notaIva(cfg)}), copertura dei consumi ${fmtPct(best.ssr)}, ` +
       `NPV ${fmtEur(best.npv)} in ${anni} anni, rientro ${best.paybackAttualizzato === null ? `oltre ${anni} anni` : `in ${fmtYears(best.paybackAttualizzato, anni)}`}.`;
 
     const warnings = warningsFor(cfg);
@@ -255,13 +261,14 @@ export function initEosolar(root: HTMLElement): void {
       rendimento.hidden = r === null;
       if (r) {
         rendimento.textContent = diversa
-          ? `Massimo rendimento percentuale: ${fmtConfig(r.kwp, r.kwhBatteria)}, MIRR ${fmtMirr(r.mirr)}, investimento ${fmtEur(r.capex.totale)}, ` +
+          ? `Massimo rendimento percentuale: ${fmtConfig(r.kwp, r.kwhBatteria)}, MIRR ${fmtMirr(r.mirr)}, investimento ${fmtEur(r.capex.totale)} (${notaIva(cfg)}), ` +
             `NPV ${fmtEur(r.npv)}, payback ${fmtYears(r.paybackAttualizzato, anni)}. Rende di più per ogni euro investito, ma genera un guadagno complessivo minore.`
           : `La configurazione consigliata è anche quella con il rendimento percentuale più alto (MIRR ${fmtMirr(r.mirr)}).`;
       }
     }
 
-    renderMetrics(q('[data-out="metrics"]'), best, anni);
+    renderMetrics(q('[data-out="metrics"]'), best, cfg);
+    q('[data-out="iva-col"]')!.textContent = notaIva(cfg);
 
     q('[data-out="top"]')!.replaceChildren(
       ...res.migliori.map((r, i) =>
@@ -359,7 +366,7 @@ export function initEosolar(root: HTMLElement): void {
       }
       if (r.scr < VINCOLI.minAutoconsumo) warnings.push(`Autoconsumo sotto il ${fmtPct(VINCOLI.minAutoconsumo)}.`);
       renderList(q('[data-out="man-warnings-list"]'), q('[data-out="man-warnings"]'), warnings);
-      renderMetrics(q('[data-out="man-metrics"]'), r, cfg.params.anni);
+      renderMetrics(q('[data-out="man-metrics"]'), r, cfg);
       const c = await charts();
       c.renderBars(q<HTMLCanvasElement>('[data-chart="bars-man"]')!, r);
       c.renderCashflow(q<HTMLCanvasElement>('[data-chart="cash-man"]')!, r);
