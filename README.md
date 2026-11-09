@@ -158,10 +158,7 @@ Dati da fornire o confermare. Ogni voce è marcata `TODO(EOS)` nel codice, e i t
 - [ ] Ritiro dedicato: prezzo e se attivarlo di default (cambia molto il dimensionamento consigliato: vedi `docs/PROGRESS.md`)
 - [ ] IVA e detrazione fiscale applicabili (aliquote e anni): normativa vigente
 
-**Privacy e cookie** (`src/pages/privacy.astro`, `src/pages/cookie.astro`, `src/components/eosolar/LeadGate.astro`)
-- [ ] PEC, legale rappresentante, eventuale DPO
-- [ ] Base giuridica e finalità del lead del calcolatore (e testo del lead gate coerente)
-- [ ] Fornitori: hosting, raccolta moduli, casella email; eventuali trasferimenti extra UE
-- [ ] Tempi di conservazione: contatti/lead, candidature, log tecnici
-- [ ] Eventuali cookie tecnici del fornitore di hosting
-- [ ] Data di validazione dei testi e verifica da parte di un consulente privacy
+**Privacy e cookie** (`src/pages/privacy.astro`, `src/pages/cookie.astro`)
+- [x] DPO non nominato, fornitori (Netlify per hosting e moduli, Aruba per l'email), conservazione 12 mesi per contatti, lead e CV (PEC e legale rappresentante omessi: non obbligatori)
+- [ ] Verificare nel DPA di Netlify la garanzia per il trasferimento negli USA e che Netlify non imposti cookie propri
+- [ ] Rilettura dei testi da parte di un consulente privacy

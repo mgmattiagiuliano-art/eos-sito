@@ -10,21 +10,20 @@ import { company, fullAddress } from '../data/site';
 <Legal
   title="Informativa privacy"
   description="Come EOS Impianti s.n.c. tratta i dati personali raccolti tramite il sito: contatti, calcolatore fotovoltaico e candidature."
-  updated="TODO(EOS): data di validazione del testo"
+  updated="9 novembre 2026"
 >
   <p>
     Questa informativa descrive come vengono trattati i dati personali raccolti tramite questo sito, ai sensi degli artt. 13
     e 14 del Regolamento (UE) 2016/679 («GDPR») e del D.Lgs. 196/2003 come modificato dal D.Lgs. 101/2018.
   </p>
-  <p><span class="todo">TODO(EOS): far verificare l'intero testo da un consulente privacy prima della pubblicazione.</span></p>
+  {/* TODO(EOS): far rileggere il testo da un consulente privacy; aggiornare la data se cambia. */}
 
   <h2>1. Titolare del trattamento</h2>
   <p>
     {company.legalName}, {fullAddress}, P.IVA {company.vatNumber}.<br />
-    Email: <a href={`mailto:${company.email}`}>{company.email}</a> · Telefono: <a href={company.phone.href}>{company.phone.display}</a><br />
-    <span class="todo">TODO(EOS): PEC e legale rappresentante.</span>
+    Email: <a href={`mailto:${company.email}`}>{company.email}</a> · Telefono: <a href={company.phone.href}>{company.phone.display}</a>
   </p>
-  <p><span class="todo">TODO(EOS): indicare se è stato nominato un Responsabile della protezione dei dati (DPO) e i suoi contatti, oppure eliminare questa riga.</span></p>
+  <p>Il titolare non ha nominato un Responsabile della protezione dei dati (DPO), non essendo obbligato ai sensi dell'art. 37 GDPR.</p>
 
   <h2>2. Dati trattati, finalità e basi giuridiche</h2>
   <div class="table-wrap">
@@ -44,8 +43,8 @@ import { company, fullAddress } from '../data/site';
           <td>Email</td>
           <td>Accesso al calcolatore e ricontatto in merito alla simulazione</td>
           <td>
-            Consenso (art. 6.1.a GDPR) <span class="todo">TODO(EOS): confermare la base giuridica e la finalità (anche
-            l'eventuale invio di comunicazioni commerciali, che richiederebbe un consenso separato).</span>
+            Consenso (art. 6.1.a GDPR), revocabile in qualsiasi momento
+            {/* TODO(EOS): per usare le email anche per comunicazioni commerciali serve un consenso separato e facoltativo. */}
           </td>
         </tr>
         <tr>
@@ -77,23 +76,25 @@ import { company, fullAddress } from '../data/site';
     in qualità di responsabili del trattamento (art. 28 GDPR), dai fornitori dei servizi tecnici necessari:
   </p>
   <ul>
-    <li><span class="todo">TODO(EOS): fornitore di hosting del sito (es. Netlify, Inc.) e sede.</span></li>
-    <li><span class="todo">TODO(EOS): fornitore del servizio di raccolta dei moduli (Netlify Forms o altro).</span></li>
-    <li><span class="todo">TODO(EOS): fornitore della casella email.</span></li>
+    <li>Netlify, Inc. (San Francisco, Stati Uniti): hosting del sito e raccolta dei moduli (Netlify Forms);</li>
+    <li>Aruba S.p.A. (Italia): servizio di posta elettronica, a cui arrivano le notifiche dei moduli.</li>
   </ul>
   <p>I dati non sono diffusi né venduti a terzi.</p>
 
   <h2>5. Trasferimenti fuori dall'Unione europea</h2>
   <p>
-    <span class="todo">TODO(EOS): indicare se i fornitori sopra elencati trasferiscono dati fuori dallo Spazio economico
-    europeo e su quale garanzia (decisione di adeguatezza, EU-US Data Privacy Framework, clausole contrattuali tipo).</span>
+    Netlify, Inc. ha sede negli Stati Uniti: i dati raccolti dal sito e dai moduli possono quindi essere trasferiti fuori
+    dallo Spazio economico europeo. Il trasferimento avviene sulla base delle garanzie previste dal Capo V del GDPR indicate
+    nell'accordo sul trattamento dei dati del fornitore (EU-US Data Privacy Framework e/o clausole contrattuali tipo
+    approvate dalla Commissione europea). Aruba S.p.A. tratta i dati in Italia.
+    {/* TODO(EOS): verificare nel Data Processing Agreement di Netlify quale garanzia è applicata. */}
   </p>
 
   <h2>6. Conservazione</h2>
   <ul>
-    <li>Richieste di contatto e lead del calcolatore: <span class="todo">TODO(EOS): periodo di conservazione.</span></li>
-    <li>Candidature: <span class="todo">TODO(EOS): periodo di conservazione dei curriculum.</span></li>
-    <li>Log tecnici: <span class="todo">TODO(EOS): periodo indicato dal fornitore di hosting.</span></li>
+    <li>Richieste di contatto e lead del calcolatore: 12 mesi dalla ricezione, salvo instaurazione di un rapporto contrattuale.</li>
+    <li>Candidature e curriculum: 12 mesi dalla ricezione, salvo instaurazione del rapporto di lavoro.</li>
+    <li>Log tecnici: per il periodo stabilito dal fornitore di hosting, secondo la sua informativa.</li>
   </ul>
 
   <h2>7. Natura del conferimento</h2>

@@ -120,6 +120,9 @@ Con RID off l'immissione vale 0 € e l'ottimo NPV resta piccolo: dipende dal de
 - Fotowall: 8 foto (`lavoro6–8.jpg`: cantiere con sollevatore in un cimitero, ingresso del cimitero, capannone industriale). Desktop 4×4 a due blocchi, tablet 2 colonne con `grid-auto-flow: dense`.
 - Commit con `[skip netlify]` su richiesta: nessun deploy finché EOS non dà l'ok.
 
+- Branch `claude/eos-rilascio` = Fase 6 + video/foto + Fase 7 (calcolatore, da altra sessione). Netlify pubblica da `claude/eos-fase-6-consegna` (production branch scelto dall'utente).
+- Privacy compilata con i dati EOS: no DPO, Netlify + Aruba, conservazione 12 mesi (contatti, lead, CV), data 9/11/2026. PEC e legale rappresentante omessi su richiesta (non obbligatori). Nessun segnaposto visibile; restano TODO solo come commenti nel sorgente (verifica DPA Netlify, cookie Netlify, rilettura consulente, consenso marketing separato).
+
 ## TODO(EOS) raccolti
 - Privacy: legale rappresentante, PEC, DPO, fornitori (hosting, form, email), trasferimenti extra UE, tempi di conservazione, base giuridica del lead, validazione del testo da un consulente.
 - Descrizioni reali delle foto dei lavori (alt e didascalie lightbox).
