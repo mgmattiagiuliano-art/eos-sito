@@ -123,6 +123,8 @@ Con RID off l'immissione vale 0 € e l'ottimo NPV resta piccolo: dipende dal de
 - Branch `claude/eos-rilascio` = Fase 6 + video/foto + Fase 7 (calcolatore, da altra sessione). Netlify pubblica da `claude/eos-fase-6-consegna` (production branch scelto dall'utente).
 - Privacy compilata con i dati EOS: no DPO, Netlify + Aruba, conservazione 12 mesi (contatti, lead, CV), data 9/11/2026. PEC e legale rappresentante omessi su richiesta (non obbligatori). Nessun segnaposto visibile; restano TODO solo come commenti nel sorgente (verifica DPA Netlify, cookie Netlify, rilettura consulente, consenso marketing separato).
 
+- 09/11/2026: rilascio su Netlify. `claude/eos-fase-6-consegna` portato a `claude/eos-rilascio` (opzione B scelta dall'utente: Netlify resta sul production branch attuale). Password parametri avanzati ancora `admin` (cambiabile con `PUBLIC_EOSOLAR_ADMIN_PASSWORD` su Netlify).
+
 ## TODO(EOS) raccolti
 - Privacy: legale rappresentante, PEC, DPO, fornitori (hosting, form, email), trasferimenti extra UE, tempi di conservazione, base giuridica del lead, validazione del testo da un consulente.
 - Descrizioni reali delle foto dei lavori (alt e didascalie lightbox).
