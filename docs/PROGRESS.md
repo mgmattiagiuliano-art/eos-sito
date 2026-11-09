@@ -48,7 +48,7 @@
 | 14 | MIRR (reinvestimento = tasso di sconto) | ✅ F2 |
 | 15 | ritiro dedicato, IVA, detrazione parametrizzati e disattivati | ✅ F2 |
 | 18 | privacy, honeypot, CV nei 3 form | ✅ F3–F4 |
-| 19 | cookie banner, Maps dopo consenso, video locale, font | ✅ F5 banner Accetta/Rifiuta/Personalizza + `src/lib/consent.ts`; Maps solo con consenso (anche revocabile); font F1; **video: manca il file** |
+| 19 | cookie banner, Maps dopo consenso, video locale, font | ✅ F5 banner Accetta/Rifiuta/Personalizza + `src/lib/consent.ts`; Maps solo con consenso (anche revocabile); font F1; video aggiunto dopo la F6 |
 | 20 | pagine legali | ✅ F5 `/privacy/`, `/cookie/` con TODO(EOS) visibili; link con slash finale |
 | 21 | URL assoluti, og-image, sitemap, robots, canonical, favicon | ✅ F1+F5 (`og-image.jpg` 1200×630 generata; `robots.txt` da route; niente canonical sulla 404) |
 | 22 | bilancio energetico non chiuso | ✅ F2 |
@@ -113,6 +113,11 @@ Con RID off l'immissione vale 0 € e l'ottimo NPV resta piccolo: dipende dal de
 - Clone pulito senza `.env`: `npm ci` + `npm run dev` → 200; build ok.
 - `netlify.toml` (build, Node 22, provider netlify, header di sicurezza, cache `/_astro`), `README.md` completo con elenco TODO(EOS).
 - Per eseguire Lighthouse senza aggiungere dipendenze: installarlo in una cartella temporanea e usare `CHROME_PATH` del Chromium di Playwright.
+
+## Aggiornamenti dopo la Fase 6
+- Video slide 5 aggiunto: `public/video/hero-fotovoltaico.mp4` (Pexels 4034091, 1280×720, 10 s, 3,1 MB, senza audio, faststart). Parte quando la slide è visibile.
+- Fotowall: 8 foto (`lavoro6–8.jpg`: cantiere con sollevatore in un cimitero, ingresso del cimitero, capannone industriale). Desktop 4×4 a due blocchi, tablet 2 colonne con `grid-auto-flow: dense`.
+- Commit con `[skip netlify]` su richiesta: nessun deploy finché EOS non dà l'ok.
 
 ## TODO(EOS) raccolti
 - Privacy: legale rappresentante, PEC, DPO, fornitori (hosting, form, email), trasferimenti extra UE, tempi di conservazione, base giuridica del lead, validazione del testo da un consulente.

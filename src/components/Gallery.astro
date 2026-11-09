@@ -59,9 +59,17 @@ const large = await Promise.all(
       grid-auto-rows: 180px;
     }
 
-    .fotowall__item--a,
-    .fotowall__item--c {
+    /* 2 colonne: una alta + una larga + sei singole = 5 righe piene (dense riempie i vuoti) */
+    .fotowall {
+      grid-auto-flow: dense;
+    }
+
+    .fotowall__item--a {
       grid-row: span 2;
+    }
+
+    .fotowall__item--h {
+      grid-column: span 2;
     }
   }
 
@@ -71,13 +79,19 @@ const large = await Promise.all(
       grid-template-columns: repeat(4, 1fr);
       grid-template-areas:
         'a b b c'
-        'a d e c';
+        'a d e c'
+        'f h h g'
+        'f h h g';
       grid-auto-rows: 210px;
     }
 
     .fotowall__item--a,
-    .fotowall__item--c {
+    .fotowall__item--c,
+    .fotowall__item--f,
+    .fotowall__item--g,
+    .fotowall__item--h {
       grid-row: auto;
+      grid-column: auto;
     }
 
     .fotowall__item--a { grid-area: a; }
@@ -85,6 +99,9 @@ const large = await Promise.all(
     .fotowall__item--c { grid-area: c; }
     .fotowall__item--d { grid-area: d; }
     .fotowall__item--e { grid-area: e; }
+    .fotowall__item--f { grid-area: f; }
+    .fotowall__item--g { grid-area: g; }
+    .fotowall__item--h { grid-area: h; }
   }
 
   .fotowall__item {

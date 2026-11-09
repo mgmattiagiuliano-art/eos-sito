@@ -146,8 +146,8 @@ Dati da fornire o confermare. Ogni voce è marcata `TODO(EOS)` nel codice, e i t
 - [ ] Dominio definitivo (`PUBLIC_SITE_URL` in `netlify.toml` / `.env`; default in `astro.config.mjs`)
 - [ ] Coordinate GPS esatte della sede (`src/data/site.ts`, JSON-LD)
 - [ ] Conferma di "oltre 20 anni" / "20+ anni di esperienza" ed "enti pubblici" (`src/components/HeroSlider.astro`, `src/components/WhyEos.astro`, `src/data/site.ts`)
-- [ ] Descrizioni reali delle foto dei lavori: tipo di impianto e località, per testi alternativi e didascalie (`src/data/gallery.ts`)
-- [ ] Video per la slide 5 (`public/video/hero-fotovoltaico.mp4`)
+- [ ] Descrizioni reali delle foto dei lavori: tipo di impianto e località, per testi alternativi e didascalie (`src/data/gallery.ts`; le foto 6–8 hanno una descrizione di ciò che si vede, da completare)
+- [x] Video per la slide 5 (`public/video/hero-fotovoltaico.mp4`, Pexels 4034091 HD, aggiunto)
 - [ ] Logo vettoriale (SVG) e, se disponibile, una foto per l'immagine social (`public/og-image.jpg` è già pronta, ma è generata)
 
 **Calcolatore** (`src/lib/eosolar/defaults.ts`)
