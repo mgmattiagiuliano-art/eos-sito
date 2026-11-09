@@ -131,14 +131,15 @@ Con RID off l'immissione vale 0 € e l'ottimo NPV resta piccolo: dipende dal de
 ## Calcolatore (Fase 7) — riferimento
 Basata sull'audit `docs/AUDIT_SIMULATORE.md` (branch `audit-simulatore`, v2).
 - Dopo l'email si apre il tab ① "Dati e consumi" (nessun calcolo automatico con i default).
-- Niente tetto a 20 kWp: griglia kWp a passo variabile 1–1.000 kWp (`GRIGLIA_KWP`, `kwpGrid`); batteria 0–100 kWh (`RANGE.kwhBatteria`).
+- Niente tetto a 20 kWp: griglia kWp a passo variabile 1–1.000 kWp (`GRIGLIA_KWP`, `kwpGrid`); batteria 0–15 kWh a passi di 2,5 (decisione EOS).
 - Nuovo input facoltativo "Potenza massima installabile" (`config.sito.kwpMax`); la griglia termina esattamente su quel valore.
 - L'ottimizzatore non simula potenze oltre il vincolo di produzione (`kwpLimit`); avviso se l'ottimo coincide con la potenza installabile o con il limite del simulatore (`ottimoAlLimite`).
 - Criterio invariato (massimo NPV entro i vincoli) + riga "massimo rendimento percentuale" (MIRR massimo tra i candidati con NPV > 0, `migliorRendimento`).
-- Curva costi FV con nodi 50 e 100 kWp (**valori segnaposto 1.200 e 1.100 €/kWp, TODO(EOS)**). Oltre 15 kWh la batteria resta a 400 €/kWh (TODO(EOS)).
+- Curva costi FV con nodi 50 e 100 kWp (1.200 e 1.100 €/kWp, approvati da EOS). Costi batteria fino a 15 kWh, modificabili.
 - Costi di riferimento, parametri tecnici, ritiro/IVA/detrazione: modificabili solo dopo password (`src/lib/eosolar/admin.ts`, default "admin", sovrascrivibile con `PUBLIC_EOSOLAR_ADMIN_PASSWORD`). Controllo solo lato browser: non è una protezione di sicurezza. Sblocco valido per la sessione (`sessionStorage eos:eosolar:admin`).
 - Validazione estesa a tutti i parametri, ai costi e alla potenza installabile.
 - Grafico NPV con asse x lineare (griglia a passo variabile).
 - Verificato con Playwright a 360/1280: flusso email → tab ①, password errata/corretta, caso 100.000 kWh con limite 60 kWp, slider; nessun errore console, nessuno scroll orizzontale.
+- Deciso: ritiro dedicato spento di default (si attiva dai parametri avanzati).
 - Deciso: listini **IVA esclusa**, IVA spenta di default; gli importi nei risultati riportano sempre "IVA esclusa" (o "IVA x% inclusa" se attivata).
-- Decisioni aperte (vedi audit §9): valore di default dell'energia immessa, prezzi 50/100 kWp, esposizione (PVGIS), modello orario.
+- Decisioni aperte (vedi audit §9): esposizione (PVGIS), modello orario.

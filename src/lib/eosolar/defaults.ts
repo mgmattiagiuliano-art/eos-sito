@@ -15,8 +15,8 @@ export const GIORNI_MESE = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31] as c
  */
 export const RANGE = {
   kwp: { min: 1, max: 1000 },
-  // TODO(EOS): oltre 15 kWh il costo resta quello dell'ultimo punto della curva (400 €/kWh): servono prezzi per accumuli grandi.
-  kwhBatteria: [0, 2.5, 5, 7.5, 10, 12.5, 15, 20, 30, 50, 75, 100],
+  // Accumulo fino a 15 kWh (decisione EOS); i prezzi sono modificabili nei parametri avanzati.
+  kwhBatteria: [0, 2.5, 5, 7.5, 10, 12.5, 15],
 } as const;
 
 /** Passo della griglia kWp per fascia: fino a `fino` kWp si procede a passi di `passo`. */
@@ -66,7 +66,7 @@ export const DEFAULT_COSTI: CostCurves = {
     { size: 10, unitCost: 1500 },
     { size: 15, unitCost: 1400 },
     { size: 20, unitCost: 1350 },
-    // TODO(EOS): valori segnaposto per 50 e 100 kWp, da sostituire con il listino EOS (modificabili nei parametri avanzati).
+    // 50 e 100 kWp: valori approvati da EOS (modificabili nei parametri avanzati).
     { size: 50, unitCost: 1200 },
     { size: 100, unitCost: 1100 },
   ],
