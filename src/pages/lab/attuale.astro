@@ -1,0 +1,1124 @@
+---
+// Ricostruzione del prototipo (docs/handoff.md, Parte 2) SOLO per confronto nel lab.
+// Modifiche rispetto al prototipo: GSAP da npm (non CDN), font self-hosted, niente video Pexels,
+// niente iframe Google Maps, calcolatore sostituito dal solo teaser, form disattivati, noindex.
+import '@fontsource/montserrat/500.css';
+import '@fontsource/montserrat/700.css';
+import '@fontsource/montserrat/800.css';
+import '@fontsource/montserrat/900.css';
+import '@fontsource/poppins/400.css';
+import '@fontsource/poppins/600.css';
+---
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EOS Impianti s.n.c. — Impianti Elettrici, Domotica e Fotovoltaico</title>
+  <meta name="description" content="Da oltre 20 anni progettiamo e realizziamo impianti elettrici civili, industriali, domotica e fotovoltaico su misura tra Alessandria, Genova e su tutto il territorio nazionale.">
+
+  <!-- OPEN GRAPH & TWITTER CARDS -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="EOS Impianti s.n.c. — Energia, tecnologia e competenza">
+  <meta property="og:description" content="Progettiamo e realizziamo il modo migliore di produrre, utilizzare e gestire la tua energia. Impianti civili, industriali e fotovoltaico su misura.">
+  <meta property="og:image" content="/logo.png">
+  <meta property="og:locale" content="it_IT">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="EOS Impianti s.n.c. — Soluzioni Energetiche e Fotovoltaico">
+  <meta name="twitter:description" content="Impianti elettrici civili e industriali, domotica e sistemi di accumulo solare tra Alessandria e Genova.">
+  <meta name="twitter:image" content="/logo.png">
+
+  <!-- GSAP & ScrollTrigger CDN -->
+
+  <!-- Engine Grafici e Font Geometrici -->
+
+  <style is:global>
+    :root {
+      --logo-red: #E52320;
+      --logo-blue: #0044BD;
+      --logo-green: #33A652;
+      --logo-dark: #1A1A1A;
+      
+      --bg-light: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --text-main: #475569;
+      --text-heading: #0F172A;
+      --border: #E2E8F0;
+      --radius: 16px;
+      
+      --font-heading: 'Montserrat', sans-serif;
+      --font-body: 'Poppins', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { 
+      font-family: var(--font-body); 
+      background-color: var(--bg-light); 
+      color: var(--text-main); 
+      line-height: 1.6; 
+      position: relative;
+      overflow-x: clip;
+    }
+
+    h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); color: var(--text-heading); }
+
+    /* EFFETTO IMPULSO DI LUCE SULLE PAROLE */
+    .electric-spark {
+      display: inline-block;
+      position: relative;
+      font-weight: 800;
+      color: var(--logo-blue);
+      background: linear-gradient(
+        110deg,
+        #0044BD 0%,
+        #0044BD 35%,
+        #38BDF8 48%,
+        #FFFFFF 50%,
+        #38BDF8 52%,
+        #0044BD 65%,
+        #0044BD 100%
+      );
+      background-size: 250% 100%;
+      background-position: 100% 0;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transition: filter 0.3s ease;
+    }
+
+    .electric-spark.spark-red {
+      color: var(--logo-red);
+      background: linear-gradient(
+        110deg,
+        #E52320 0%,
+        #E52320 35%,
+        #FFA2A1 48%,
+        #FFFFFF 50%,
+        #FFA2A1 52%,
+        #E52320 65%,
+        #E52320 100%
+      );
+      background-size: 250% 100%;
+      background-position: 100% 0;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .electric-spark.active {
+      animation: electricPassThrough 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.6));
+    }
+
+    .electric-spark.spark-red.active {
+      filter: drop-shadow(0 0 6px rgba(229, 35, 32, 0.6));
+    }
+
+    @keyframes electricPassThrough {
+      0% { background-position: 100% 0; }
+      100% { background-position: 0% 0; }
+    }
+
+    /* HEADER STICKY */
+    header.site-header {
+      position: sticky; top: 0; background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+      padding: 16px 5%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+      transition: all 0.3s ease;
+    }
+    header.site-header.scrolled { padding: 8px 5%; }
+
+    .brand-center { cursor: pointer; text-align: center; margin-bottom: 8px; }
+    .brand-logo { height: 68px; width: auto; object-fit: contain; transition: all 0.3s ease; }
+    header.site-header.scrolled .brand-logo { height: 38px; }
+
+    nav.site-nav { display: flex; gap: 24px; align-items: center; justify-content: center; flex-wrap: wrap; }
+    nav.site-nav a { font-family: var(--font-heading); color: var(--text-main); text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: color 0.2s; }
+    nav.site-nav a:hover { color: var(--logo-blue); }
+    .btn-cta-nav { background: var(--logo-blue); color: white !important; padding: 8px 18px; border-radius: 6px; font-weight: 700 !important; transition: background 0.2s; }
+    .btn-cta-nav:hover { background: #003399; }
+
+    /* ========================================================
+       SLIDESHOW HERO A LARGHEZZA PIENA
+       ======================================================== */
+    .horizontal-scroll-container {
+      position: relative;
+      width: 100%;
+      height: 85vh;
+      overflow: hidden;
+      background: var(--bg-light);
+    }
+
+    .horizontal-scroll-wrapper {
+      display: flex;
+      width: 500%;
+      height: 100%;
+      will-change: transform;
+    }
+
+    .hero-slide {
+      width: 100vw;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 5%;
+      flex-shrink: 0;
+      position: relative;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .hero-big-statement {
+      font-size: clamp(2.4rem, 4.8vw, 4.6rem);
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--text-heading);
+      width: 100%;
+      max-width: 1350px;
+      margin: 0 auto;
+    }
+
+    .hero-slide-content {
+      width: 100%;
+      max-width: 1350px;
+      margin: 0 auto;
+      padding: 0 15px;
+    }
+    .hero-slide-content h2 { 
+      font-size: clamp(1.8rem, 3.4vw, 2.6rem); 
+      font-weight: 800; 
+      color: var(--text-heading); 
+      margin-bottom: 20px; 
+      line-height: 1.25; 
+    }
+    .hero-slide-content p { 
+      font-size: clamp(1rem, 1.4vw, 1.22rem); 
+      color: var(--text-main); 
+      margin: 0 auto 30px auto; 
+      font-weight: 400; 
+      line-height: 1.6; 
+      max-width: 1150px;
+    }
+
+    .slide-video-container { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; z-index: 1; }
+    .slide-video-bg { width: 100%; height: 100%; object-fit: cover; opacity: 0.45; }
+    .slide-video-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(11, 17, 32, 0.88) 0%, rgba(15, 23, 42, 0.92) 100%); }
+    .slide-calc-content { position: relative; z-index: 2; }
+    .slide-calc-content h2 { color: #FFFFFF !important; }
+    .slide-calc-content p { color: #E2E8F0 !important; }
+
+    .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary { background: var(--logo-red); color: white; padding: 14px 30px; border-radius: 8px; text-decoration: none; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; font-family: var(--font-heading); font-size: 1rem; }
+    .btn-primary:hover { background: #CC1F1C; transform: translateY(-2px); }
+    .btn-secondary { background: white; color: var(--logo-blue); border: 2px solid var(--logo-blue); padding: 14px 30px; border-radius: 8px; text-decoration: none; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: var(--font-heading); font-size: 1rem; }
+    .btn-secondary:hover { background: var(--logo-blue); color: white; transform: translateY(-2px); }
+
+    /* ========================================================
+       CAVO ELETTRICO SOTTILE (2px) E ALLINEAMENTO ESATTO ALLE ICONE
+       ======================================================== */
+    .master-wire-track {
+      position: absolute;
+      top: 85vh;
+      bottom: 60px;
+      left: 0;
+      width: 100%;
+      pointer-events: none;
+      z-index: 1;
+      mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%);
+    }
+
+    .wire-svg-canvas {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .wire-tube-bg {
+      fill: none;
+      stroke: #CBD5E1;
+      stroke-width: 2;
+      stroke-linecap: round;
+      opacity: 0.35;
+    }
+
+    .wire-copper-active {
+      fill: none;
+      stroke: #38BDF8;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-dasharray: 12000;
+      stroke-dashoffset: 12000;
+      filter: drop-shadow(0 0 5px #0044BD);
+    }
+
+    /* ICONE VETTORIALI */
+    .wire-element {
+      position: absolute;
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      pointer-events: auto;
+      background: none;
+      border: none;
+      box-shadow: none;
+      opacity: 0.9;
+      transition: all 0.4s ease;
+    }
+
+    .wire-element svg {
+      width: 100%;
+      height: 100%;
+      transition: all 0.4s ease;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.06));
+    }
+
+    /* LAMPADINA SEMPRE GIALLA E LUMINOSA */
+    #node-lamp {
+      opacity: 1;
+      filter: drop-shadow(0 0 16px rgba(245, 158, 11, 0.85)) drop-shadow(0 0 28px rgba(217, 119, 6, 0.4));
+    }
+    #node-lamp svg, #node-lamp path, #node-lamp circle, #node-lamp rect {
+      stroke: #D97706 !important;
+      fill: #FBBF24 !important;
+    }
+
+    /* ACCENSIONE ALTRI ELEMENTI QUANDO IL CAVO LI RAGGIUNGE */
+    .wire-element.active-element {
+      opacity: 1;
+      filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.85)) drop-shadow(0 0 25px rgba(0, 68, 189, 0.4));
+      transform: translate(-50%, -50%) scale(1.12);
+    }
+
+    .wire-element.active-element.green {
+      filter: drop-shadow(0 0 18px rgba(16, 185, 129, 0.9)) drop-shadow(0 0 30px rgba(5, 150, 105, 0.5));
+    }
+
+    /* POSIZIONI LONTANE DAI BOX CENTRALI (4% SINISTRA E 96% DESTRA) */
+    .elem-lamp      { top: 2%;  left: 4%; }
+    .elem-switch    { top: 15%; left: 96%; }
+    .elem-panel     { top: 29%; left: 4%; }
+    .elem-meter     { top: 43%; left: 96%; }
+    .elem-inverter  { top: 58%; left: 4%; }
+    .elem-solar     { top: 73%; left: 96%; }
+    .elem-battery   { top: 86%; left: 4%; }
+    .elem-traliccio { top: 98%; left: 96%; }
+
+    @media (max-width: 1100px) {
+      .wire-element, .master-wire-track { display: none; }
+    }
+
+    /* CONTENITORE CENTRALE BEN DISTANZIATO DALLE ICONE LATERALI */
+    .section-container { 
+      padding: 80px 4%; 
+      max-width: 1080px;
+      margin: 0 auto; 
+      position: relative; 
+      z-index: 5;
+    }
+    .section-head { text-align: center; margin-bottom: 45px; }
+    .section-head h3 { font-size: 2.2rem; font-weight: 800; margin-bottom: 10px; color: var(--text-heading); }
+    .section-head p { color: var(--text-main); font-size: 1.05rem; }
+
+    /* SERVIZI */
+    .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+    .service-card { position: relative; background: var(--card-bg); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03); height: 360px; transition: all 0.35s ease; cursor: pointer; }
+    .service-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: var(--logo-blue); }
+    .service-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+    .service-card:hover .service-img { transform: scale(1.08); }
+    .service-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.4) 55%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 26px; color: white; }
+    .service-tag { display: inline-block; background: var(--logo-red); color: white; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; margin-bottom: 8px; width: fit-content; }
+    .service-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; color: white; line-height: 1.25; }
+    .service-desc { opacity: 0; max-height: 0; transition: all 0.4s ease; font-size: 0.88rem; color: #E2E8F0; line-height: 1.4; }
+    .service-card:hover .service-desc { opacity: 1; max-height: 160px; margin-top: 4px; }
+
+    /* PERCHÉ SCEGLIERE EOS */
+    .streamlined-box { background: white; border-radius: var(--radius); border: 1px solid var(--border); padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+    .features-inline-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; text-align: center; }
+    .feature-item-num { font-family: var(--font-heading); font-size: 1.8rem; font-weight: 900; color: var(--logo-blue); margin-bottom: 4px; }
+
+    /* FOTOWALL PULITO A MOSAICO */
+    .fotowall-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 200px; gap: 18px; }
+    @media (max-width: 900px) { .fotowall-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 170px; } }
+    @media (max-width: 550px) { .fotowall-grid { grid-template-columns: 1fr; grid-auto-rows: 210px; } }
+
+    .fotowall-item { 
+      position: relative; 
+      border-radius: 12px; 
+      overflow: hidden; 
+      border: 1px solid var(--border); 
+      cursor: pointer; 
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); 
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+    .fotowall-item:hover { transform: scale(1.025) translateY(-4px); z-index: 10; box-shadow: 0 15px 30px rgba(0,0,0,0.12); border-color: var(--logo-blue); }
+    .fotowall-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+    .fotowall-item:hover img { transform: scale(1.06); }
+    .fotowall-item.tall { grid-row: span 2; }
+    .fotowall-item.wide { grid-column: span 2; }
+    @media (max-width: 550px) { .fotowall-item.tall, .fotowall-item.wide { grid-row: span 1; grid-column: span 1; } }
+
+    /* LIGHTBOX */
+    .gallery-lightbox-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); z-index: 3000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+    .gallery-lightbox-backdrop.open { opacity: 1 !important; pointer-events: auto !important; }
+    .gallery-lightbox-card { position: relative; max-width: 950px; width: 90%; text-align: center; color: white; }
+    .gallery-lightbox-img { max-width: 100%; max-height: 80vh; border-radius: 8px; object-fit: contain; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+    .lightbox-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255,255,255,0.3); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; cursor: pointer; transition: all 0.2s; user-select: none; z-index: 3100; }
+    .lightbox-arrow:hover { background: var(--logo-red); }
+    .lightbox-prev { left: -65px; }
+    .lightbox-next { right: -65px; }
+    @media (max-width: 768px) { .lightbox-prev { left: 10px; } .lightbox-next { right: 10px; } }
+
+    /* LAVORA CON NOI */
+    .careers-box { background: white; border-radius: var(--radius); padding: 40px; border: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; gap: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+    @media (max-width: 868px) { .careers-box { grid-template-columns: 1fr; } }
+    .careers-info h4 { font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; color: var(--text-heading); }
+    .careers-info p { color: var(--text-main); font-size: 0.98rem; margin-bottom: 20px; }
+    .careers-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .careers-list li { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--text-heading); font-size: 0.92rem; }
+    .careers-list li span { color: var(--logo-green); font-weight: bold; }
+
+    /* CONTATTI */
+    .contact-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; background: white; border-radius: var(--radius); padding: 40px; border: 1px solid var(--border); align-items: stretch; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+    @media (max-width: 868px) { .contact-wrapper { grid-template-columns: 1fr; } }
+    .contact-item { display: flex; gap: 14px; margin-bottom: 18px; align-items: flex-start; }
+    .contact-icon { background: rgba(0, 68, 189, 0.08); color: var(--logo-blue); width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; font-weight: bold; }
+    .contact-detail label { font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: var(--text-main); display: block; }
+    .contact-detail p, .contact-detail a { font-size: 0.95rem; font-weight: 600; color: var(--text-heading); text-decoration: none; }
+
+    .map-container { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); height: 230px; margin-top: 15px; position: relative; }
+    .map-iframe { width: 100%; height: 100%; border: none; }
+
+    /* FORM STYLES */
+    .form-style { display: flex; flex-direction: column; gap: 14px; text-align: left; }
+    .form-style label { font-size: 0.75rem; font-weight: 700; color: var(--text-heading); text-transform: uppercase; }
+    .form-style input, .form-style textarea { width: 100%; padding: 11px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.92rem; font-family: var(--font-body); }
+
+    /* MODALI */
+    .modal-backdrop { 
+      position: fixed; inset: 0; background: rgba(26, 26, 26, 0.85); 
+      backdrop-filter: blur(8px); z-index: 5000; display: flex; 
+      align-items: center; justify-content: center; padding: 20px; 
+      opacity: 0; pointer-events: none; transition: opacity 0.3s ease; 
+    }
+    .modal-backdrop.open { opacity: 1 !important; pointer-events: auto !important; }
+    
+    .modal-card { background: white; border-radius: var(--radius); padding: 35px; max-width: 450px; width: 100%; text-align: center; position: relative; border-top: 6px solid var(--logo-red); }
+    .modal-logo-view { background: white; border-radius: var(--radius); padding: 40px; max-width: 550px; width: 100%; text-align: center; position: relative; }
+    .modal-logo-view img { max-width: 100%; max-height: 380px; object-fit: contain; }
+    .close-modal { position: absolute; top: 12px; right: 16px; font-size: 1.8rem; border: none; background: none; cursor: pointer; color: var(--text-main); z-index: 5200; }
+
+    /* BANNER COOKIE */
+    .cookie-banner {
+      position: fixed; bottom: 20px; left: 20px; right: 20px; max-width: 900px; margin: 0 auto;
+      background: rgba(26, 26, 26, 0.96); backdrop-filter: blur(12px); color: white;
+      padding: 20px 26px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 4000;
+      display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+      transition: all 0.4s ease; transform: translateY(150%); opacity: 0;
+    }
+    .cookie-banner.show { transform: translateY(0); opacity: 1; }
+    .cookie-text { font-size: 0.85rem; color: #E2E8F0; max-width: 620px; line-height: 1.5; }
+    .cookie-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-cookie-accept { background: var(--logo-blue); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+    .btn-cookie-accept:hover { background: #003399; }
+    .btn-cookie-decline { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 10px 16px; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; }
+    .btn-cookie-decline:hover { background: rgba(255,255,255,0.25); }
+
+    /* FOOTER */
+    footer { background: #1A1A1A; color: #A0AEC0; padding: 40px 5% 25px; border-top: 1px solid var(--border); position: relative; z-index: 5; }
+    .footer-content { max-width: 1250px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
+    .footer-bottom { max-width: 1250px; margin: 15px auto 0; text-align: center; font-size: 0.8rem; color: #718096; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .footer-logo { height: 45px; width: auto; object-fit: contain; margin-bottom: 10px; filter: brightness(0) invert(1); opacity: 0.9; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER STICKY -->
+  <header class="site-header" id="header">
+    <div class="brand-center" onclick="openLogoModal()" title="Clicca per ingrandire il logo">
+      <img src="/logo.png" alt="Logo EOS Impianti s.n.c." class="brand-logo" id="header-logo" />
+    </div>
+    <nav class="site-nav">
+      <a href="#hero-slider-section">Home</a>
+      <a href="#servizi">Servizi</a>
+      <a href="#perche-eos">Perché EOS</a>
+      <a href="#fotogallery">Fotogallery</a>
+      <a href="#calcolatore">Calcolatore Solare</a>
+      <a href="#lavora-con-noi">Lavora con Noi</a>
+      <a href="#contatti" class="btn-cta-nav">Contattaci</a>
+    </nav>
+  </header>
+
+  <!-- ========================================================
+       SLIDESHOW HERO A LARGHEZZA PIENA
+       ======================================================== -->
+  <div class="horizontal-scroll-container" id="hero-slider-section">
+    <div class="horizontal-scroll-wrapper" id="hero-slider-track">
+      
+      <!-- Slide 1: MOTTO ENORME DISTRIBUITO IN LARGHEZZA -->
+      <div class="hero-slide">
+        <h1 class="hero-big-statement">
+          Qual è <span class="electric-spark">l'energia giusta</span> per te?
+        </h1>
+      </div>
+
+      <!-- Slide 2: RISPOSTA DIRETTA -->
+      <div class="hero-slide">
+        <div class="hero-slide-content">
+          <h2>Progettiamo e realizziamo il modo migliore di <span class="electric-spark spark-red">produrre, utilizzare e gestire</span> la tua energia.</h2>
+          <p>Dagli impianti elettrici alle energie rinnovabili, dalla sicurezza alla domotica, creiamo soluzioni integrate per abitazioni, aziende e industrie.</p>
+          <div class="hero-buttons">
+            <a href="#contatti" class="btn-primary">Richiedi un sopralluogo</a>
+            <button onclick="openLeadModal()" class="btn-secondary">Calcola il tuo impianto fotovoltaico</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3: Chi Siamo (EOS Impianti) -->
+      <div class="hero-slide">
+        <div class="hero-slide-content">
+          <span style="color:var(--logo-blue);font-weight:800;font-size:0.85rem;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:8px;">EOS Impianti</span>
+          <h2>Energia e competenza al servizio dei tuoi <span class="electric-spark">progetti</span>.</h2>
+          <p>Da oltre vent'anni progettiamo e realizziamo impianti tecnologici per privati, aziende, industrie ed enti pubblici. Fortemente radicati tra Alessandria e Genova, operiamo con successo su tutto il territorio nazionale.</p>
+          <div class="hero-buttons">
+            <a href="#servizi" class="btn-secondary">Scopri i nostri servizi</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 4: La Nostra Filosofia -->
+      <div class="hero-slide">
+        <div class="hero-slide-content">
+          <span style="color:var(--logo-red);font-weight:800;font-size:0.85rem;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:8px;">La nostra filosofia</span>
+          <h2>Ogni progetto ha la sua <span class="electric-spark spark-red">energia</span>.</h2>
+          <p>Non proponiamo soluzioni standard: analizziamo consumi e obiettivi per progettare impianti realmente adatti a chi li vive ogni giorno. Crediamo nelle tecnologie efficienti per ridurre i costi ed aumentare l'autonomia energetica.</p>
+          <div class="hero-buttons">
+            <a href="#perche-eos" class="btn-secondary">Perché scegliere EOS</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 5: Rimando al Calcolatore Solare con Video Pexels in background -->
+      <div class="hero-slide" style="padding:0;">
+        <div class="slide-video-container">
+          <video class="slide-video-bg" autoplay muted loop playsinline poster="/servizi/fotovoltaico.jpg">
+          </video>
+          <div class="slide-video-overlay"></div>
+        </div>
+        <div class="hero-slide-content slide-calc-content">
+          <span style="color:#34D399;font-weight:800;font-size:0.85rem;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:8px;">Strumento Interattivo</span>
+          <h2>Simula il tuo <span class="electric-spark">impianto fotovoltaico</span> su misura.</h2>
+          <p>Inserisci i tuoi consumi reali F1/F2/F3 e scopri la potenza ideale in kWp, la capacità di accumulo e il tempo di rientro dell'investimento.</p>
+          <div class="hero-buttons">
+            <button onclick="openLeadModal()" class="btn-primary" style="font-size:1.05rem;padding:16px 34px;">⚡ Calcola subito il tuo impianto</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================
+       IL CAVO ELETTRICO CONTINUO A SERPENTINA (8 NODI INTEGRATI)
+       ======================================================== -->
+  <div class="master-wire-track" id="global-wire-track">
+    
+    <!-- 1. LAMPADINA (SEMPRE GIALLA E LUMINOSA) -->
+    <div class="wire-element elem-lamp" id="node-lamp" data-src="/icons/lampadina.svg" title="Illuminazione & Domotica"></div>
+
+    <!-- 2. INTERRUTTORE DIMMER -->
+    <div class="wire-element elem-switch" id="node-switch" data-src="/icons/interruttore.svg" title="Protezione & Interruttori"></div>
+
+    <!-- 3. QUADRO ELETTRICO -->
+    <div class="wire-element elem-panel" id="node-panel" data-src="/icons/quadro.svg" title="Distribuzione Quadri"></div>
+
+    <!-- 4. CONTATORE ELETTRONICO -->
+    <div class="wire-element elem-meter" id="node-meter" data-src="/icons/contatore.svg" title="Contatore Smart Bidirezionale"></div>
+
+    <!-- 5. INVERTER SOLARE -->
+    <div class="wire-element elem-inverter" id="node-inverter" data-src="/icons/inverter.svg" title="Inverter Ibrido Solare"></div>
+
+    <!-- 6. PANNELLO FOTOVOLTAICO (ALL'ALTEZZA DEL CALCOLATORE) -->
+    <div class="wire-element elem-solar green" id="node-solar" data-src="/icons/pannello.svg" title="Pannelli Fotovoltaici"></div>
+
+    <!-- 7. BATTERIA D'ACCUMULO BESS -->
+    <div class="wire-element elem-battery green" id="node-battery" data-src="/icons/batteria.svg" title="Batteria d'Accumulo BESS"></div>
+
+    <!-- 8. TRALICCIO RETE ELETTRICA (AL FONDO DELLA PAGINA) -->
+    <div class="wire-element elem-traliccio" id="node-traliccio" data-src="/icons/traliccio.svg" title="Rete & Traliccio Nazionale"></div>
+
+    <!-- TRACCIATO VETTORIALE PRECISO (CENTRA ESATTAMENTE OGNI ICONA DA 1 A 8) -->
+    <svg class="wire-svg-canvas" viewBox="0 0 1000 5200" preserveAspectRatio="none">
+      <path d="M 40,100 C 40,440 960,440 960,780 C 960,1140 40,1140 40,1500 C 40,1870 960,1870 960,2240 C 960,2630 40,2630 40,3020 C 40,3410 960,3410 960,3800 C 960,4130 40,4130 40,4470 C 40,4780 960,4780 960,5100" class="wire-tube-bg" />
+      <path d="M 40,100 C 40,440 960,440 960,780 C 960,1140 40,1140 40,1500 C 40,1870 960,1870 960,2240 C 960,2630 40,2630 40,3020 C 40,3410 960,3410 960,3800 C 960,4130 40,4130 40,4470 C 40,4780 960,4780 960,5100" id="flowing-copper-wire" class="wire-copper-active" />
+    </svg>
+  </div>
+
+  <!-- SERVIZI (IMMAGINI DA /public/servizi/) -->
+  <section class="section-container" id="servizi">
+    <div class="section-head">
+      <h3>I Nostri <span class="electric-spark">Servizi Specializzati</span></h3>
+      <p>Passa con il mouse sulle sezioni per scoprire i dettagli dei nostri interventi</p>
+    </div>
+
+    <div class="services-grid">
+      <!-- 1. Domotica -->
+      <div class="service-card gsap-card">
+        <img src="/servizi/domotica.jpg" class="service-img" alt="Impianti elettrici civili e domotica" />
+        <div class="service-overlay">
+          <span class="service-tag">Civili & Domotica</span>
+          <h4 class="service-title">Impianti Elettrici Civili e Domotica</h4>
+          <p class="service-desc">Soluzioni sicure e affidabili per abitazioni, ville e condomini. Progettiamo sistemi integrati con domotica smart, illuminazione e gestione dei consumi.</p>
+        </div>
+      </div>
+
+      <!-- 2. Industriale -->
+      <div class="service-card gsap-card">
+        <img src="/servizi/industriale.jpg" class="service-img" alt="Impianti elettrici industriali" />
+        <div class="service-overlay">
+          <span class="service-tag">Alta Potenza</span>
+          <h4 class="service-title">Impianti Elettrici Industriali</h4>
+          <p class="service-desc">Energia affidabile per aziende, capannoni e stabilimenti produttivi. Quadri di distribuzione e linee di potenza per garantire continuità operativa.</p>
+        </div>
+      </div>
+
+      <!-- 3. Fotovoltaico -->
+      <div class="service-card gsap-card">
+        <img src="/servizi/fotovoltaico.jpg" class="service-img" alt="Fotovoltaico e sistemi di accumulo" />
+        <div class="service-overlay">
+          <span class="service-tag">Rinnovabili</span>
+          <h4 class="service-title">Impianti Fotovoltaici su Misura</h4>
+          <p class="service-desc">Produci la tua energia e dipendi meno dai costi energetici. Ci occupiamo di analisi, pratiche, installazione, accumulo e colonnine di ricarica.</p>
+        </div>
+      </div>
+
+      <!-- 4. Antifurto -->
+      <div class="service-card gsap-card">
+        <img src="/servizi/antifurto.jpg" class="service-img" alt="Sistemi di sicurezza e allarmi" />
+        <div class="service-overlay">
+          <span class="service-tag">Sicurezza</span>
+          <h4 class="service-title">Sistemi di Sicurezza e Allarmi</h4>
+          <p class="service-desc">Proteggere ciò che conta. Installiamo antifurto, videosorveglianza IP e impianti antincendio valutando il livello di protezione richiesto.</p>
+        </div>
+      </div>
+
+      <!-- 5. Climatizzazione -->
+      <div class="service-card gsap-card">
+        <img src="/servizi/climatizzazione.jpg" class="service-img" alt="Impianti di Condizionamento e Climatizzazione" />
+        <div class="service-overlay">
+          <span class="service-tag">Tecnologia & Comfort</span>
+          <h4 class="service-title">Impianti di Condizionamento, Illuminazione e Reti Dati</h4>
+          <p class="service-desc">Sistemi di climatizzazione ed impianti di condizionamento ad alta efficienza con split a parete e unità esterne, illuminazione moderna e cablaggi strutturati.</p>
+        </div>
+      </div>
+
+      <!-- 6. Idroelettrico & Rinnovabili -->
+      <div class="service-card gsap-card">
+        <img src="/servizi/idroelettrico.jpg" class="service-img" alt="Energie rinnovabili idroelettrico ed eolico" />
+        <div class="service-overlay">
+          <span class="service-tag">Green Future</span>
+          <h4 class="service-title">Energie Rinnovabili: Idroelettrico ed Eolico</h4>
+          <p class="service-desc">Sviluppo e progettazione di sistemi alimentati da fonti rinnovabili come micro-idroelettrico e minieolico per un'autonomia sostenibile.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PERCHÉ SCEGLIERE EOS -->
+  <section class="section-container" id="perche-eos">
+    <div class="streamlined-box gsap-reveal">
+      <div class="section-head" style="margin-bottom:30px;">
+        <h3>Perché Scegliere <span class="electric-spark">EOS Impianti</span></h3>
+        <p>Un unico referente per trasformare le tue esigenze in soluzioni affidabili e durature</p>
+      </div>
+
+      <div class="features-inline-grid">
+        <div>
+          <div class="feature-item-num">20+</div>
+          <strong style="color:var(--text-heading);display:block;margin-bottom:4px;">Anni di esperienza</strong>
+          <span style="font-size:0.85rem;">Competenza consolidata nel settore civile e industriale.</span>
+        </div>
+        <div>
+          <div class="feature-item-num">100%</div>
+          <strong style="color:var(--text-heading);display:block;margin-bottom:4px;">Su Misura</strong>
+          <span style="font-size:0.85rem;">Progetti nati dall'analisi dei consumi reali.</span>
+        </div>
+        <div>
+          <div class="feature-item-num">1</div>
+          <strong style="color:var(--text-heading);display:block;margin-bottom:4px;">Unico Referente</strong>
+          <span style="font-size:0.85rem;">Dalla prima consulenza alla manutenzione nel tempo.</span>
+        </div>
+        <div>
+          <div class="feature-item-num">📍</div>
+          <strong style="color:var(--text-heading);display:block;margin-bottom:4px;">Radicamento & Operatività</strong>
+          <span style="font-size:0.85rem;">Solido radicamento tra Alessandria e Genova, e non solo con operatività su tutto il territorio.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOTOWALL PULITO A MOSAICO -->
+  <section class="section-container" id="fotogallery">
+    <div class="section-head">
+      <h3>I Nostri <span class="electric-spark">Lavori Realizzati</span></h3>
+      <p>Clicca su un'immagine per ingrandire la galleria ad alta risoluzione</p>
+    </div>
+
+    <div class="fotowall-grid">
+      <div class="fotowall-item wide gsap-card" onclick="openGalleryLightbox(0)">
+        <img src="/lavori/lavoro1.jpg" alt="Lavoro 1" onerror="this.src='/lavori/lavoro1.jpg'" />
+      </div>
+
+      <div class="fotowall-item tall gsap-card" onclick="openGalleryLightbox(1)">
+        <img src="/lavori/lavoro2.jpg" alt="Lavoro 2" onerror="this.src='/lavori/lavoro2.jpg'" />
+      </div>
+
+      <div class="fotowall-item gsap-card" onclick="openGalleryLightbox(2)">
+        <img src="/lavori/lavoro3.jpg" alt="Lavoro 3" onerror="this.src='/lavori/lavoro3.jpg'" />
+      </div>
+
+      <div class="fotowall-item gsap-card" onclick="openGalleryLightbox(3)">
+        <img src="/lavori/lavoro4.jpg" alt="Lavoro 4" onerror="this.src='/lavori/lavoro4.jpg'" />
+      </div>
+
+      <div class="fotowall-item wide gsap-card" onclick="openGalleryLightbox(4)">
+        <img src="/lavori/lavoro5.jpg" alt="Lavoro 5" onerror="this.src='/lavori/lavoro5.jpg'" />
+      </div>
+    </div>
+  </section>
+
+  <!-- LIGHTBOX FOTOGALLERY -->
+  <div class="gallery-lightbox-backdrop" id="gallery-lightbox" onclick="closeGalleryLightbox()">
+    <button class="close-modal" onclick="closeGalleryLightbox()">&times;</button>
+    <div class="lightbox-arrow lightbox-prev" onclick="event.stopPropagation(); changeLightboxImage(-1)">❮</div>
+    <div class="lightbox-arrow lightbox-next" onclick="event.stopPropagation(); changeLightboxImage(1)">❯</div>
+    <div class="gallery-lightbox-card" onclick="event.stopPropagation()">
+      <img id="lightbox-current-img" class="gallery-lightbox-img" src="" alt="Galleria Foto" />
+    </div>
+  </div>
+
+  <!-- COMPONENTE AUTONOMO CALCOLATORE SOLARE -->
+  <section class="section-container" id="calcolatore">
+    <div style="max-width:900px;margin:0 auto;text-align:center;background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:40px 24px;">
+      <h4 style="font-size:1.55rem;font-weight:800;margin-bottom:10px;">Ottimizzatore Fotovoltaico &amp; Accumulo EOSolar</h4>
+      <p style="font-weight:600;color:#1A1A1A;margin-bottom:10px;">Calcola il dimensionamento ideale (kWp + Batteria) sui tuoi consumi reali.</p>
+      <p style="font-size:.92rem;margin:0 auto 18px;max-width:720px;">Inserisci i tuoi consumi energetici e scopri la stima precisa della combinazione ottimale di pannelli e accumulo che massimizza il risparmio e il rientro dell'investimento a 25 anni.</p>
+      <button class="btn-primary" onclick="openLeadModal()">🔓 Accedi al Calcolatore Fotovoltaico</button>
+    </div>
+  </section>
+
+  <!-- LAVORA CON NOI -->
+  <section class="section-container" id="lavora-con-noi">
+    <div class="careers-box gsap-reveal">
+      <div class="careers-info">
+        <span class="badge-hero" style="background:rgba(0, 68, 189, 0.08);color:var(--logo-blue);border-color:rgba(0, 68, 189, 0.2);padding:4px 12px;border-radius:99px;font-size:0.75rem;font-weight:700;display:inline-block;margin-bottom:12px;">Unisciti al Nostro Team</span>
+        <h4>Lavora con Noi</h4>
+        <p>Siamo alla ricerca di <strong>Tecnici Elettricisti Specializzati</strong> da inserire nel nostro organico per la realizzazione di impianti civili, industriali e fotovoltaici.</p>
+        <ul class="careers-list">
+          <li><span>✓</span> Requisiti: Abilitazione tecnica / Esperienza nel settore</li>
+          <li><span>✓</span> Lettura schemi elettrici e cablaggi quadri</li>
+          <li><span>✓</span> Patente B e predisposizione al lavoro di squadra</li>
+          <li><span>✓</span> <strong>Sede di lavoro principale:</strong> Provincia di Alessandria / Genova</li>
+        </ul>
+      </div>
+
+      <div>
+        <form name="candidatura-tecnici" method="POST" data-netlify="true" enctype="multipart/form-data" class="form-style">
+          <div>
+            <label>Nome e Cognome *</label>
+            <input type="text" name="nome" required placeholder="Il tuo nome">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div>
+              <label>Email *</label>
+              <input type="email" name="email" required placeholder="email@dominio.it">
+            </div>
+            <div>
+              <label>Telefono *</label>
+              <input type="tel" name="telefono" required placeholder="333 1234567">
+            </div>
+          </div>
+          <div>
+            <label>Carica il tuo Curriculum (PDF / DOC) *</label>
+            <input type="file" name="curriculum" accept=".pdf,.doc,.docx" required>
+          </div>
+          <div>
+            <label>Breve Lettera di Presentazione</label>
+            <textarea name="lettera" rows="3" placeholder="Raccontaci brevemente la tua esperienza lavorativa..."></textarea>
+          </div>
+          <button type="submit" class="btn-primary" style="width:100%;">Invia Candidatura</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTATTI UFFICIALI -->
+  <section class="section-container" id="contatti">
+    <div class="section-head">
+      <h3>Hai un progetto in mente?</h3>
+      <p>Raccontaci le tue esigenze. EOS Impianti è al tuo fianco per ogni soluzione elettrica e tecnologica.</p>
+    </div>
+
+    <div class="contact-wrapper gsap-reveal">
+      <div>
+        <h4 style="font-size:1.4rem;font-weight:800;margin-bottom:20px;">Informazioni di Contatto</h4>
+        
+        <div class="contact-item">
+          <div class="contact-icon">📍</div>
+          <div class="contact-detail">
+            <label>Sede Operativa & Legale</label>
+            <p>EOS IMPIANTI s.n.c.<br>Loc. Fornace 2, 15060 Vignole Borbera (AL)</p>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-icon">📞</div>
+          <div class="contact-detail">
+            <label>Telefono</label>
+            <a href="tel:+390143677895">+39 0143 677895</a>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-icon">✉️</div>
+          <div class="contact-detail">
+            <label>Email Ufficiale</label>
+            <a href="mailto:info@eosimpianti.it">info@eosimpianti.it</a>
+          </div>
+        </div>
+
+        <div class="map-container">
+          <div class="map-iframe" style="display:grid;place-items:center;background:#E2E8F0;color:#475569;font-size:.9rem;">Mappa disattivata nel lab (iframe Google = terza parte, richiede consenso)</div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;justify-content:space-between;">
+        <h4 style="font-size:1.4rem;font-weight:800;margin-bottom:20px;">Richiedi una Consulenza</h4>
+        <form name="contatti-ufficiali" method="POST" data-netlify="true" class="form-style" style="flex:1;display:flex;flex-direction:column;justify-content:space-between;">
+          <div>
+            <label>Nome e Cognome *</label>
+            <input type="text" name="nome" required placeholder="Il tuo nome">
+          </div>
+          <div>
+            <label>Email *</label>
+            <input type="email" name="email" required placeholder="la-tua-email@dominio.it">
+          </div>
+          <div>
+            <label>Messaggio</label>
+            <textarea name="messaggio" rows="4" placeholder="Descrivi il tuo progetto o la tua richiesta..."></textarea>
+          </div>
+          <button type="submit" class="btn-primary" style="width:100%;margin-top:10px;">Invia Richiesta</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODALE LEAD CALCOLATORE NETLIFY FORM -->
+  <div class="modal-backdrop" id="lead-modal">
+    <div class="modal-card">
+      <button class="close-modal" onclick="closeLeadModal()">&times;</button>
+      <h4>Accedi al Calcolatore Fotovoltaico</h4>
+      <p>Inserisci la tua email per sbloccare la simulazione completa.</p>
+      
+      <form id="lead-form-gate" name="lead-calcolatore-fotovoltaico" method="POST" data-netlify="true" class="form-style" onsubmit="handleLeadSubmit(event)">
+        <input type="hidden" name="form-name" value="lead-calcolatore-fotovoltaico" />
+        <div>
+          <label>Indirizzo Email *</label>
+          <input type="email" id="user-email-input" name="email" required placeholder="esempio@email.it">
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%;margin-top:10px;">
+          Sblocca Calcolatore ➔
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODALE LOGO -->
+  <div class="modal-backdrop" id="logo-modal" onclick="closeLogoModal()">
+    <div class="modal-logo-view" onclick="event.stopPropagation()">
+      <button class="close-modal" onclick="closeLogoModal()">&times;</button>
+      <img src="/logo.png" alt="Logo EOS Impianti s.n.c." />
+    </div>
+  </div>
+
+  <!-- BANNER COOKIE -->
+  <div class="cookie-banner" id="cookie-banner">
+    <div class="cookie-text">
+      Questo sito utilizza cookie tecnici e analitici necessari al funzionamento delle funzionalità avanzate (come il calcolatore solare). Proseguendo la navigazione o cliccando su "Accetta Tutti", acconsenti all'uso dei cookie.
+    </div>
+    <div class="cookie-btns">
+      <button class="btn-cookie-decline" onclick="acceptCookies(false)">Solo Tecnici</button>
+      <button class="btn-cookie-accept" onclick="acceptCookies(true)">Accetta Tutti</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+      <div>
+        <img src="/logo.png" alt="EOS Impianti Logo" class="footer-logo" onerror="this.style.display='none'" />
+        <h5 style="color:white;font-size:1.1rem;font-weight:800;font-family:var(--font-heading);">EOS IMPIANTI s.n.c.</h5>
+        <p>Progettazione e installazione impianti elettrici e fotovoltaici</p>
+      </div>
+      <div>
+        <p>Loc. Fornace 2, 15060 Vignole Borbera (AL) · P.IVA: 02164950061</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 EOS IMPIANTI s.n.c. Tutti i diritti riservati.</p>
+      <p style="font-size:0.75rem;"><a href="#contatti" style="color:#A0AEC0;text-decoration:underline;">Privacy Policy</a> · <a href="#contatti" style="color:#A0AEC0;text-decoration:underline;">Cookie Policy</a></p>
+    </div>
+  </footer>
+
+  <!-- GSAP & SCRIPT ENGINE INTEGRATO -->
+  <script is:inline>
+    window.addEventListener('scroll', function() {
+      const header = document.getElementById('header');
+      if (window.scrollY > 50) { header.classList.add('scrolled'); } 
+      else { header.classList.remove('scrolled'); }
+    });
+
+    // INIEZIONE AUTOMATICA DEI FILE SVG DA /public/icons/
+    async function loadInlineSVGs() {
+      const elements = document.querySelectorAll('.wire-element[data-src]');
+      for (const el of elements) {
+        const src = el.getAttribute('data-src');
+        try {
+          const res = await fetch(src);
+          if (res.ok) {
+            const svgText = await res.text();
+            el.innerHTML = svgText;
+          }
+        } catch (e) {
+          console.warn('Errore caricamento icona SVG:', src);
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async function() {
+      await loadInlineSVGs();
+
+      if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 1. SLIDESHOW ORIZZONTALE IN HERO SU SCROLL VERTICALE
+        const sliderTrack = document.getElementById('hero-slider-track');
+        if (sliderTrack && window.innerWidth > 768) {
+          gsap.to(sliderTrack, {
+            xPercent: -80,
+            ease: "none",
+            scrollTrigger: {
+              trigger: "#hero-slider-section",
+              pin: true,
+              scrub: 0.6,
+              start: "top top",
+              end: "+=2200",
+              anticipatePin: 1
+            }
+          });
+        }
+
+        // 2. FLUSSO ELETTRICO CONTINUO DEL CAVO SOTTILE
+        const copperWire = document.getElementById('flowing-copper-wire');
+        if (copperWire) {
+          const wireLength = copperWire.getTotalLength ? copperWire.getTotalLength() : 12000;
+          gsap.set(copperWire, { strokeDasharray: wireLength, strokeDashoffset: wireLength });
+
+          gsap.to(copperWire, {
+            strokeDashoffset: 0,
+            ease: "none",
+            scrollTrigger: {
+              trigger: "#global-wire-track",
+              start: "top 80%",
+              end: "bottom bottom",
+              scrub: 0.4
+            }
+          });
+        }
+
+        // 3. ACCENSIONE PROGRESSIVA DEGLI 8 NODI HARDWARE
+        const nodes = [
+          { id: '#node-switch', threshold: 'top 65%' },
+          { id: '#node-panel', threshold: 'top 65%' },
+          { id: '#node-meter', threshold: 'top 65%' },
+          { id: '#node-inverter', threshold: 'top 65%' },
+          { id: '#node-solar', threshold: 'top 65%' },
+          { id: '#node-battery', threshold: 'top 65%' },
+          { id: '#node-traliccio', threshold: 'top 65%' }
+        ];
+
+        nodes.forEach(n => {
+          const el = document.querySelector(n.id);
+          if (el) {
+            ScrollTrigger.create({
+              trigger: el,
+              start: n.threshold,
+              onEnter: () => el.classList.add('active-element'),
+              onLeaveBack: () => el.classList.remove('active-element')
+            });
+          }
+        });
+
+        // 4. IMPULSO DI LUCE SUL TESTO
+        const sparkTexts = document.querySelectorAll('.electric-spark');
+        sparkTexts.forEach((el) => {
+          ScrollTrigger.create({
+            trigger: el,
+            start: "top 85%",
+            onEnter: () => {
+              el.classList.remove('active');
+              void el.offsetWidth;
+              el.classList.add('active');
+            }
+          });
+        });
+
+        // 5. INGRESSO SCHEDE SERVIZI
+        gsap.utils.toArray('.gsap-card').forEach((card, index) => {
+          gsap.from(card, {
+            y: 35,
+            opacity: 0,
+            duration: 0.7,
+            delay: (index % 3) * 0.1,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: card,
+              start: "top 90%",
+              toggleActions: "play none none none"
+            }
+          });
+        });
+
+        ScrollTrigger.refresh();
+      }
+
+      // COOKIE BANNER
+      const consent = localStorage.getItem('eos_cookie_consent');
+      if (!consent) {
+        setTimeout(() => {
+          const banner = document.getElementById('cookie-banner');
+          if (banner) banner.classList.add('show');
+        }, 1000);
+      }
+    });
+
+    window.acceptCookies = function(all) {
+      localStorage.setItem('eos_cookie_consent', all ? 'accepted_all' : 'accepted_necessary');
+      const banner = document.getElementById('cookie-banner');
+      if (banner) banner.classList.remove('show');
+    };
+
+    // MODALI
+    window.openLeadModal = function() {
+      const modal = document.getElementById('lead-modal');
+      if (modal) modal.classList.add('open');
+    };
+
+    window.closeLeadModal = function() {
+      const modal = document.getElementById('lead-modal');
+      if (modal) modal.classList.remove('open');
+    };
+
+    window.openLogoModal = function() {
+      const modal = document.getElementById('logo-modal');
+      if (modal) modal.classList.add('open');
+    };
+
+    window.closeLogoModal = function() {
+      const modal = document.getElementById('logo-modal');
+      if (modal) modal.classList.remove('open');
+    };
+
+    // GESTIONE SBLOCCO CALCOLATORE CON FORM NETLIFY
+    window.handleLeadSubmit = function(event) {
+      event.preventDefault();
+      const emailInput = document.getElementById('user-email-input');
+      
+      if(!emailInput.value || !emailInput.value.includes('@')) { 
+        alert('Inserisci un indirizzo email valido.'); 
+        return; 
+      }
+
+      const form = event.target;
+      const formData = new FormData(form);
+
+      fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(formData).toString()
+      })
+      .then(() => {
+        window.closeLeadModal();
+        const dash = document.getElementById('calc-dashboard'); 
+        if (dash) {
+          dash.classList.add('active'); 
+          dash.scrollIntoView({ behavior: 'smooth' });
+        }
+        if(typeof runAllEOSolar === 'function') runAllEOSolar();
+      })
+      .catch((error) => {
+        console.error("Errore invio lead:", error);
+        window.closeLeadModal();
+        const dash = document.getElementById('calc-dashboard'); 
+        if (dash) {
+          dash.classList.add('active'); 
+          dash.scrollIntoView({ behavior: 'smooth' });
+        }
+        if(typeof runAllEOSolar === 'function') runAllEOSolar();
+      });
+    };
+
+    const galleryItems = [
+      { src: '/lavori/lavoro1.jpg' },
+      { src: '/lavori/lavoro2.jpg' },
+      { src: '/lavori/lavoro3.jpg' },
+      { src: '/lavori/lavoro4.jpg' },
+      { src: '/lavori/lavoro5.jpg' }
+    ];
+
+    let currentGalleryIndex = 0;
+    window.openGalleryLightbox = function(index) { currentGalleryIndex = index; updateLightboxContent(); document.getElementById('gallery-lightbox').classList.add('open'); };
+    window.closeGalleryLightbox = function() { document.getElementById('gallery-lightbox').classList.remove('open'); };
+    window.changeLightboxImage = function(direction) {
+      currentGalleryIndex += direction;
+      if (currentGalleryIndex < 0) currentGalleryIndex = galleryItems.length - 1;
+      if (currentGalleryIndex >= galleryItems.length) currentGalleryIndex = 0;
+      updateLightboxContent();
+    };
+    function updateLightboxContent() {
+      const item = galleryItems[currentGalleryIndex];
+      const imgEl = document.getElementById('lightbox-current-img');
+      if (imgEl) {
+        imgEl.src = item.src;
+        imgEl.onerror = function() { this.src = item.src.replace('.jpeg', '.jpg'); };
+      }
+    }
+  </script>
+
+  <script>
+    import { gsap } from 'gsap';
+    import { ScrollTrigger } from 'gsap/ScrollTrigger';
+    // Il prototipo si aspetta i globali del CDN: li esponiamo prima di DOMContentLoaded.
+    Object.assign(window, { gsap, ScrollTrigger });
+    document.addEventListener(
+      'submit',
+      (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        alert('Lab: nella ricostruzione del prototipo i moduli non inviano dati.');
+      },
+      true
+    );
+  </script>
+  <a href="/lab" style="position:fixed;left:12px;bottom:12px;z-index:99999;background:#0b1020;color:#fff;padding:8px 14px;border-radius:8px;font:600 13px system-ui;text-decoration:none;">← Lab · prototipo attuale</a>
+</body>
+</html>

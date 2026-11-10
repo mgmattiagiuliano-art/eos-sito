@@ -1,0 +1,179 @@
+---
+/**
+ * Barra fissa del laboratorio: nome della direzione, 3 righe di logica (a tendina),
+ * interruttore del cavo, ritorno all'indice. Stile neutro, volutamente estraneo alle varianti.
+ */
+interface Props {
+  code: string;
+  direction: string;
+  logic: [string, string, string];
+}
+const { code, direction, logic } = Astro.props;
+---
+
+<div class="labbar" role="region" aria-label="Barra del laboratorio di design">
+  <div class="labbar-row">
+    <a class="labbar-back" href="/lab" aria-label="Torna all'indice del laboratorio">← Lab</a>
+    <p class="labbar-name"><span class="labbar-code">{code}</span> {direction}</p>
+    <button
+      class="labbar-btn"
+      type="button"
+      aria-expanded="false"
+      aria-controls="labbar-logic"
+      data-labbar-toggle
+    >
+      Logica <span aria-hidden="true">▾</span>
+    </button>
+    <button class="labbar-btn labbar-wire" type="button" aria-pressed="false" data-labbar-wire>
+      <span class="labbar-dot" aria-hidden="true"></span> Cavo
+    </button>
+  </div>
+  <ol class="labbar-logic" id="labbar-logic" hidden>
+    {logic.map((line) => <li>{line}</li>)}
+  </ol>
+</div>
+
+<style>
+  .labbar {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 1000;
+    font: 500 13px/1.45 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: #e2e8f0;
+    background: #0b1020;
+    border-bottom: 1px solid #263045;
+  }
+  .labbar-row {
+    height: 44px; /* fisso: --labbar-h viene misurato da qui, non deve dipenderne */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+  }
+  .labbar-back {
+    color: #93c5fd;
+    text-decoration: none;
+    white-space: nowrap;
+    padding: 6px 4px;
+  }
+  .labbar-back:hover {
+    text-decoration: underline;
+  }
+  .labbar-name {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
+    color: #fff;
+  }
+  .labbar-code {
+    display: inline-block;
+    padding: 1px 7px;
+    margin-right: 4px;
+    border-radius: 4px;
+    background: #e52320;
+    color: #fff;
+    font-weight: 700;
+  }
+  .labbar-btn {
+    font: inherit;
+    color: #e2e8f0;
+    background: #182033;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 5px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .labbar-btn:hover {
+    border-color: #64748b;
+  }
+  .labbar-btn:focus-visible,
+  .labbar-back:focus-visible {
+    outline: 2px solid #93c5fd;
+    outline-offset: 2px;
+  }
+  .labbar-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #475569;
+  }
+  .labbar-wire[aria-pressed='true'] .labbar-dot {
+    background: #facc15;
+    box-shadow: 0 0 8px #facc15;
+  }
+  .labbar-logic {
+    margin: 0;
+    padding: 10px 16px 14px 34px;
+    border-top: 1px solid #263045;
+    max-width: 920px;
+    color: #cbd5e1;
+  }
+  .labbar-logic li + li {
+    margin-top: 4px;
+  }
+  .labbar-logic li::marker {
+    color: #93c5fd;
+  }
+</style>
+
+<script>
+  const bar = document.querySelector<HTMLElement>('.labbar');
+  const toggle = bar?.querySelector<HTMLButtonElement>('[data-labbar-toggle]');
+  const logic = bar?.querySelector<HTMLElement>('.labbar-logic');
+  const wireBtn = bar?.querySelector<HTMLButtonElement>('[data-labbar-wire]');
+
+  const params = new URLSearchParams(location.search);
+  const embedded = params.has('embed') || window.self !== window.top;
+
+  function setLogic(open: boolean) {
+    if (!toggle || !logic) return;
+    logic.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+  }
+  // La pagina si sposta sotto la barra, anche quando la logica è aperta: gli header sticky restano visibili.
+  if (bar) {
+    const syncHeight = () =>
+      document.documentElement.style.setProperty('--labbar-h', `${bar.offsetHeight}px`);
+    new ResizeObserver(syncHeight).observe(bar);
+    syncHeight();
+  }
+
+  // Aperta di default su desktop, chiusa su mobile e dentro l'iframe dell'indice.
+  setLogic(!embedded && window.matchMedia('(min-width: 900px)').matches);
+  toggle?.addEventListener('click', () => setLogic(logic?.hidden ?? false));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && logic && !logic.hidden) setLogic(false);
+  });
+
+  function readWire(): boolean {
+    if (params.get('wire') === '1') return true;
+    if (embedded) return false; // nell'iframe dell'indice decide solo il parametro
+    try {
+      return localStorage.getItem('eos-lab-wire') === 'on';
+    } catch {
+      return false;
+    }
+  }
+  function setWire(on: boolean, persist = true) {
+    document.documentElement.dataset.wire = on ? 'on' : 'off';
+    wireBtn?.setAttribute('aria-pressed', String(on));
+    if (persist) {
+      try {
+        localStorage.setItem('eos-lab-wire', on ? 'on' : 'off');
+      } catch {
+        /* storage non disponibile: nessun problema */
+      }
+    }
+    window.dispatchEvent(new CustomEvent('labwire:toggle', { detail: on }));
+  }
+  setWire(readWire(), false);
+  wireBtn?.addEventListener('click', () => setWire(document.documentElement.dataset.wire !== 'on'));
+</script>

@@ -1,0 +1,992 @@
+---
+import '@fontsource-variable/fraunces/full.css';
+import '@fontsource-variable/fraunces/full-italic.css';
+import '@fontsource-variable/source-sans-3';
+import '../../components/lab/tokens/b.css';
+import LabShell from '../../components/lab/LabShell.astro';
+import { company, hero, services, why, calc, contact, nav } from '../../components/lab/content';
+
+// Curve di livello (decorative) generate al build: niente immagini esterne.
+const contours = Array.from({ length: 11 }, (_, i) => {
+  const y0 = 40 + i * 52;
+  let d = '';
+  for (let x = -40; x <= 1480; x += 40) {
+    const y = y0 + Math.sin(x / 230 + i * 0.75) * 22 + Math.sin(x / 97 + i * 1.3) * 7;
+    d += `${x === -40 ? 'M' : 'L'}${x},${y.toFixed(1)} `;
+  }
+  return d;
+});
+
+// Mappa schematica: proiezione lineare lon 8.5–9.1, lat 44.95–44.35.
+const px = (lng: number) => 30 + ((lng - 8.5) / 0.6) * 240;
+const py = (lat: number) => 30 + ((44.95 - lat) / 0.6) * 340;
+const places = [
+  { name: 'Alessandria', x: px(8.615), y: py(44.913), main: false },
+  { name: 'Vignole Borbera', x: px(company.geo.lng), y: py(company.geo.lat), main: true },
+  { name: 'Genova', x: px(8.934), y: py(44.407), main: false },
+];
+const [al, vb, ge] = places;
+const route = `M${al.x},${al.y} C${al.x + 60},${al.y + 30} ${vb.x - 50},${vb.y - 50} ${vb.x},${vb.y} S${ge.x - 40},${ge.y - 70} ${ge.x},${ge.y}`;
+const lavori = [1, 2, 3, 4, 5].map((n) => `/lavori/lavoro${n}.jpg`);
+---
+
+<LabShell
+  title="B · Val Borbera"
+  code="B"
+  direction="Val Borbera — calda e territoriale"
+  wire="curve"
+  themeColor="#f6f0e6"
+  logic={[
+    "L'impresa di fiducia della porta accanto: carta calda, foto grandi, la geografia tra Alessandria e Genova come prova di radicamento.",
+    'Fraunces (serif morbido) per i titoli, Source Sans 3 per il testo, angoli arrotondati e ombre calde. Il rosso diventa un corsivo, il blu resta per link e dettagli.',
+    'Motion lento e organico: curve di livello che si disegnano, foto in leggera parallasse, il sole del calcolatore che sorge. Il cavo, se attivo, è un sentiero curvo.',
+  ]}
+>
+  <div class="vb">
+    <header class="b-header">
+      <div class="b-container b-header-in">
+        <a href="#top" class="b-logo"><img src="/logo.png" alt="EOS Impianti s.n.c." width="970" height="257" /></a>
+        <nav class="b-nav" aria-label="Sezioni">
+          {nav.map((n) => <a href={n.href}>{n.label}</a>)}
+        </nav>
+        <a class="b-btn b-btn-primary b-btn-sm" href="#contatti">Sopralluogo</a>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- Slide 1 — Motto -->
+      <section class="b-hero1" data-wire-node data-wire-offset="60" aria-labelledby="b-motto">
+        <svg class="b-contours" viewBox="0 0 1440 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          {contours.map((d) => <path d={d} />)}
+        </svg>
+        <div class="b-container b-hero1-in">
+          <p class="b-kicker b-fade">Vignole Borbera · tra Alessandria e Genova</p>
+          <h1 id="b-motto" class="b-motto">
+            <span class="b-word">Qual</span> <span class="b-word">è</span>
+            <em><span class="b-word">l'energia</span> <span class="b-word">giusta</span></em>
+            <span class="b-word">per</span> <span class="b-word">te?</span>
+          </h1>
+          <a href="#risposta" class="b-scroll b-fade" aria-label="Scorri alla risposta">
+            <span aria-hidden="true"></span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Slide 2 — Risposta -->
+      <section class="b-section b-hero2" id="risposta" data-wire-node aria-labelledby="b-answer">
+        <div class="b-container b-hero2-in">
+          <div class="b-hero2-text">
+            <h2 id="b-answer" class="b-h2 b-fade">
+              {hero.answer.before}<em>{hero.answer.accent}</em>{hero.answer.after}
+            </h2>
+            <p class="b-lead b-fade">{hero.answer.text}</p>
+            <div class="b-actions b-fade">
+              <a class="b-btn b-btn-primary" href="#contatti">{hero.answer.ctaPrimary}</a>
+              <a class="b-btn b-btn-soft" href="#calcolatore">{hero.answer.ctaSecondary}</a>
+            </div>
+          </div>
+          <figure class="b-arch b-fade">
+            <div class="b-arch-img">
+              <img src="/servizi/fotovoltaico.jpg" alt="Impianto fotovoltaico su tetto" width="800" height="1000" data-parallax />
+            </div>
+            <figcaption>Fotovoltaico su misura, progettato sui consumi reali</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- Chi siamo + territorio -->
+      <section class="b-section b-place" data-wire-node aria-labelledby="b-place-title">
+        <div class="b-container b-place-in">
+          <div class="b-place-text">
+            <p class="b-kicker b-fade">{hero.about.kicker}</p>
+            <h2 id="b-place-title" class="b-h2 b-fade">{hero.about.title}</h2>
+            <p class="b-fade">{hero.about.text}</p>
+            <div class="b-quote b-fade">
+              <p class="b-kicker">{hero.philosophy.kicker}</p>
+              <p class="b-quote-title">{hero.philosophy.title}</p>
+              <p>{hero.philosophy.text}</p>
+            </div>
+          </div>
+          <figure class="b-map b-fade">
+            <svg viewBox="0 0 300 400" role="img" aria-labelledby="b-map-title">
+              <title id="b-map-title">Mappa schematica: EOS Impianti a Vignole Borbera, tra Alessandria e Genova</title>
+              <g class="b-map-relief" aria-hidden="true">
+                <path d="M20 150 C 90 120, 160 190, 280 140" />
+                <path d="M20 190 C 100 160, 170 230, 280 180" />
+                <path d="M20 230 C 110 200, 180 270, 280 220" />
+                <path d="M20 270 C 120 240, 190 300, 280 260" />
+              </g>
+              <path class="b-map-sea" d="M0 352 C 60 340, 120 362, 180 346 S 260 352, 300 340 L300 400 L0 400 Z" />
+              <text x="60" y="385" class="b-map-sealabel">Mar Ligure</text>
+              <path class="b-map-route" d={route} />
+              {
+                places.map((p) => (
+                  <g class={p.main ? 'b-pin b-pin-main' : 'b-pin'}>
+                    <circle cx={p.x} cy={p.y} r={p.main ? 9 : 5} />
+                    {p.main && <circle class="b-pin-halo" cx={p.x} cy={p.y} r="18" />}
+                    <text x={p.x + (p.main ? 16 : 10)} y={p.y + 5}>
+                      {p.name}
+                    </text>
+                  </g>
+                ))
+              }
+            </svg>
+            <figcaption>Radicati qui, attivi su tutto il territorio nazionale.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- Servizi -->
+      <section class="b-section b-services-wrap" id="servizi" data-wire-node aria-labelledby="b-services-title">
+        <div class="b-container">
+          <div class="b-head">
+            <p class="b-kicker b-fade">Cosa facciamo</p>
+            <h2 id="b-services-title" class="b-h2 b-fade">I nostri <em>servizi</em> specializzati</h2>
+          </div>
+          <ul class="b-services" role="list">
+            {
+              services.map((s) => (
+                <li class="b-card b-fade">
+                  <div class="b-card-img">
+                    <img src={s.img} alt={s.alt} loading="lazy" width="640" height="480" />
+                  </div>
+                  <div class="b-card-body">
+                    <span class="b-pill">{s.tag}</span>
+                    <h3 class="b-h3">{s.title}</h3>
+                    <p>{s.desc}</p>
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </section>
+
+      <!-- Perché EOS -->
+      <section class="b-section b-why" id="perche-eos" data-wire-node aria-labelledby="b-why-title">
+        <div class="b-container">
+          <div class="b-why-head">
+            <h2 id="b-why-title" class="b-h2 b-fade">Perché scegliere <em>EOS Impianti</em></h2>
+            <p class="b-fade">{why.subtitle}</p>
+          </div>
+          <ul class="b-why-grid" role="list">
+            {
+              why.items.map((it) => (
+                <li class="b-fade">
+                  <span class="b-why-num">{it.value}</span>
+                  <strong>{it.label}</strong>
+                  <span>{it.text}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <div class="b-strip" aria-label="Alcuni lavori realizzati">
+            {lavori.map((src, i) => <img src={src} alt={`Lavoro realizzato da EOS Impianti, foto ${i + 1}`} loading="lazy" width="600" height="450" />)}
+          </div>
+        </div>
+      </section>
+
+      <!-- Calcolatore -->
+      <section class="b-section" id="calcolatore" data-wire-node aria-labelledby="b-calc-title">
+        <div class="b-container">
+          <div class="b-calc b-fade">
+            <svg class="b-sun" viewBox="0 0 400 220" aria-hidden="true">
+              <g class="b-sun-rays">
+                {Array.from({ length: 13 }, (_, i) => {
+                  const a = Math.PI - (i * Math.PI) / 12;
+                  return (
+                    <line
+                      x1={200 + Math.cos(a) * 110}
+                      y1={210 - Math.sin(a) * 110}
+                      x2={200 + Math.cos(a) * 150}
+                      y2={210 - Math.sin(a) * 150}
+                    />
+                  );
+                })}
+              </g>
+              <circle class="b-sun-disc" cx="200" cy="210" r="90" />
+            </svg>
+            <div class="b-calc-text">
+              <p class="b-kicker">{calc.kicker}</p>
+              <h2 id="b-calc-title" class="b-h2">{calc.title}</h2>
+              <p class="b-lead">{calc.sub}</p>
+              <p>{calc.text}</p>
+              <ul class="b-outputs" role="list">
+                {calc.outputs.map((o) => <li>{o}</li>)}
+              </ul>
+              <p class="b-note">{calc.note}</p>
+              <button class="b-btn b-btn-primary" type="button" data-demo="Anteprima di design: il calcolatore EOSolar non è collegato nelle pagine /lab.">
+                {calc.cta}
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contatti -->
+      <section class="b-section b-contact" id="contatti" data-wire-node aria-labelledby="b-contact-title">
+        <div class="b-container b-contact-in">
+          <div>
+            <p class="b-kicker b-fade">Parliamone</p>
+            <h2 id="b-contact-title" class="b-h2 b-fade">{contact.title}</h2>
+            <p class="b-lead b-fade">{contact.text}</p>
+            <a class="b-phone b-fade" href={company.phoneHref}>{company.phone}</a>
+            <div class="b-address b-fade">
+              <p><strong>{company.legalName}</strong><br />{company.street}<br />{company.city}</p>
+              <p><a href={`mailto:${company.email}`}>{company.email}</a></p>
+              <p><a href={company.mapsHref} target="_blank" rel="noopener">Indicazioni stradali ↗</a></p>
+            </div>
+          </div>
+          <form class="b-form b-fade" data-demo-form aria-labelledby="b-form-title">
+            <h3 id="b-form-title" class="b-h3">{contact.formTitle}</h3>
+            <label class="b-field">
+              <span>Nome e cognome *</span>
+              <input name="nome" required autocomplete="name" />
+            </label>
+            <label class="b-field">
+              <span>Email *</span>
+              <input type="email" name="email" required autocomplete="email" />
+            </label>
+            <label class="b-field">
+              <span>Messaggio</span>
+              <textarea name="messaggio" rows="4" placeholder="Raccontaci casa, azienda o progetto…"></textarea>
+            </label>
+            <label class="b-check">
+              <input type="checkbox" required name="privacy" />
+              <span>Ho letto l'<a href="#privacy">informativa privacy</a> e acconsento al trattamento dei dati per ricevere risposta. *</span>
+            </label>
+            <button class="b-btn b-btn-primary b-btn-block" type="submit">{contact.submit}</button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="b-footer">
+      <div class="b-container b-footer-in">
+        <p class="b-footer-name">{company.legalName}</p>
+        <p>{company.street}, {company.city} · P.IVA {company.vat}</p>
+        <p>© 2026 Tutti i diritti riservati.</p>
+      </div>
+    </footer>
+  </div>
+</LabShell>
+
+<style is:global>
+  body {
+    background: var(--t-bg);
+    color: var(--t-text);
+    font-family: var(--t-font-body);
+    font-size: var(--t-fs-body);
+    line-height: var(--t-lh-body);
+  }
+  .vb :where(h1, h2, h3) {
+    font-family: var(--t-font-display);
+    font-weight: var(--t-weight-display);
+    color: var(--t-ink);
+    margin: 0;
+    font-variation-settings: 'SOFT' 100, 'WONK' 0;
+  }
+  .vb :where(h1, h2, h3) em {
+    font-style: italic;
+    color: var(--t-highlight);
+    font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  }
+  .vb p {
+    margin: 0 0 var(--t-space-3);
+  }
+  .vb a {
+    color: var(--t-link);
+    text-underline-offset: 3px;
+  }
+  .vb :focus-visible {
+    outline: 3px solid var(--t-focus);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  .b-container {
+    max-width: var(--t-container);
+    margin-inline: auto;
+    padding-inline: var(--t-gutter);
+    position: relative;
+    z-index: 1;
+  }
+  .b-section {
+    padding-block: var(--t-section-y);
+  }
+  .b-kicker {
+    font-size: var(--t-fs-label);
+    letter-spacing: var(--t-tracking-label);
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--t-muted);
+  }
+  .b-h2 {
+    font-size: var(--t-fs-h2);
+    line-height: 1.08;
+    letter-spacing: var(--t-tracking-display);
+    margin-bottom: var(--t-space-4) !important;
+  }
+  .b-h3 {
+    font-size: var(--t-fs-h3);
+    line-height: 1.25;
+    margin-bottom: var(--t-space-2) !important;
+  }
+  .b-lead {
+    font-size: clamp(1.125rem, 1.5vw, 1.3rem);
+    max-width: 56ch;
+  }
+
+  /* Header */
+  .b-header {
+    position: sticky;
+    top: var(--labbar-h);
+    z-index: 50;
+    background: rgba(246, 240, 230, 0.9);
+    backdrop-filter: blur(10px);
+  }
+  .b-header-in {
+    height: 72px;
+    display: flex;
+    align-items: center;
+    gap: var(--t-space-4);
+  }
+  .b-logo img {
+    height: 38px;
+    width: auto;
+  }
+  .b-nav {
+    display: none;
+    margin-left: auto;
+    gap: var(--t-space-4);
+  }
+  .vb .b-nav a {
+    color: var(--t-ink);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .vb .b-nav a:hover {
+    color: var(--t-highlight);
+  }
+  .b-header .b-btn {
+    margin-left: auto;
+  }
+  @media (min-width: 900px) {
+    .b-nav {
+      display: flex;
+    }
+    .b-header .b-btn {
+      margin-left: 0;
+    }
+  }
+
+  /* Bottoni */
+  .b-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50px;
+    padding: 12px 26px;
+    border-radius: var(--t-radius-pill);
+    border: 0;
+    font: 600 1rem/1.2 var(--t-font-body);
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.3s var(--t-ease), box-shadow 0.3s var(--t-ease), background 0.3s;
+  }
+  .vb .b-btn-primary {
+    background: var(--t-accent);
+    color: var(--t-on-accent);
+    box-shadow: 0 8px 20px rgba(229, 35, 32, 0.25);
+  }
+  .vb .b-btn-primary:hover {
+    background: var(--t-accent-hover);
+    transform: translateY(-2px);
+  }
+  .vb .b-btn-soft {
+    background: var(--t-surface-2);
+    color: var(--t-ink);
+  }
+  .vb .b-btn-soft:hover {
+    background: var(--t-line);
+    transform: translateY(-2px);
+  }
+  .b-btn-sm {
+    min-height: 42px;
+    padding: 8px 18px;
+    font-size: 0.95rem;
+  }
+  .b-btn-block {
+    width: 100%;
+  }
+  .b-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--t-space-3);
+    margin-top: var(--t-space-5);
+  }
+
+  /* Slide 1 */
+  .b-hero1 {
+    position: relative;
+    min-height: calc(100svh - var(--labbar-h) - 72px);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    text-align: center;
+    padding-block: var(--t-space-7);
+  }
+  .b-contours {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .b-contours path {
+    fill: none;
+    stroke: #b99f80;
+    stroke-width: 1;
+    opacity: 0.35;
+  }
+  .b-hero1-in {
+    display: grid;
+    justify-items: center;
+    gap: var(--t-space-4);
+  }
+  .b-motto {
+    font-size: var(--t-fs-hero);
+    line-height: var(--t-lh-tight);
+    letter-spacing: var(--t-tracking-display);
+    max-width: 14ch;
+    font-variation-settings: 'SOFT' 100, 'opsz' 144;
+  }
+  .b-motto em {
+    display: block;
+  }
+  .b-word {
+    display: inline-block;
+  }
+  .b-scroll {
+    width: 30px;
+    height: 48px;
+    border: 2px solid var(--t-line-strong);
+    border-radius: 999px;
+    display: grid;
+    justify-items: center;
+    padding-top: 8px;
+    margin-top: var(--t-space-4);
+  }
+  .b-scroll span {
+    width: 4px;
+    height: 10px;
+    border-radius: 4px;
+    background: var(--t-highlight);
+    animation: b-scroll 1.8s var(--t-ease) infinite;
+  }
+  @keyframes b-scroll {
+    0% { transform: translateY(0); opacity: 1; }
+    80% { transform: translateY(14px); opacity: 0; }
+    100% { opacity: 0; }
+  }
+
+  /* Slide 2 */
+  .b-hero2-in {
+    display: grid;
+    gap: var(--t-space-6);
+    align-items: center;
+  }
+  @media (min-width: 960px) {
+    .b-hero2-in {
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: var(--t-space-7);
+    }
+  }
+  .b-hero2 .b-h2 {
+    font-size: clamp(2rem, 4.6vw, 3.8rem);
+  }
+  .b-arch {
+    margin: 0;
+  }
+  .b-arch-img {
+    border-radius: 999px 999px var(--t-radius-l) var(--t-radius-l);
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    max-height: 640px;
+    box-shadow: var(--t-shadow-2);
+    background: var(--t-surface-2);
+  }
+  .b-arch-img img {
+    width: 100%;
+    height: 116%;
+    object-fit: cover;
+  }
+  .b-arch figcaption,
+  .b-map figcaption {
+    margin-top: var(--t-space-3);
+    font-size: var(--t-fs-small);
+    color: var(--t-muted);
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* Territorio */
+  .b-place {
+    background: var(--t-surface);
+    border-radius: var(--t-radius-l) var(--t-radius-l) 0 0;
+  }
+  .b-place-in {
+    display: grid;
+    gap: var(--t-space-6);
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .b-place-in {
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: var(--t-space-7);
+    }
+  }
+  .b-quote {
+    margin-top: var(--t-space-5);
+    padding: var(--t-space-4) var(--t-space-4) var(--t-space-3);
+    background: var(--t-bg);
+    border-radius: var(--t-radius-m);
+    border-left: 4px solid var(--t-accent);
+  }
+  .b-quote-title {
+    font-family: var(--t-font-display);
+    font-style: italic;
+    font-size: 1.5rem;
+    color: var(--t-ink);
+    line-height: 1.2;
+  }
+  .b-map {
+    margin: 0;
+    max-width: 380px;
+    justify-self: center;
+    width: 100%;
+  }
+  .b-map svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .b-map-relief path {
+    fill: none;
+    stroke: #c9b59b;
+    stroke-width: 1;
+    opacity: 0.7;
+  }
+  .b-map-sea {
+    fill: #dfe7ee;
+  }
+  .b-map-sealabel {
+    font: italic 400 12px var(--t-font-display);
+    fill: #5a6b7d;
+  }
+  .b-map-route {
+    fill: none;
+    stroke: var(--t-ink);
+    stroke-width: 2;
+    stroke-dasharray: 2 7;
+    stroke-linecap: round;
+  }
+  .b-pin circle {
+    fill: var(--t-ink);
+  }
+  .b-pin text {
+    font: 600 13px var(--t-font-body);
+    fill: var(--t-ink);
+  }
+  .b-pin-main circle {
+    fill: var(--t-accent);
+  }
+  .b-pin-main .b-pin-halo {
+    fill: none;
+    stroke: var(--t-accent);
+    stroke-width: 1.5;
+    opacity: 0.5;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: b-halo 2.4s ease-out infinite;
+  }
+  .b-pin-main text {
+    font-size: 15px;
+    font-weight: 700;
+  }
+  @keyframes b-halo {
+    0% { transform: scale(0.5); opacity: 0.7; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+
+  /* Servizi */
+  .b-services-wrap {
+    background: var(--t-surface);
+    padding-top: 0;
+  }
+  .b-head {
+    max-width: 760px;
+    margin-bottom: var(--t-space-6);
+  }
+  .b-services {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--t-space-4);
+  }
+  @media (min-width: 640px) {
+    .b-services {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1040px) {
+    .b-services {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--t-space-5);
+      padding-bottom: 48px;
+    }
+    .b-card:nth-child(3n + 2) {
+      transform: translateY(48px);
+    }
+  }
+  .b-card {
+    background: var(--t-bg);
+    border-radius: var(--t-radius-m);
+    overflow: hidden;
+    box-shadow: var(--t-shadow-1);
+    transition: box-shadow 0.4s var(--t-ease);
+  }
+  .b-card:hover {
+    box-shadow: var(--t-shadow-2);
+  }
+  .b-card-img {
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: var(--t-surface-2);
+  }
+  .b-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.2s var(--t-ease);
+  }
+  .b-card:hover .b-card-img img {
+    transform: scale(1.05);
+  }
+  .b-card-body {
+    padding: var(--t-space-4);
+  }
+  .b-card-body p {
+    margin: 0;
+    font-size: 1rem;
+  }
+  .b-pill {
+    display: inline-block;
+    margin-bottom: var(--t-space-3);
+    padding: 4px 12px;
+    border-radius: var(--t-radius-pill);
+    background: var(--t-surface);
+    border: 1px solid var(--t-line);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--t-muted);
+  }
+
+  /* Perché EOS */
+  .b-why {
+    background: var(--t-ink);
+    color: var(--t-on-dark-muted);
+  }
+  .vb .b-why h2 {
+    color: var(--t-on-dark);
+  }
+  .vb .b-why h2 em {
+    color: #ff8a7a;
+  }
+  .b-why-head {
+    max-width: 720px;
+    margin-bottom: var(--t-space-6);
+  }
+  .b-why-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0;
+  }
+  @media (min-width: 720px) {
+    .b-why-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1100px) {
+    .b-why-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .b-why-grid li {
+    padding: var(--t-space-4) var(--t-space-4) var(--t-space-4) 0;
+    border-top: 1px solid rgba(246, 239, 228, 0.18);
+    display: grid;
+    gap: 6px;
+    align-content: start;
+  }
+  .b-why-num {
+    font-family: var(--t-font-display);
+    font-size: clamp(2.8rem, 6vw, 4.2rem);
+    line-height: 1;
+    color: var(--t-on-dark);
+    font-variation-settings: 'SOFT' 100, 'opsz' 144;
+    font-weight: 350;
+    margin-bottom: var(--t-space-2);
+  }
+  .b-why-grid strong {
+    color: var(--t-on-dark);
+    font-size: 1.1rem;
+  }
+  .b-strip {
+    margin-top: var(--t-space-7);
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(220px, 1fr);
+    gap: var(--t-space-3);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: var(--t-space-2);
+    align-items: start;
+  }
+  .b-strip img {
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--t-radius-m);
+    scroll-snap-align: start;
+    width: 100%;
+  }
+
+  /* Calcolatore */
+  .b-calc {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--t-radius-l);
+    background: linear-gradient(170deg, #fff6e5 0%, #fbe4c0 55%, #f6cf9a 100%);
+    padding: clamp(28px, 6vw, 72px);
+    display: grid;
+    box-shadow: var(--t-shadow-1);
+  }
+  .b-sun {
+    position: absolute;
+    right: -40px;
+    bottom: -10px;
+    width: min(70%, 520px);
+    height: auto;
+    opacity: 0.9;
+  }
+  .b-sun-disc {
+    fill: var(--t-sun);
+    opacity: 0.55;
+  }
+  .b-sun-rays line {
+    stroke: var(--t-sun);
+    stroke-width: 6;
+    stroke-linecap: round;
+    opacity: 0.45;
+  }
+  .b-calc-text {
+    position: relative;
+    max-width: 640px;
+  }
+  .b-calc .b-kicker {
+    color: #6b4a1f;
+  }
+  .b-outputs {
+    list-style: none;
+    margin: var(--t-space-4) 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .b-outputs li {
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: var(--t-radius-pill);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--t-ink);
+  }
+  .b-note {
+    font-size: var(--t-fs-small);
+    color: #5c4630;
+  }
+
+  /* Contatti */
+  .b-contact {
+    background: var(--t-surface);
+  }
+  .b-contact-in {
+    display: grid;
+    gap: var(--t-space-6);
+  }
+  @media (min-width: 960px) {
+    .b-contact-in {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--t-space-7);
+    }
+  }
+  .vb .b-phone {
+    display: inline-block;
+    font-family: var(--t-font-display);
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    color: var(--t-ink);
+    text-decoration: none;
+    margin-block: var(--t-space-3) var(--t-space-4);
+    border-bottom: 2px solid var(--t-accent);
+    line-height: 1.2;
+  }
+  .b-address p {
+    margin-bottom: var(--t-space-2);
+  }
+  .b-form {
+    background: var(--t-bg);
+    border-radius: var(--t-radius-l);
+    padding: clamp(22px, 4vw, 44px);
+    display: grid;
+    gap: var(--t-space-3);
+    align-self: start;
+  }
+  .b-field {
+    display: grid;
+    gap: 6px;
+  }
+  .b-field > span {
+    font-weight: 600;
+    color: var(--t-ink);
+    font-size: 0.95rem;
+  }
+  .b-field input,
+  .b-field textarea {
+    font: inherit;
+    color: var(--t-ink);
+    background: var(--t-surface);
+    border: 1px solid var(--t-line-strong);
+    border-radius: var(--t-radius-s);
+    padding: 12px 16px;
+    width: 100%;
+  }
+  .b-field textarea::placeholder {
+    color: #8a7a6c;
+  }
+  .b-field input:focus,
+  .b-field textarea:focus {
+    outline: 3px solid rgba(0, 68, 189, 0.35);
+    border-color: var(--t-focus);
+  }
+  .b-check {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: var(--t-fs-small);
+    line-height: 1.5;
+  }
+  .b-check input {
+    width: 20px;
+    height: 20px;
+    flex: none;
+    margin-top: 2px;
+    accent-color: var(--t-accent);
+  }
+
+  .b-footer {
+    background: var(--t-ink);
+    color: var(--t-on-dark-muted);
+    padding-block: var(--t-space-6);
+    font-size: var(--t-fs-small);
+  }
+  .b-footer-in p {
+    margin: 0 0 4px;
+  }
+  .b-footer-name {
+    font-family: var(--t-font-display);
+    font-size: 1.3rem;
+    color: var(--t-on-dark);
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+
+  const mm = gsap.matchMedia();
+  mm.add('(prefers-reduced-motion: no-preference)', () => {
+    // Curve di livello: si disegnano lentamente all'apertura.
+    const lines = gsap.utils.toArray<SVGPathElement>('.b-contours path');
+    lines.forEach((p) => {
+      const len = p.getTotalLength();
+      gsap.set(p, { strokeDasharray: len, strokeDashoffset: len });
+    });
+    gsap.to(lines, { strokeDashoffset: 0, duration: 2.6, ease: 'power2.out', stagger: 0.08 });
+
+    // Motto: parola per parola, morbido.
+    gsap.from('.b-motto .b-word', {
+      y: 24,
+      autoAlpha: 0,
+      filter: 'blur(6px)',
+      duration: 1.1,
+      ease: 'power3.out',
+      stagger: 0.08,
+      delay: 0.3,
+    });
+
+    gsap.utils.toArray<HTMLElement>('.b-fade').forEach((el) => {
+      gsap.from(el, {
+        y: 28,
+        autoAlpha: 0,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 90%' },
+      });
+    });
+
+    // Foto: leggera parallasse dentro l'arco.
+    gsap.utils.toArray<HTMLElement>('[data-parallax]').forEach((img) => {
+      gsap.fromTo(
+        img,
+        { yPercent: -8 },
+        { yPercent: 0, ease: 'none', scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: true } }
+      );
+    });
+
+    // Mappa: il percorso si traccia.
+    const route = document.querySelector<SVGPathElement>('.b-map-route');
+    if (route) {
+      const len = route.getTotalLength();
+      gsap.fromTo(
+        route,
+        { strokeDasharray: `${len}`, strokeDashoffset: len },
+        {
+          strokeDashoffset: 0,
+          duration: 1.8,
+          ease: 'power2.inOut',
+          scrollTrigger: { trigger: '.b-map', start: 'top 75%' },
+          onComplete: () => {
+            route.style.strokeDasharray = '';
+          },
+        }
+      );
+    }
+
+    // Il sole del calcolatore sorge con lo scroll.
+    gsap.fromTo(
+      '.b-sun',
+      { yPercent: 45 },
+      { yPercent: 0, ease: 'none', scrollTrigger: { trigger: '.b-calc', start: 'top bottom', end: 'center center', scrub: true } }
+    );
+    gsap.to('.b-sun-rays', {
+      rotation: 8,
+      transformOrigin: '50% 95%',
+      ease: 'none',
+      scrollTrigger: { trigger: '.b-calc', start: 'top bottom', end: 'bottom top', scrub: true },
+    });
+  });
+</script>

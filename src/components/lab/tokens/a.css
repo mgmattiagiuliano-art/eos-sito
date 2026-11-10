@@ -1,0 +1,79 @@
+/* =====================================================================
+   LAB · A — "Tavola tecnica"
+   Stesso schema di nomi in a.css / b.css / c.css: adottare una variante
+   significa copiare questo blocco in src/styles/tokens.css.
+   ===================================================================== */
+:root {
+  /* Marchio (fissi) */
+  --t-brand-red: #e52320;
+  --t-brand-blue: #0044bd;
+
+  /* Colori d'uso */
+  --t-bg: #f3f5f8;            /* carta tecnica fredda */
+  --t-surface: #ffffff;
+  --t-surface-2: #e9edf3;
+  --t-ink: #0b1220;           /* titoli, targa dati */
+  --t-ink-2: #121a2b;
+  --t-text: #3b4658;          /* AA su bg: 8.9:1 */
+  --t-muted: #5d6879;         /* AA su bg: 5.4:1 */
+  --t-line: #c7d0dc;
+  --t-line-strong: #8d99ab;
+  --t-grid: rgba(0, 68, 189, 0.055);
+  --t-accent: var(--t-brand-red);   /* solo azione */
+  --t-accent-hover: #c41d1a;
+  --t-on-accent: #ffffff;
+  --t-link: var(--t-brand-blue);    /* linee, collegamenti, evidenze */
+  --t-highlight: var(--t-brand-blue);
+  --t-green: #1f7a3c;               /* verde rinnovabili scurito per AA */
+  --t-focus: #0044bd;
+
+  /* Tipografia */
+  --t-font-display: 'IBM Plex Sans Variable', 'IBM Plex Sans', system-ui, sans-serif;
+  --t-font-body: 'IBM Plex Sans Variable', 'IBM Plex Sans', system-ui, sans-serif;
+  --t-font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --t-fs-hero: clamp(2.5rem, 8.4vw, 6.4rem);
+  --t-fs-h2: clamp(1.75rem, 4vw, 3rem);
+  --t-fs-h3: clamp(1.1rem, 1.6vw, 1.3rem);
+  --t-fs-body: 1.0625rem;
+  --t-fs-small: 0.875rem;
+  --t-fs-label: 0.75rem;
+  --t-weight-display: 600;
+  --t-lh-tight: 1.02;
+  --t-lh-body: 1.6;
+  --t-tracking-display: -0.035em;
+  --t-tracking-label: 0.08em;
+
+  /* Forma */
+  --t-radius-s: 2px;
+  --t-radius-m: 2px;
+  --t-radius-l: 4px;
+  --t-border: 1px solid var(--t-line);
+  --t-shadow-1: none;
+  --t-shadow-2: 0 1px 0 var(--t-line);
+
+  /* Spaziatura (griglia 8px) */
+  --t-space-1: 4px;
+  --t-space-2: 8px;
+  --t-space-3: 16px;
+  --t-space-4: 24px;
+  --t-space-5: 32px;
+  --t-space-6: 48px;
+  --t-space-7: 64px;
+  --t-space-8: 96px;
+  --t-section-y: clamp(64px, 10vw, 128px);
+  --t-container: 1240px;
+  --t-gutter: clamp(16px, 4vw, 40px);
+
+  /* Movimento */
+  --t-ease: cubic-bezier(0.2, 0, 0, 1);
+  --t-dur: 0.6s;
+
+  /* Cavo (opzione): tracciato ortogonale da schema */
+  --wire-color: var(--t-brand-blue);
+  --wire-track: rgba(0, 68, 189, 0.16);
+  --wire-width: 1.5px;
+  --wire-glow: none;
+  --wire-node-bg: var(--t-bg);
+  --wire-gutter: 2%;
+  --wire-z: 0;
+}

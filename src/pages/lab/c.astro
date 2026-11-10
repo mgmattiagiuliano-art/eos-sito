@@ -1,0 +1,1073 @@
+---
+import '@fontsource-variable/archivo/wdth.css';
+import '../../components/lab/tokens/c.css';
+import LabShell from '../../components/lab/LabShell.astro';
+import { company, hero, services, why, calc, contact, nav } from '../../components/lab/content';
+
+const marquee = [
+  'Impianti civili',
+  'Industriali',
+  'Fotovoltaico',
+  'Accumulo',
+  'Micro-idroelettrico',
+  'Minieolico',
+  'Domotica',
+  'Sicurezza',
+  'Climatizzazione',
+  'Reti dati',
+];
+---
+
+<LabShell
+  title="C · Alta tensione"
+  code="C"
+  direction="Alta tensione — editoriale e audace"
+  wire="rail"
+  themeColor="#0d0e11"
+  logic={[
+    'Una rivista di settore, non un depliant: titoli enormi, contrasto pieno, campiture di rosso e blu del marchio usate come blocchi di colore.',
+    "Archivo variabile come unica famiglia: condensato per i titoli giganti, espanso per etichette e menu. Angoli vivi, alternanza netta notte/osso, nessuna ombra decorativa.",
+    'Motion deciso: hero orizzontale agganciato allo scroll (come approvato), titoli che emergono da una maschera, nastro dei servizi, foto che segue il cursore. Il cavo, se attivo, è un binario rosso nel margine.',
+  ]}
+>
+  <div class="vc">
+    <header class="c-header">
+      <div class="c-container c-header-in">
+        <a href="#top" class="c-logo"><img src="/logo.png" alt="EOS Impianti s.n.c." width="970" height="257" /></a>
+        <nav class="c-nav" aria-label="Sezioni">
+          {nav.map((n) => <a href={n.href}>{n.label}</a>)}
+        </nav>
+        <a class="c-btn c-btn-red c-btn-sm" href="#contatti">Sopralluogo</a>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- Hero: 4 pannelli, orizzontale agganciato su desktop -->
+      <section class="c-hero" data-wire-node data-wire-offset="0" aria-label="Presentazione">
+        <div class="c-track">
+          <article class="c-panel c-p1">
+            <div class="c-container c-panel-in">
+              <p class="c-label c-p1-meta"><span>EOS Impianti</span><span>Alessandria — Genova — Italia</span></p>
+              <h1 class="c-mega">
+                <span class="c-line"><span>Qual è</span></span>
+                <span class="c-line"><span class="c-red">l'energia giusta</span></span>
+                <span class="c-line"><span>per te?</span></span>
+              </h1>
+              <p class="c-label c-hint" aria-hidden="true">Scorri →</p>
+            </div>
+          </article>
+
+          <article class="c-panel c-p2">
+            <div class="c-container c-panel-in">
+              <p class="c-label">01 — La risposta</p>
+              <h2 class="c-h2 c-p2-title">
+                {hero.answer.before}<span class="c-red">{hero.answer.accent}</span>{hero.answer.after}
+              </h2>
+              <div class="c-p2-foot">
+                <p class="c-lead">{hero.answer.text}</p>
+                <div class="c-actions">
+                  <a class="c-btn c-btn-red" href="#contatti">{hero.answer.ctaPrimary}</a>
+                  <a class="c-btn c-btn-line" href="#calcolatore">{hero.answer.ctaSecondary}</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="c-panel c-p3">
+            <div class="c-container c-panel-in">
+              <p class="c-label">02 — {hero.about.kicker}</p>
+              <h2 class="c-h2">{hero.about.title}</h2>
+              <p class="c-lead">{hero.about.text}</p>
+            </div>
+          </article>
+
+          <article class="c-panel c-p4">
+            <span class="c-ghost" aria-hidden="true">Energia</span>
+            <div class="c-container c-panel-in">
+              <p class="c-label">03 — {hero.philosophy.kicker}</p>
+              <h2 class="c-h2">Ogni progetto ha la sua <span class="c-red">energia</span>.</h2>
+              <p class="c-lead">{hero.philosophy.text}</p>
+            </div>
+          </article>
+        </div>
+        <div class="c-progress" aria-hidden="true"><span></span></div>
+      </section>
+
+      <!-- Nastro -->
+      <div class="c-marquee" aria-label="Ambiti di intervento">
+        <ul class="c-marquee-track" role="list">
+          {marquee.map((m) => <li>{m}</li>)}
+        </ul>
+        <ul class="c-marquee-track" role="list" aria-hidden="true">
+          {marquee.map((m) => <li>{m}</li>)}
+        </ul>
+      </div>
+
+      <!-- Servizi: indice editoriale -->
+      <section class="c-section c-light" id="servizi" data-wire-node aria-labelledby="c-services-title">
+        <div class="c-container">
+          <div class="c-head">
+            <p class="c-label">Servizi</p>
+            <h2 id="c-services-title" class="c-h2 c-mask">Sei specialità.<br />Un solo referente.</h2>
+          </div>
+          <ol class="c-index" role="list">
+            {
+              services.map((s) => (
+                <li class="c-row" data-img={s.img}>
+                  <span class="c-row-num">{s.code}</span>
+                  <div class="c-row-main">
+                    <p class="c-label c-row-tag">{s.tag}</p>
+                    <h3 class="c-row-title">{s.title}</h3>
+                  </div>
+                  <p class="c-row-desc">{s.desc}</p>
+                  <img class="c-row-img" src={s.img} alt={s.alt} loading="lazy" width="640" height="480" />
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+        <figure class="c-float" aria-hidden="true"><img alt="" /></figure>
+      </section>
+
+      <!-- Perché EOS -->
+      <section class="c-section" id="perche-eos" data-wire-node aria-labelledby="c-why-title">
+        <div class="c-container">
+          <div class="c-head c-head-split">
+            <h2 id="c-why-title" class="c-h2 c-mask">Perché <span class="c-red">EOS</span></h2>
+            <p class="c-lead">{why.subtitle}</p>
+          </div>
+          <ul class="c-why" role="list">
+            {
+              why.items.map((it) => (
+                <li class="c-why-item">
+                  <span class="c-why-num">{it.value}</span>
+                  <div>
+                    <strong>{it.label}</strong>
+                    <p>{it.text}</p>
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </section>
+
+      <!-- Calcolatore -->
+      <section class="c-section c-blue" id="calcolatore" data-wire-node aria-labelledby="c-calc-title">
+        <span class="c-kwp" aria-hidden="true">kWp</span>
+        <div class="c-container c-calc">
+          <p class="c-label">{calc.kicker} — EOSolar</p>
+          <h2 id="c-calc-title" class="c-h2 c-mask">Quanto sole<br />ti serve davvero?</h2>
+          <div class="c-calc-cols">
+            <div>
+              <p class="c-lead"><strong>{calc.title}.</strong> {calc.sub}</p>
+              <p>{calc.text}</p>
+              <p class="c-small">{calc.note}</p>
+            </div>
+            <div>
+              <ol class="c-outputs" role="list">
+                {calc.outputs.map((o, i) => <li><span>0{i + 1}</span>{o}</li>)}
+              </ol>
+              <button class="c-btn c-btn-red c-btn-big" type="button" data-demo="Anteprima di design: il calcolatore EOSolar non è collegato nelle pagine /lab.">
+                {calc.cta} →
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contatti -->
+      <section class="c-section c-light" id="contatti" data-wire-node aria-labelledby="c-contact-title">
+        <div class="c-container c-contact">
+          <div>
+            <p class="c-label">Contatti</p>
+            <h2 id="c-contact-title" class="c-h2 c-mask">{contact.title}</h2>
+            <p class="c-lead">{contact.text}</p>
+            <a class="c-phone" href={company.phoneHref}>{company.phone}</a>
+            <dl class="c-facts">
+              <div><dt>Email</dt><dd><a href={`mailto:${company.email}`}>{company.email}</a></dd></div>
+              <div><dt>Sede</dt><dd>{company.street}, {company.city}</dd></div>
+              <div><dt>Mappa</dt><dd><a href={company.mapsHref} target="_blank" rel="noopener">Google Maps ↗</a></dd></div>
+            </dl>
+          </div>
+          <form class="c-form" data-demo-form aria-labelledby="c-form-title">
+            <h3 id="c-form-title" class="c-label c-form-title">{contact.formTitle}</h3>
+            <label class="c-field"><span>Nome e cognome *</span><input name="nome" required autocomplete="name" /></label>
+            <label class="c-field"><span>Email *</span><input type="email" name="email" required autocomplete="email" /></label>
+            <label class="c-field"><span>Messaggio</span><textarea name="messaggio" rows="3"></textarea></label>
+            <label class="c-check">
+              <input type="checkbox" required name="privacy" />
+              <span>Ho letto l'<a href="#privacy">informativa privacy</a> e acconsento al trattamento dei dati per ricevere risposta. *</span>
+            </label>
+            <button class="c-btn c-btn-black c-btn-block" type="submit">{contact.submit} →</button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="c-footer">
+      <div class="c-container c-footer-in">
+        <p class="c-footer-big">EOS<span class="c-red">.</span></p>
+        <div>
+          <p>{company.legalName} · {company.street}, {company.city}</p>
+          <p>P.IVA {company.vat} · © 2026</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+</LabShell>
+
+<style is:global>
+  body {
+    background: var(--t-bg);
+    color: var(--t-text);
+    font-family: var(--t-font-body);
+    font-size: var(--t-fs-body);
+    line-height: var(--t-lh-body);
+    font-variation-settings: 'wdth' 100;
+  }
+  .vc :where(h1, h2, h3) {
+    margin: 0;
+    color: var(--t-ink);
+    font-family: var(--t-font-display);
+    font-weight: var(--t-weight-display);
+  }
+  .vc p {
+    margin: 0 0 var(--t-space-3);
+  }
+  .vc a {
+    color: var(--t-link);
+  }
+  .vc :focus-visible {
+    outline: 3px solid var(--t-focus);
+    outline-offset: 3px;
+  }
+  .c-container {
+    max-width: var(--t-container);
+    margin-inline: auto;
+    padding-inline: var(--t-gutter);
+    position: relative;
+    z-index: 1;
+  }
+  .c-section {
+    position: relative;
+    padding-block: var(--t-section-y);
+    overflow: clip;
+  }
+  .c-light {
+    background: var(--t-bg-alt);
+    color: var(--t-text-alt);
+  }
+  .vc .c-light :where(h1, h2, h3) {
+    color: var(--t-ink-alt);
+  }
+  .vc .c-light a {
+    color: var(--t-link-alt);
+  }
+  .c-label {
+    font-size: var(--t-fs-label);
+    font-weight: 600;
+    letter-spacing: var(--t-tracking-label);
+    text-transform: uppercase;
+    font-variation-settings: 'wdth' var(--t-wdth-label);
+  }
+  .c-red {
+    color: var(--t-highlight);
+  }
+  .c-h2 {
+    font-size: var(--t-fs-h2);
+    line-height: 0.95;
+    letter-spacing: var(--t-tracking-display);
+    text-transform: uppercase;
+    font-variation-settings: 'wdth' var(--t-wdth-display);
+    margin-bottom: var(--t-space-5) !important;
+  }
+  .c-lead {
+    font-size: clamp(1.1rem, 1.5vw, 1.3rem);
+    max-width: 52ch;
+    color: inherit;
+  }
+  .c-small {
+    font-size: var(--t-fs-small);
+  }
+
+  /* Header */
+  .c-header {
+    position: sticky;
+    top: var(--labbar-h);
+    z-index: 50;
+    background: var(--t-bg);
+    border-bottom: 1px solid var(--t-line);
+  }
+  .c-header-in {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: var(--t-space-4);
+  }
+  /* Il logo resta intatto: lo poggiamo su una targhetta bianca. */
+  .c-logo {
+    background: #fff;
+    padding: 6px 10px;
+    display: block;
+  }
+  .c-logo img {
+    height: 28px;
+    width: auto;
+  }
+  .c-nav {
+    display: none;
+    margin-left: auto;
+    gap: var(--t-space-5);
+  }
+  .vc .c-nav a {
+    color: var(--t-ink);
+    text-decoration: none;
+    font-size: var(--t-fs-label);
+    font-weight: 600;
+    letter-spacing: var(--t-tracking-label);
+    text-transform: uppercase;
+    font-variation-settings: 'wdth' var(--t-wdth-label);
+  }
+  .vc .c-nav a:hover {
+    color: var(--t-accent-hover);
+  }
+  .c-header .c-btn {
+    margin-left: auto;
+  }
+  @media (min-width: 900px) {
+    .c-nav {
+      display: flex;
+    }
+    .c-header .c-btn {
+      margin-left: 0;
+    }
+  }
+
+  /* Bottoni */
+  .c-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 14px 26px;
+    border: 2px solid transparent;
+    font: 700 0.875rem/1.2 var(--t-font-body);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-variation-settings: 'wdth' 112;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.25s, color 0.25s, border-color 0.25s;
+  }
+  .vc .c-btn-red {
+    background: var(--t-accent);
+    color: var(--t-on-accent);
+  }
+  .vc .c-btn-red:hover {
+    background: var(--t-ink-alt);
+    color: #fff;
+  }
+  .vc .c-btn-line {
+    border-color: currentColor;
+    color: inherit;
+    background: transparent;
+  }
+  .vc .c-btn-line:hover {
+    background: var(--t-ink-alt);
+    color: #fff;
+    border-color: var(--t-ink-alt);
+  }
+  .vc .c-btn-black {
+    background: var(--t-ink-alt);
+    color: #fff;
+  }
+  .vc .c-btn-black:hover {
+    background: var(--t-accent);
+  }
+  .c-btn-sm {
+    min-height: 40px;
+    padding: 8px 16px;
+    font-size: 0.75rem;
+  }
+  .c-btn-big {
+    min-height: 64px;
+    padding-inline: 32px;
+    width: 100%;
+    margin-top: var(--t-space-4);
+  }
+  .c-btn-block {
+    width: 100%;
+  }
+  .c-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--t-space-3);
+  }
+
+  /* Hero */
+  .c-hero {
+    position: relative;
+    overflow: hidden;
+  }
+  .c-panel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-block: var(--t-space-7);
+    overflow: hidden;
+  }
+  .c-panel-in {
+    width: 100%;
+  }
+  .c-p1 {
+    min-height: calc(100svh - var(--labbar-h) - 64px);
+  }
+  .c-p1 .c-panel-in {
+    display: grid;
+    gap: var(--t-space-5);
+  }
+  .c-p1-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    color: var(--t-muted);
+  }
+  .c-mega {
+    font-size: var(--t-fs-hero);
+    line-height: var(--t-lh-tight);
+    text-transform: uppercase;
+    font-variation-settings: 'wdth' 62;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+  }
+  .c-line {
+    display: block;
+    overflow: hidden;
+    padding-top: 0.14em;
+    margin-top: -0.14em;
+    padding-bottom: 0.04em;
+  }
+  .c-line > span {
+    display: inline-block;
+  }
+  .c-hint {
+    color: var(--t-muted);
+    display: none;
+  }
+  .c-p2 {
+    background: var(--t-bg-alt);
+    color: var(--t-text-alt);
+  }
+  .vc .c-p2 h2 {
+    color: var(--t-ink-alt);
+  }
+  .c-p2-title {
+    max-width: 18ch;
+  }
+  .c-p2-foot {
+    display: grid;
+    gap: var(--t-space-4);
+    align-items: end;
+  }
+  @media (min-width: 900px) {
+    .c-p2-foot {
+      grid-template-columns: 1fr auto;
+    }
+  }
+  .c-p3 {
+    background: var(--t-block-blue);
+    color: #fff;
+  }
+  .c-p3 .c-label {
+    color: #dbe6ff;
+  }
+  .vc .c-p3 h2 {
+    color: #fff;
+    max-width: 16ch;
+  }
+  .c-p4 .c-label,
+  .c-p1 .c-label {
+    color: var(--t-muted);
+  }
+  .c-p4 .c-h2 {
+    max-width: 14ch;
+  }
+  .c-ghost {
+    position: absolute;
+    right: -0.05em;
+    bottom: -0.18em;
+    font-family: var(--t-font-display);
+    font-weight: 900;
+    font-size: clamp(6rem, 26vw, 26rem);
+    line-height: 1;
+    text-transform: uppercase;
+    font-variation-settings: 'wdth' 62;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(245, 243, 238, 0.12);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .c-progress {
+    display: none;
+  }
+
+  /* Modalità orizzontale (attivata da JS solo su desktop senza riduzione movimento) */
+  .c-hero.is-horizontal .c-track {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+  }
+  .c-hero.is-horizontal .c-panel {
+    width: 100vw;
+    height: calc(100svh - var(--labbar-h) - 64px);
+    min-height: 0;
+    flex: none;
+    padding-block: var(--t-space-6);
+  }
+  .c-hero.is-horizontal .c-hint {
+    display: block;
+  }
+  .c-hero.is-horizontal .c-progress {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 2;
+  }
+  .c-progress span {
+    display: block;
+    height: 100%;
+    width: 100%;
+    background: var(--t-accent);
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+
+  /* Nastro */
+  .c-marquee {
+    display: flex;
+    overflow: hidden;
+    background: var(--t-accent);
+    color: #fff;
+    border-block: 1px solid #000;
+  }
+  .c-marquee-track {
+    list-style: none;
+    margin: 0;
+    padding: 18px 0;
+    display: flex;
+    flex: none;
+    gap: 0;
+    animation: c-marquee 38s linear infinite;
+  }
+  .c-marquee-track li {
+    font-family: var(--t-font-display);
+    font-weight: 800;
+    font-size: clamp(1.4rem, 3vw, 2.4rem);
+    text-transform: uppercase;
+    font-variation-settings: 'wdth' 80;
+    white-space: nowrap;
+    padding-inline: 0.6em;
+  }
+  .c-marquee-track li::after {
+    content: '✕';
+    margin-left: 1.2em;
+    font-size: 0.6em;
+    vertical-align: middle;
+  }
+  @keyframes c-marquee {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .c-marquee {
+      flex-wrap: wrap;
+    }
+    .c-marquee-track {
+      animation: none;
+      flex-wrap: wrap;
+    }
+    .c-marquee-track[aria-hidden='true'] {
+      display: none;
+    }
+  }
+
+  /* Servizi */
+  .c-head {
+    margin-bottom: var(--t-space-6);
+  }
+  .c-head-split {
+    display: grid;
+    gap: var(--t-space-3);
+  }
+  @media (min-width: 900px) {
+    .c-head-split {
+      grid-template-columns: 1fr 1fr;
+      align-items: end;
+    }
+  }
+  .c-index {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 2px solid var(--t-ink-alt);
+  }
+  .c-row {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: var(--t-space-2) var(--t-space-3);
+    padding-block: var(--t-space-4);
+    border-bottom: 1px solid var(--t-line-alt);
+    position: relative;
+    transition: background 0.3s, padding 0.4s var(--t-ease);
+  }
+  .c-row-num {
+    font-family: var(--t-font-display);
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--t-muted-alt);
+    font-variant-numeric: tabular-nums;
+  }
+  .c-row-tag {
+    color: var(--t-muted-alt);
+    margin-bottom: 4px !important;
+  }
+  .c-row-title {
+    font-size: clamp(1.5rem, 3.4vw, 2.8rem);
+    line-height: 1;
+    text-transform: uppercase;
+    font-variation-settings: 'wdth' 75;
+  }
+  .c-row-desc {
+    grid-column: 2;
+    margin: 0 !important;
+    max-width: 52ch;
+  }
+  .c-row-img {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    margin-top: var(--t-space-2);
+  }
+  @media (min-width: 900px) {
+    .c-row {
+      grid-template-columns: 80px 1.3fr 1fr;
+      align-items: center;
+      padding-block: var(--t-space-5);
+    }
+    .c-row-num {
+      font-size: 1.4rem;
+    }
+    .c-row-desc {
+      grid-column: 3;
+    }
+    .c-row-img {
+      grid-column: 1 / -1;
+      max-width: 420px;
+      justify-self: end;
+    }
+    .c-row:hover {
+      padding-left: 16px;
+    }
+    .c-row:hover .c-row-title {
+      color: var(--t-accent);
+    }
+  }
+  html.c-float-on .c-row-img {
+    display: none;
+  }
+  .c-float {
+    position: fixed;
+    left: 0;
+    top: 0;
+    margin: 0;
+    width: 320px;
+    aspect-ratio: 4 / 3;
+    pointer-events: none;
+    z-index: 40;
+    opacity: 0;
+    transition: opacity 0.25s;
+    box-shadow: var(--t-shadow-2);
+    display: none;
+  }
+  html.c-float-on .c-float {
+    display: block;
+  }
+  .c-float.is-on {
+    opacity: 1;
+  }
+  .c-float img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Perché */
+  .c-why {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--t-line);
+  }
+  @media (min-width: 900px) {
+    .c-why {
+      grid-template-columns: 1fr 1fr;
+    }
+    .c-why-item:nth-child(odd) {
+      border-right: 1px solid var(--t-line);
+      padding-right: var(--t-space-5);
+    }
+    .c-why-item:nth-child(even) {
+      padding-left: var(--t-space-5);
+    }
+  }
+  .c-why-item {
+    display: grid;
+    gap: var(--t-space-3);
+    padding-block: var(--t-space-5);
+    border-bottom: 1px solid var(--t-line);
+  }
+  .c-why-num {
+    font-family: var(--t-font-display);
+    font-weight: 900;
+    font-size: clamp(4.5rem, 14vw, 10rem);
+    line-height: 0.85;
+    text-transform: uppercase;
+    font-variation-settings: 'wdth' 62;
+    color: var(--t-ink);
+    transition: color 0.6s var(--t-ease), -webkit-text-stroke-color 0.6s;
+  }
+  html.c-js .c-why-item:not(.is-on) .c-why-num {
+    color: transparent;
+    -webkit-text-stroke: 2px var(--t-ink);
+  }
+  .c-why-item strong {
+    display: block;
+    color: var(--t-ink);
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-variation-settings: 'wdth' 110;
+    margin-bottom: 4px;
+  }
+  .c-why-item p {
+    margin: 0 !important;
+  }
+
+  /* Calcolatore */
+  .c-blue {
+    background: var(--t-block-blue);
+    color: #fff;
+  }
+  .vc .c-blue h2 {
+    color: #fff;
+  }
+  .c-blue .c-label {
+    color: #dbe6ff;
+  }
+  .c-kwp {
+    position: absolute;
+    right: -0.04em;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--t-font-display);
+    font-weight: 900;
+    font-size: clamp(8rem, 38vw, 34rem);
+    line-height: 1;
+    font-variation-settings: 'wdth' 62;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.18);
+    pointer-events: none;
+  }
+  .c-calc-cols {
+    display: grid;
+    gap: var(--t-space-5);
+  }
+  @media (min-width: 900px) {
+    .c-calc-cols {
+      grid-template-columns: 1.2fr 1fr;
+      gap: var(--t-space-7);
+    }
+  }
+  .c-outputs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.35);
+  }
+  .c-outputs li {
+    display: flex;
+    gap: var(--t-space-3);
+    align-items: baseline;
+    padding-block: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  .c-outputs li span {
+    font-size: var(--t-fs-label);
+    letter-spacing: var(--t-tracking-label);
+    color: #dbe6ff;
+  }
+  .vc .c-blue .c-btn-red:hover {
+    background: #fff;
+    color: var(--t-ink-alt);
+  }
+
+  /* Contatti */
+  .c-contact {
+    display: grid;
+    gap: var(--t-space-6);
+  }
+  @media (min-width: 1000px) {
+    .c-contact {
+      grid-template-columns: 1.3fr 1fr;
+      gap: var(--t-space-7);
+      align-items: end;
+    }
+  }
+  .vc .c-light .c-phone {
+    display: inline-block;
+    font-family: var(--t-font-display);
+    font-weight: 900;
+    font-size: clamp(2.2rem, 8vw, 5.5rem);
+    line-height: 1;
+    font-variation-settings: 'wdth' 62;
+    color: var(--t-ink-alt);
+    text-decoration: none;
+    margin-block: var(--t-space-3) var(--t-space-5);
+    background: linear-gradient(var(--t-accent), var(--t-accent)) left bottom / 100% 6px no-repeat;
+    padding-bottom: 8px;
+  }
+  .vc .c-light .c-phone:hover {
+    color: var(--t-link-alt);
+  }
+  .c-facts {
+    margin: 0;
+    border-top: 1px solid var(--t-line-alt);
+  }
+  .c-facts div {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: var(--t-space-3);
+    padding-block: 10px;
+    border-bottom: 1px solid var(--t-line-alt);
+  }
+  .c-facts dt {
+    font-size: var(--t-fs-label);
+    font-weight: 700;
+    letter-spacing: var(--t-tracking-label);
+    text-transform: uppercase;
+    font-variation-settings: 'wdth' var(--t-wdth-label);
+    padding-top: 3px;
+    color: var(--t-muted-alt);
+  }
+  .c-facts dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+  .c-form {
+    display: grid;
+    gap: var(--t-space-4);
+  }
+  .vc .c-form-title {
+    color: var(--t-ink-alt);
+    font-size: var(--t-fs-label);
+    font-weight: 700;
+  }
+  .c-field {
+    display: grid;
+    gap: 4px;
+  }
+  .c-field span {
+    font-size: var(--t-fs-label);
+    font-weight: 700;
+    letter-spacing: var(--t-tracking-label);
+    text-transform: uppercase;
+    font-variation-settings: 'wdth' var(--t-wdth-label);
+    color: var(--t-ink-alt);
+  }
+  .c-field input,
+  .c-field textarea {
+    font: inherit;
+    font-size: 1.15rem;
+    color: var(--t-ink-alt);
+    background: transparent;
+    border: 0;
+    border-bottom: 2px solid var(--t-ink-alt);
+    border-radius: 0;
+    padding: 10px 0;
+    width: 100%;
+  }
+  .c-field input:focus,
+  .c-field textarea:focus {
+    outline: none;
+    border-bottom-color: var(--t-link-alt);
+    box-shadow: 0 2px 0 var(--t-link-alt);
+  }
+  .c-check {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: var(--t-fs-small);
+  }
+  .c-check input {
+    width: 20px;
+    height: 20px;
+    flex: none;
+    margin-top: 1px;
+    accent-color: var(--t-ink-alt);
+  }
+
+  .c-footer {
+    padding-block: var(--t-space-6);
+    border-top: 1px solid var(--t-line);
+    font-size: var(--t-fs-small);
+    color: var(--t-muted);
+  }
+  .c-footer-in {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--t-space-4);
+  }
+  .c-footer-in p {
+    margin: 0 0 2px;
+  }
+  .c-footer-big {
+    font-family: var(--t-font-display);
+    font-weight: 900;
+    font-size: clamp(4rem, 16vw, 12rem);
+    line-height: 0.8;
+    font-variation-settings: 'wdth' 62;
+    color: var(--t-ink);
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.documentElement.classList.add('c-js');
+  const HEADER = 64;
+  const offset = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--labbar-h')) + HEADER;
+
+  // Numeri di "Perché EOS": da contorno a pieni entrando in vista (anche con movimento ridotto: è solo un cambio di colore).
+  document.querySelectorAll<HTMLElement>('.c-why-item').forEach((el) => {
+    ScrollTrigger.create({ trigger: el, start: 'top 80%', once: true, onEnter: () => el.classList.add('is-on') });
+  });
+
+  const mm = gsap.matchMedia();
+
+  mm.add('(prefers-reduced-motion: no-preference)', () => {
+    gsap.from('.c-mega .c-line > span', { yPercent: 105, duration: 1, ease: 'expo.out', stagger: 0.1, delay: 0.1 });
+
+    gsap.utils.toArray<HTMLElement>('.c-mask').forEach((el) => {
+      gsap.fromTo(
+        el,
+        { clipPath: 'inset(0% 0% 100% 0%)', y: 40 },
+        {
+          clipPath: 'inset(0% 0% 0% 0%)',
+          y: 0,
+          duration: 1,
+          ease: 'expo.out',
+          scrollTrigger: { trigger: el, start: 'top 85%' },
+          onComplete: () => gsap.set(el, { clearProps: 'clipPath' }),
+        }
+      );
+    });
+
+    gsap.from('.c-row', {
+      autoAlpha: 0,
+      y: 30,
+      duration: 0.7,
+      ease: 'power3.out',
+      stagger: 0.08,
+      scrollTrigger: { trigger: '.c-index', start: 'top 80%' },
+    });
+
+    gsap.fromTo(
+      '.c-kwp',
+      { xPercent: 20 },
+      { xPercent: -10, ease: 'none', scrollTrigger: { trigger: '.c-blue', start: 'top bottom', end: 'bottom top', scrub: true } }
+    );
+  });
+
+  // Hero orizzontale agganciato: solo desktop e senza riduzione del movimento.
+  mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
+    const heroEl = document.querySelector<HTMLElement>('.c-hero');
+    const track = heroEl?.querySelector<HTMLElement>('.c-track');
+    if (!heroEl || !track) return;
+    heroEl.classList.add('is-horizontal');
+    const distance = () => track.scrollWidth - window.innerWidth;
+    const tween = gsap.to(track, {
+      x: () => -distance(),
+      ease: 'none',
+      scrollTrigger: {
+        trigger: heroEl,
+        start: () => `top top+=${offset()}`,
+        end: () => `+=${distance()}`,
+        pin: true,
+        scrub: 0.6,
+        snap: { snapTo: 1 / 3, directional: false, inertia: false, delay: 0.15, duration: 0.4, ease: 'power2.inOut' },
+        invalidateOnRefresh: true,
+        onUpdate: (self) => gsap.set('.c-progress span', { scaleX: self.progress }),
+      },
+    });
+    return () => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+      gsap.set(track, { clearProps: 'transform' });
+      heroEl.classList.remove('is-horizontal');
+    };
+  });
+
+  // Foto che segue il cursore nell'indice servizi (solo puntatore fine).
+  mm.add('(min-width: 900px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)', () => {
+    const float = document.querySelector<HTMLElement>('.c-float');
+    const img = float?.querySelector('img');
+    if (!float || !img) return;
+    document.documentElement.classList.add('c-float-on');
+    gsap.set(float, { yPercent: -50 });
+    const xTo = gsap.quickTo(float, 'x', { duration: 0.45, ease: 'power3.out' });
+    const yTo = gsap.quickTo(float, 'y', { duration: 0.45, ease: 'power3.out' });
+    const rows = [...document.querySelectorAll<HTMLElement>('.c-row')];
+    const onMove = (e: PointerEvent) => {
+      xTo(e.clientX + 40);
+      yTo(e.clientY);
+    };
+    const handlers = rows.map((row) => {
+      const enter = () => {
+        img.src = row.dataset.img ?? '';
+        float.classList.add('is-on');
+      };
+      const leave = () => float.classList.remove('is-on');
+      row.addEventListener('pointerenter', enter);
+      row.addEventListener('pointerleave', leave);
+      return { row, enter, leave };
+    });
+    window.addEventListener('pointermove', onMove);
+    return () => {
+      document.documentElement.classList.remove('c-float-on');
+      window.removeEventListener('pointermove', onMove);
+      handlers.forEach(({ row, enter, leave }) => {
+        row.removeEventListener('pointerenter', enter);
+        row.removeEventListener('pointerleave', leave);
+      });
+    };
+  });
+
+  window.addEventListener('load', () => ScrollTrigger.refresh());
+</script>

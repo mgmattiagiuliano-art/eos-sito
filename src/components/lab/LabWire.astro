@@ -1,0 +1,190 @@
+---
+/**
+ * Il "cavo" come opzione: un tracciato SVG generato a runtime che unisce gli elementi
+ * `[data-wire-node]` della pagina, alternando margine sinistro e destro, e si "elettrifica"
+ * con lo scroll. Geometrie: ortogonale (schema), curva (sentiero), spezzata, binario (linea
+ * verticale nel margine sinistro, mai sopra al testo).
+ * Lo stile arriva dai token della variante: --wire-color, --wire-track, --wire-width,
+ * --wire-glow, --wire-z, --wire-gutter.
+ */
+interface Props {
+  variant: 'ortho' | 'curve' | 'zigzag' | 'rail';
+}
+const { variant } = Astro.props;
+---
+
+<div class="labwire" data-labwire={variant} aria-hidden="true"></div>
+
+<style is:global>
+  .labwire {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 0;
+    pointer-events: none;
+    z-index: var(--wire-z, 0);
+    display: none;
+  }
+  html[data-wire='on'] .labwire {
+    display: block;
+  }
+  .labwire svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .labwire-track,
+  .labwire-live {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .labwire-track {
+    stroke: var(--wire-track, rgba(15, 23, 42, 0.12));
+    stroke-width: var(--wire-width, 2px);
+  }
+  .labwire-live {
+    stroke: var(--wire-color, #e52320);
+    stroke-width: var(--wire-width, 2px);
+    filter: var(--wire-glow, none);
+  }
+  .labwire-node {
+    fill: var(--wire-node-bg, #fff);
+    stroke: var(--wire-track, rgba(15, 23, 42, 0.25));
+    stroke-width: 2px;
+    transition: fill 0.3s, stroke 0.3s;
+  }
+  .labwire-node.is-live {
+    fill: var(--wire-color, #e52320);
+    stroke: var(--wire-color, #e52320);
+  }
+</style>
+
+<script>
+  type Geometry = 'ortho' | 'curve' | 'zigzag' | 'rail';
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const host = document.querySelector<HTMLElement>('.labwire');
+
+  if (host) {
+    const geometry = (host.dataset.labwire ?? 'curve') as Geometry;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let live: SVGPathElement | null = null;
+    let length = 0;
+    let points: { x: number; y: number }[] = [];
+    let nodes: SVGElement[] = [];
+    let raf = 0;
+
+    const docY = (el: Element) => el.getBoundingClientRect().top + window.scrollY;
+
+    function build() {
+      if (!host || document.documentElement.dataset.wire !== 'on') return;
+      const width = document.documentElement.clientWidth;
+      const height = document.documentElement.scrollHeight;
+      const gutterRaw = getComputedStyle(host).getPropertyValue('--wire-gutter').trim();
+      const gutter = gutterRaw.endsWith('%')
+        ? (parseFloat(gutterRaw) / 100) * width
+        : parseFloat(gutterRaw) || Math.max(12, width * 0.03);
+      const xL = gutter;
+      const xR = width - gutter;
+
+      const els = [...document.querySelectorAll<HTMLElement>('[data-wire-node]')];
+      points = els.map((el, i) => ({
+        x: geometry === 'rail' || i % 2 === 0 ? xL : xR,
+        y: docY(el) + Number(el.dataset.wireOffset ?? 0),
+      }));
+      if (points.length < 2) return;
+      const last = points[points.length - 1];
+      const end = { x: last.x, y: Math.min(height - 8, last.y + 240) };
+
+      let d = `M ${points[0].x},${points[0].y}`;
+      for (let i = 1; i < points.length; i++) {
+        const p = points[i - 1];
+        const q = points[i];
+        if (geometry === 'ortho') {
+          d += ` L ${p.x},${q.y} L ${q.x},${q.y}`;
+        } else if (geometry === 'curve') {
+          const my = (p.y + q.y) / 2;
+          d += ` C ${p.x},${my} ${q.x},${my} ${q.x},${q.y}`;
+        } else {
+          d += ` L ${q.x},${q.y}`;
+        }
+      }
+      d += ` L ${end.x},${end.y}`;
+
+      host.style.height = `${height}px`;
+      host.replaceChildren();
+      const svg = document.createElementNS(SVG_NS, 'svg');
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      svg.setAttribute('preserveAspectRatio', 'none');
+      const track = document.createElementNS(SVG_NS, 'path');
+      track.setAttribute('d', d);
+      track.setAttribute('class', 'labwire-track');
+      live = document.createElementNS(SVG_NS, 'path');
+      live.setAttribute('d', d);
+      live.setAttribute('class', 'labwire-live');
+      svg.append(track, live);
+
+      nodes = points.map((pt) => {
+        const shape =
+          geometry === 'ortho'
+            ? document.createElementNS(SVG_NS, 'rect')
+            : document.createElementNS(SVG_NS, 'circle');
+        if (shape instanceof SVGRectElement) {
+          shape.setAttribute('x', String(pt.x - 6));
+          shape.setAttribute('y', String(pt.y - 6));
+          shape.setAttribute('width', '12');
+          shape.setAttribute('height', '12');
+        } else {
+          shape.setAttribute('cx', String(pt.x));
+          shape.setAttribute('cy', String(pt.y));
+          shape.setAttribute('r', geometry === 'zigzag' ? '7' : '6');
+        }
+        shape.setAttribute('class', 'labwire-node');
+        svg.append(shape);
+        return shape;
+      });
+
+      host.append(svg);
+      length = live.getTotalLength();
+      live.style.strokeDasharray = `${length}`;
+      update();
+    }
+
+    function update() {
+      raf = 0;
+      if (!live || !length) return;
+      if (reduced.matches) {
+        live.style.strokeDashoffset = '0';
+        nodes.forEach((n) => n.classList.add('is-live'));
+        return;
+      }
+      // La "corrente" arriva al 65% dell'altezza della finestra.
+      const front = window.scrollY + window.innerHeight * 0.65;
+      const first = points[0].y;
+      const lastY = points[points.length - 1].y + 240;
+      const progress = Math.min(1, Math.max(0, (front - first) / (lastY - first)));
+      live.style.strokeDashoffset = `${length * (1 - progress)}`;
+      points.forEach((pt, i) => nodes[i]?.classList.toggle('is-live', pt.y <= front));
+    }
+
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    let resizeTimer = 0;
+    const rebuild = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(build, 150);
+    };
+
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', rebuild);
+    window.addEventListener('load', build);
+    window.addEventListener('labwire:toggle', () => requestAnimationFrame(build));
+    new ResizeObserver(rebuild).observe(document.body);
+    build();
+  }
+</script>

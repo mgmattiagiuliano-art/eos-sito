@@ -1,0 +1,465 @@
+---
+/**
+ * Indice del laboratorio di design: link alle varianti e anteprima in iframe
+ * a larghezza fissa (360 / 768 / 1440 px), scalata per stare nello schermo.
+ */
+const variants = [
+  {
+    id: 'a',
+    href: '/lab/a',
+    code: 'A',
+    name: 'Tavola tecnica',
+    tone: 'Ingegneristica',
+    text: 'Griglia millimetrata, tavole numerate, schema unifilare che si disegna, "targa dati" per il perché EOS. IBM Plex Sans + Mono.',
+    swatch: ['#f3f5f8', '#0b1220', '#0044bd', '#e52320'],
+  },
+  {
+    id: 'b',
+    href: '/lab/b',
+    code: 'B',
+    name: 'Val Borbera',
+    tone: 'Calda e territoriale',
+    text: 'Carta calda, serif morbido, foto grandi ad arco, mappa schematica Alessandria–Vignole–Genova, sole che sorge sul calcolatore. Fraunces + Source Sans 3.',
+    swatch: ['#f6f0e6', '#2b1e16', '#e52320', '#e8a33d'],
+  },
+  {
+    id: 'c',
+    href: '/lab/c',
+    code: 'C',
+    name: 'Alta tensione',
+    tone: 'Editoriale e audace',
+    text: 'Titoli giganti condensati, alternanza notte/osso, campiture rosso e blu, hero orizzontale agganciato, indice servizi con foto che segue il cursore. Archivo variabile.',
+    swatch: ['#0d0e11', '#f1eee7', '#e52320', '#0044bd'],
+  },
+  {
+    id: 'attuale',
+    href: '/lab/attuale',
+    code: '0',
+    name: 'Prototipo attuale',
+    tone: 'Riferimento',
+    text: 'Il prototipo di docs/handoff.md ricostruito per confronto (GSAP da npm, senza video esterno, mappa e calcolatore sostituiti da segnaposto).',
+    swatch: ['#f8fafc', '#0f172a', '#0044bd', '#e52320'],
+  },
+];
+const widths = [360, 768, 1440];
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/logo.png" />
+    <title>EOS · Design Lab</title>
+  </head>
+  <body>
+    <header class="top">
+      <div class="wrap top-in">
+        <img src="/logo.png" alt="EOS Impianti s.n.c." width="970" height="257" class="logo" />
+        <div>
+          <p class="eyebrow">Design Lab · pagine non indicizzate</p>
+          <h1>Tre direzioni per il sito EOS</h1>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section aria-labelledby="var-title">
+        <h2 id="var-title" class="h2">Varianti</h2>
+        <ul class="cards" role="list">
+          {
+            variants.map((v) => (
+              <li class="card">
+                <div class="swatch" aria-hidden="true">
+                  {v.swatch.map((c) => (
+                    <span style={`background:${c}`} />
+                  ))}
+                </div>
+                <p class="card-tone">
+                  <span class="code">{v.code}</span> {v.tone}
+                </p>
+                <h3>{v.name}</h3>
+                <p class="card-text">{v.text}</p>
+                <div class="card-actions">
+                  <a href={v.href}>Apri {v.href} →</a>
+                  <button type="button" data-preview={v.id}>
+                    Anteprima
+                  </button>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="preview" id="anteprima" aria-labelledby="prev-title">
+        <div class="preview-head">
+          <h2 id="prev-title" class="h2">Anteprima a larghezza fissa</h2>
+          <div class="controls">
+            <fieldset>
+              <legend>Variante</legend>
+              {
+                variants.map((v, i) => (
+                  <label>
+                    <input type="radio" name="variant" value={v.id} checked={i === 0} />
+                    <span>{v.code === '0' ? 'Attuale' : v.code}</span>
+                  </label>
+                ))
+              }
+            </fieldset>
+            <fieldset>
+              <legend>Larghezza</legend>
+              {
+                widths.map((w, i) => (
+                  <label>
+                    <input type="radio" name="width" value={w} checked={i === 0} />
+                    <span>{w}px</span>
+                  </label>
+                ))
+              }
+            </fieldset>
+            <label class="toggle">
+              <input type="checkbox" name="wire" />
+              <span>Cavo attivo</span>
+            </label>
+            <a class="open" href="/lab/a" target="_blank" rel="noopener" data-open>Nuova scheda ↗</a>
+          </div>
+        </div>
+        <p class="scale-note" aria-live="polite" data-scale-note></p>
+        <div class="stage" data-stage>
+          <div class="device" data-device>
+            <iframe title="Anteprima della variante" src="/lab/a?embed=1" data-frame></iframe>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <style>
+      :root {
+        --bg: #0b1020;
+        --panel: #121a2e;
+        --line: #26324b;
+        --text: #cbd5e1;
+        --ink: #fff;
+        --muted: #94a3b8;
+        --accent: #93c5fd;
+        --red: #e52320;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 400 15px/1.55 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      }
+      .wrap {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding-inline: 16px;
+      }
+      .top {
+        border-bottom: 1px solid var(--line);
+        padding-block: 20px;
+        margin-bottom: 28px;
+      }
+      .top-in {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .logo {
+        height: 44px;
+        width: auto;
+        background: #fff;
+        padding: 6px 10px;
+        border-radius: 6px;
+      }
+      .eyebrow {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      h1 {
+        margin: 0;
+        color: var(--ink);
+        font-size: clamp(1.4rem, 3vw, 2rem);
+        line-height: 1.15;
+      }
+      .h2 {
+        color: var(--ink);
+        font-size: 1.1rem;
+        margin: 0 0 14px;
+      }
+      .cards {
+        list-style: none;
+        margin: 0 0 40px;
+        padding: 0;
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .swatch {
+        display: flex;
+        height: 28px;
+        border-radius: 6px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+      }
+      .swatch span {
+        flex: 1;
+      }
+      .card-tone {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .code {
+        display: inline-block;
+        padding: 0 7px;
+        border-radius: 4px;
+        background: var(--red);
+        color: #fff;
+        font-weight: 700;
+        margin-right: 4px;
+      }
+      .card h3 {
+        margin: 0;
+        color: var(--ink);
+        font-size: 1.15rem;
+      }
+      .card-text {
+        margin: 0;
+        flex: 1;
+      }
+      .card-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 6px;
+      }
+      a {
+        color: var(--accent);
+      }
+      button,
+      .open {
+        font: inherit;
+        color: var(--ink);
+        background: #1b2540;
+        border: 1px solid #334155;
+        border-radius: 6px;
+        padding: 6px 12px;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      button:hover,
+      .open:hover {
+        border-color: var(--accent);
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .preview-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: end;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      fieldset {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 4px;
+        margin: 0;
+        display: flex;
+        gap: 2px;
+      }
+      legend {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+      fieldset label {
+        position: relative;
+      }
+      fieldset input {
+        position: absolute;
+        opacity: 0;
+        inset: 0;
+        cursor: pointer;
+      }
+      fieldset span {
+        display: block;
+        padding: 5px 11px;
+        border-radius: 5px;
+        color: var(--text);
+      }
+      fieldset input:checked + span {
+        background: var(--red);
+        color: #fff;
+        font-weight: 600;
+      }
+      fieldset input:focus-visible + span {
+        outline: 2px solid var(--accent);
+      }
+      .toggle {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .toggle input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--red);
+      }
+      .scale-note {
+        margin: 0 0 8px;
+        color: var(--muted);
+        font-size: 13px;
+        min-height: 1.5em;
+      }
+      .stage {
+        background: repeating-conic-gradient(#0f1629 0 25%, #0d1324 0 50%) 0 0 / 24px 24px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        height: min(78vh, 900px);
+        min-height: 480px;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        padding: 12px 0;
+        margin-bottom: 40px;
+      }
+      .device {
+        transform-origin: top center;
+        flex: none;
+        background: #fff;
+        box-shadow: 0 0 0 1px #334155, 0 20px 50px rgba(0, 0, 0, 0.5);
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .device iframe {
+        display: block;
+        border: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+
+    <script>
+      const stage = document.querySelector<HTMLElement>('[data-stage]');
+      const device = document.querySelector<HTMLElement>('[data-device]');
+      const frame = document.querySelector<HTMLIFrameElement>('[data-frame]');
+      const openLink = document.querySelector<HTMLAnchorElement>('[data-open]');
+      const note = document.querySelector<HTMLElement>('[data-scale-note]');
+      const wireBox = document.querySelector<HTMLInputElement>('input[name="wire"]');
+
+      const state = { variant: 'a', width: 360 };
+
+      // Ricorda l'ultima scelta (solo comodità per chi guarda).
+      try {
+        const saved = JSON.parse(localStorage.getItem('eos-lab-preview') ?? 'null');
+        if (saved && typeof saved.variant === 'string' && typeof saved.width === 'number') {
+          Object.assign(state, saved);
+        }
+      } catch {
+        /* ignora */
+      }
+
+      function src() {
+        const wire = wireBox?.checked ? '&wire=1' : '';
+        return `/lab/${state.variant}?embed=1${wire}`;
+      }
+
+      // Altezze realistiche per ogni larghezza: telefono, tablet verticale, portatile.
+      const HEIGHTS: Record<number, number> = { 360: 760, 768: 1024, 1440: 900 };
+
+      function layout() {
+        if (!stage || !device) return;
+        const w = state.width;
+        const h = HEIGHTS[w] ?? 900;
+        const availW = stage.clientWidth - 24;
+        const availH = stage.clientHeight - 24;
+        const scale = Math.min(1, availW / w, availH / h);
+        device.style.width = `${w}px`;
+        device.style.height = `${h}px`;
+        device.style.transform = `scale(${scale})`;
+        // Il blocco trasformato occupa ancora le misure originali: compensiamo.
+        device.style.marginInline = `${(-w * (1 - scale)) / 2}px`;
+        device.style.marginBottom = `${-h * (1 - scale)}px`;
+        if (note) {
+          note.textContent = `Viewport ${w}×${h}px` + (scale < 1 ? `, ridotta al ${Math.round(scale * 100)}% per stare nello schermo.` : ', scala 100%.');
+        }
+      }
+
+      function load() {
+        if (frame) frame.src = src();
+        if (openLink) openLink.href = `/lab/${state.variant}`;
+        try {
+          localStorage.setItem('eos-lab-preview', JSON.stringify(state));
+        } catch {
+          /* ignora */
+        }
+        layout();
+      }
+
+      function syncRadios() {
+        document.querySelectorAll<HTMLInputElement>('input[name="variant"]').forEach((r) => {
+          r.checked = r.value === state.variant;
+        });
+        document.querySelectorAll<HTMLInputElement>('input[name="width"]').forEach((r) => {
+          r.checked = Number(r.value) === state.width;
+        });
+      }
+
+      document.addEventListener('change', (e) => {
+        const t = e.target as HTMLInputElement;
+        if (t.name === 'variant') {
+          state.variant = t.value;
+          load();
+        } else if (t.name === 'width') {
+          state.width = Number(t.value);
+          load();
+        } else if (t.name === 'wire') {
+          load();
+        }
+      });
+
+      document.querySelectorAll<HTMLButtonElement>('[data-preview]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          state.variant = btn.dataset.preview ?? 'a';
+          syncRadios();
+          load();
+          document.getElementById('anteprima')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+
+      window.addEventListener('resize', layout);
+      syncRadios();
+      load();
+    </script>
+  </body>
+</html>

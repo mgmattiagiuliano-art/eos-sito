@@ -1,0 +1,81 @@
+/* =====================================================================
+   LAB · B — "Val Borbera"
+   Stesso schema di nomi in a.css / b.css / c.css.
+   ===================================================================== */
+:root {
+  /* Marchio (fissi) */
+  --t-brand-red: #e52320;
+  --t-brand-blue: #0044bd;
+
+  /* Colori d'uso */
+  --t-bg: #f6f0e6;            /* carta calda */
+  --t-surface: #fffcf7;
+  --t-surface-2: #efe5d6;
+  --t-ink: #2b1e16;           /* bruno scuro, non nero */
+  --t-ink-2: #3a2a20;         /* superfici scure */
+  --t-text: #54453a;          /* AA su bg: 8.4:1 */
+  --t-muted: #6c5c4f;         /* AA su bg: 5.6:1 */
+  --t-line: #e2d4c0;
+  --t-line-strong: #c9b59b;
+  --t-accent: var(--t-brand-red);
+  --t-accent-hover: #c41d1a;
+  --t-on-accent: #ffffff;
+  --t-link: var(--t-brand-blue);
+  --t-highlight: #c41d1a;     /* corsivi caldi: rosso marchio scurito per AA su carta */
+  --t-green: #2f7d45;
+  --t-sun: #e8a33d;           /* solo decorativo, mai testo */
+  --t-on-dark: #f6efe4;
+  --t-on-dark-muted: #cdbfae;
+  --t-focus: #0044bd;
+
+  /* Tipografia */
+  --t-font-display: 'Fraunces Variable', 'Fraunces', Georgia, serif;
+  --t-font-body: 'Source Sans 3 Variable', 'Source Sans 3', system-ui, sans-serif;
+  --t-font-mono: ui-monospace, 'SFMono-Regular', monospace; /* poco usato in B */
+  --t-fs-hero: clamp(2.6rem, 8vw, 6.6rem);
+  --t-fs-h2: clamp(1.9rem, 4.4vw, 3.4rem);
+  --t-fs-h3: clamp(1.2rem, 1.8vw, 1.45rem);
+  --t-fs-body: 1.125rem;
+  --t-fs-small: 0.95rem;
+  --t-fs-label: 0.8125rem;
+  --t-weight-display: 420;
+  --t-lh-tight: 1.04;
+  --t-lh-body: 1.65;
+  --t-tracking-display: -0.02em;
+  --t-tracking-label: 0.12em;
+
+  /* Forma */
+  --t-radius-s: 10px;
+  --t-radius-m: 18px;
+  --t-radius-l: 28px;
+  --t-radius-pill: 999px;
+  --t-border: 1px solid var(--t-line);
+  --t-shadow-1: 0 1px 2px rgba(60, 38, 20, 0.06), 0 6px 18px rgba(60, 38, 20, 0.06);
+  --t-shadow-2: 0 2px 6px rgba(60, 38, 20, 0.06), 0 24px 48px rgba(60, 38, 20, 0.12);
+
+  /* Spaziatura */
+  --t-space-1: 4px;
+  --t-space-2: 8px;
+  --t-space-3: 16px;
+  --t-space-4: 24px;
+  --t-space-5: 36px;
+  --t-space-6: 56px;
+  --t-space-7: 80px;
+  --t-space-8: 120px;
+  --t-section-y: clamp(72px, 11vw, 144px);
+  --t-container: 1200px;
+  --t-gutter: clamp(16px, 5vw, 48px);
+
+  /* Movimento */
+  --t-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --t-dur: 0.9s;
+
+  /* Cavo (opzione): curva morbida come un sentiero */
+  --wire-color: var(--t-brand-red);
+  --wire-track: rgba(43, 30, 22, 0.1);
+  --wire-width: 2px;
+  --wire-glow: none;
+  --wire-node-bg: var(--t-bg);
+  --wire-gutter: 3%;
+  --wire-z: 0;
+}

@@ -1,0 +1,85 @@
+/* =====================================================================
+   LAB · C — "Alta tensione"
+   Stesso schema di nomi in a.css / b.css / c.css.
+   C alterna sezioni scure e chiare: i token *-alt valgono per le chiare.
+   ===================================================================== */
+:root {
+  /* Marchio (fissi) */
+  --t-brand-red: #e52320;
+  --t-brand-blue: #0044bd;
+
+  /* Colori d'uso */
+  --t-bg: #0d0e11;            /* notte */
+  --t-bg-alt: #f1eee7;        /* osso */
+  --t-surface: #17181d;
+  --t-surface-2: #22242b;
+  --t-ink: #f5f3ee;           /* titoli su scuro */
+  --t-ink-alt: #0d0e11;       /* titoli su chiaro */
+  --t-text: #bdbab2;          /* AA su bg: 9.6:1 */
+  --t-text-alt: #3a3a3f;      /* AA su bg-alt: 10:1 */
+  --t-muted: #8f8c85;         /* AA su bg: 5.9:1 */
+  --t-muted-alt: #5e5d61;     /* AA su bg-alt: 5.7:1 */
+  --t-line: #2c2e36;
+  --t-line-alt: #cfcac0;
+  --t-accent: var(--t-brand-red);   /* campiture e testo SOLO grande su chiaro */
+  --t-accent-hover: #ff3b37;
+  --t-on-accent: #ffffff;
+  --t-link: #8fb3ff;                /* blu marchio schiarito per AA su scuro */
+  --t-link-alt: var(--t-brand-blue);
+  --t-highlight: var(--t-brand-red);
+  --t-block-blue: var(--t-brand-blue); /* campitura: testo bianco 8.2:1 */
+  --t-green: #34c06b;
+  --t-focus: #facc15;
+
+  /* Tipografia — un solo family variabile, larghezza come voce */
+  --t-font-display: 'Archivo Variable', 'Archivo', 'Arial Narrow', system-ui, sans-serif;
+  --t-font-body: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
+  --t-font-mono: 'Archivo Variable', ui-monospace, monospace;
+  --t-wdth-display: 72;       /* condensato per i titoli giganti */
+  --t-wdth-label: 125;        /* espanso per etichette e nav */
+  --t-fs-hero: clamp(3.4rem, 14vw, 13rem);
+  --t-fs-h2: clamp(2.4rem, 7vw, 6rem);
+  --t-fs-h3: clamp(1.2rem, 2vw, 1.6rem);
+  --t-fs-body: 1.0625rem;
+  --t-fs-small: 0.9rem;
+  --t-fs-label: 0.75rem;
+  --t-weight-display: 800;
+  --t-lh-tight: 0.88;
+  --t-lh-body: 1.6;
+  --t-tracking-display: -0.01em;
+  --t-tracking-label: 0.14em;
+
+  /* Forma */
+  --t-radius-s: 0;
+  --t-radius-m: 0;
+  --t-radius-l: 0;
+  --t-border: 1px solid var(--t-line);
+  --t-shadow-1: none;
+  --t-shadow-2: 0 30px 60px rgba(0, 0, 0, 0.45);
+
+  /* Spaziatura */
+  --t-space-1: 4px;
+  --t-space-2: 8px;
+  --t-space-3: 16px;
+  --t-space-4: 24px;
+  --t-space-5: 40px;
+  --t-space-6: 64px;
+  --t-space-7: 96px;
+  --t-space-8: 160px;
+  --t-section-y: clamp(80px, 13vw, 180px);
+  --t-container: 1440px;
+  --t-gutter: clamp(16px, 4vw, 56px);
+
+  /* Movimento */
+  --t-ease: cubic-bezier(0.7, 0, 0.2, 1);
+  --t-dur: 0.5s;
+
+  /* Cavo (opzione): spezzata rossa, spessa, sopra i blocchi */
+  --wire-color: var(--t-brand-red);
+  --wire-track: rgba(229, 35, 32, 0.18);
+  --wire-width: 3px;
+  --wire-glow: drop-shadow(0 0 6px rgba(229, 35, 32, 0.7));
+  --wire-node-bg: var(--t-bg);
+  --wire-gutter: 1.6%;
+  --wire-z: 3;
+}

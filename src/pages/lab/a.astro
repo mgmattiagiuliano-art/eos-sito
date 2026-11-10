@@ -1,0 +1,1055 @@
+---
+import '@fontsource-variable/ibm-plex-sans';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '../../components/lab/tokens/a.css';
+import LabShell from '../../components/lab/LabShell.astro';
+import { company, hero, services, why, calc, contact, nav } from '../../components/lab/content';
+---
+
+<LabShell
+  title="A · Tavola tecnica"
+  code="A"
+  direction="Tavola tecnica — ingegneristica"
+  wire="ortho"
+  themeColor="#f3f5f8"
+  logic={[
+    'Il sito come un progetto esecutivo: tavole numerate, griglia millimetrata, dati di targa. Comunica metodo e precisione prima ancora dei servizi.',
+    'IBM Plex Sans + Plex Mono, superfici chiare e fredde, angoli vivi. Il rosso marca solo le azioni, il blu traccia linee, collegamenti ed evidenze.',
+    'Motion: gli schemi si disegnano entrando in vista, le cifre "si misurano". Il cavo, se attivo, diventa un tracciato ortogonale da schema elettrico.',
+  ]}
+>
+  <div class="va">
+    <header class="a-header">
+      <div class="a-container a-header-in">
+        <a href="#top" class="a-logo"><img src="/logo.png" alt="EOS Impianti s.n.c." width="970" height="257" /></a>
+        <nav class="a-nav" aria-label="Sezioni">
+          {
+            nav.map((n, i) => (
+              <a href={n.href}>
+                <span class="a-mono">0{i + 1}</span> {n.label}
+              </a>
+            ))
+          }
+        </nav>
+        <a class="a-btn a-btn-primary a-btn-sm" href="#contatti">Sopralluogo</a>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- TAV. 01 — Motto -->
+      <section class="a-hero1" data-wire-node data-wire-offset="40" aria-labelledby="a-motto">
+        <div class="a-container a-hero1-in">
+          <p class="a-tav a-reveal"><span>Tav. 01</span><span class="a-rule"></span><span>Domanda</span></p>
+          <h1 id="a-motto" class="a-motto">
+            <span class="a-line"><span>{hero.motto.before}</span></span>
+            <span class="a-line"><span><em>{hero.motto.accent}</em></span></span>
+            <span class="a-line"><span>{hero.motto.after.trim()}</span></span>
+          </h1>
+          <dl class="a-titleblock a-reveal" aria-label="Cartiglio">
+            <div><dt>Studio</dt><dd>{company.name}</dd></div>
+            <div><dt>Luogo</dt><dd>Vignole Borbera (AL)</dd></div>
+            <div><dt>Area</dt><dd>Alessandria — Genova — Italia</dd></div>
+            <div><dt>Tavola</dt><dd>01 / 05</dd></div>
+          </dl>
+          <a href="#tav-02" class="a-scrollcue a-mono">↓ Tav. 02 — la risposta</a>
+        </div>
+      </section>
+
+      <!-- TAV. 02 — Risposta + schema unifilare -->
+      <section class="a-section a-hero2" id="tav-02" data-wire-node aria-labelledby="a-answer">
+        <div class="a-container a-hero2-in">
+          <div>
+            <p class="a-tav a-reveal"><span>Tav. 02</span><span class="a-rule"></span><span>Risposta</span></p>
+            <h2 id="a-answer" class="a-h2 a-reveal">
+              {hero.answer.before}<mark>{hero.answer.accent}</mark>{hero.answer.after}
+            </h2>
+            <p class="a-lead a-reveal">{hero.answer.text}</p>
+            <div class="a-actions a-reveal">
+              <a class="a-btn a-btn-primary" href="#contatti">{hero.answer.ctaPrimary}</a>
+              <a class="a-btn a-btn-ghost" href="#calcolatore">{hero.answer.ctaSecondary}</a>
+            </div>
+          </div>
+          <figure class="a-diagram">
+            <svg viewBox="0 0 520 460" role="img" aria-labelledby="a-diag-title">
+              <title id="a-diag-title">Schema unifilare: dalla rete al quadro, verso utenze, accumulo e fotovoltaico</title>
+              <g class="a-grid-dots" aria-hidden="true">
+                <rect x="0" y="0" width="520" height="460" fill="url(#a-dots)"></rect>
+              </g>
+              <defs>
+                <pattern id="a-dots" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <circle cx="1" cy="1" r="1" fill="currentColor" opacity=".18"></circle>
+                </pattern>
+              </defs>
+              <!-- Rete / traliccio -->
+              <path class="a-draw" d="M30 110 L50 40 L70 110 M36 88 L64 88 M42 64 L58 64 M50 40 L50 30 M38 50 L62 50"></path>
+              <text x="50" y="132" class="a-svg-label" text-anchor="middle">RETE</text>
+              <!-- linea rete -> contatore -->
+              <path class="a-draw a-flow-base" d="M70 76 L150 76"></path>
+              <!-- Contatore -->
+              <rect class="a-draw" x="150" y="50" width="84" height="52" rx="2"></rect>
+              <text x="192" y="81" class="a-svg-value" text-anchor="middle">kWh</text>
+              <text x="192" y="124" class="a-svg-label" text-anchor="middle">CONTATORE</text>
+              <!-- linea contatore -> quadro -->
+              <path class="a-draw a-flow-base" d="M234 76 L310 76"></path>
+              <!-- Quadro -->
+              <rect class="a-draw" x="310" y="36" width="140" height="90" rx="2"></rect>
+              <path class="a-draw" d="M335 56 L335 72 L345 64 M335 80 L335 106 M380 56 L380 72 L390 64 M380 80 L380 106 M425 56 L425 72 L435 64 M425 80 L425 106"></path>
+              <text x="380" y="148" class="a-svg-label" text-anchor="middle">QUADRO</text>
+              <!-- dorsale -->
+              <path class="a-draw a-flow-base" d="M380 126 L380 190 M90 190 L470 190 M90 190 L90 250 M270 190 L270 250 M450 190 L450 250"></path>
+              <!-- Utenze: casa -->
+              <path class="a-draw" d="M60 300 L90 272 L120 300 L120 340 L60 340 Z M82 340 L82 318 L98 318 L98 340"></path>
+              <text x="90" y="366" class="a-svg-label" text-anchor="middle">UTENZE</text>
+              <path class="a-draw" d="M90 250 L90 272"></path>
+              <!-- Accumulo -->
+              <rect class="a-draw" x="244" y="262" width="52" height="78" rx="2"></rect>
+              <path class="a-draw" d="M260 256 L280 256 M256 282 L284 282 M256 300 L284 300 M256 318 L284 318"></path>
+              <text x="270" y="366" class="a-svg-label" text-anchor="middle">ACCUMULO</text>
+              <path class="a-draw" d="M270 250 L270 256"></path>
+              <!-- Inverter -->
+              <rect class="a-draw" x="414" y="250" width="72" height="50" rx="2"></rect>
+              <path class="a-draw" d="M414 300 L486 250"></path>
+              <text x="432" y="272" class="a-svg-tiny">~</text>
+              <text x="462" y="292" class="a-svg-tiny">=</text>
+              <path class="a-draw a-flow-base" d="M450 300 L450 330"></path>
+              <!-- Pannello FV -->
+              <path class="a-draw a-green" d="M410 330 L490 330 L500 400 L400 400 Z M425 330 L420 400 M450 330 L450 400 M475 330 L480 400 M405 365 L495 365"></path>
+              <text x="450" y="424" class="a-svg-label" text-anchor="middle">FOTOVOLTAICO</text>
+              <!-- flusso -->
+              <path class="a-flow" d="M70 76 L150 76 M234 76 L310 76 M380 126 L380 190 L90 190 L90 250 M380 190 L270 190 L270 250 M380 190 L450 190 L450 250 M450 330 L450 300"></path>
+            </svg>
+            <figcaption class="a-mono">Fig. 2.1 — Produrre, utilizzare, gestire: un solo impianto, un solo referente.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- TAV. 03 — Relazione: chi siamo + filosofia -->
+      <section class="a-section a-report" data-wire-node aria-labelledby="a-report-title">
+        <div class="a-container">
+          <p class="a-tav a-reveal"><span>Tav. 03</span><span class="a-rule"></span><span>Relazione</span></p>
+          <h2 id="a-report-title" class="sr-only">Chi siamo e filosofia</h2>
+          <div class="a-report-grid">
+            <article class="a-reveal">
+              <p class="a-num a-mono">3.1 — {hero.about.kicker}</p>
+              <h3 class="a-h3">{hero.about.title}</h3>
+              <p>{hero.about.text}</p>
+            </article>
+            <article class="a-reveal">
+              <p class="a-num a-mono">3.2 — {hero.philosophy.kicker}</p>
+              <h3 class="a-h3">{hero.philosophy.title}</h3>
+              <p>{hero.philosophy.text}</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAV. 04 — Servizi -->
+      <section class="a-section" id="servizi" data-wire-node aria-labelledby="a-services-title">
+        <div class="a-container">
+          <p class="a-tav a-reveal"><span>Tav. 04</span><span class="a-rule"></span><span>Servizi</span></p>
+          <div class="a-head-row">
+            <h2 id="a-services-title" class="a-h2 a-reveal">Sei discipline, <mark>un'unica regia</mark>.</h2>
+            <p class="a-muted a-reveal">Ogni scheda è una specialità che progettiamo, installiamo e manteniamo nel tempo.</p>
+          </div>
+          <ul class="a-services" role="list">
+            {
+              services.map((s) => (
+                <li class="a-service a-reveal">
+                  <div class="a-service-img">
+                    <img src={s.img} alt={s.alt} loading="lazy" width="640" height="480" />
+                    <span class="a-corner" aria-hidden="true" />
+                  </div>
+                  <p class="a-service-meta a-mono">
+                    <span>S-{s.code}</span>
+                    <span>{s.tag}</span>
+                  </p>
+                  <h3 class="a-h3">{s.title}</h3>
+                  <p class="a-service-desc">{s.desc}</p>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </section>
+
+      <!-- Perché EOS: targa dati -->
+      <section class="a-section" id="perche-eos" data-wire-node aria-labelledby="a-why-title">
+        <div class="a-container">
+          <div class="a-plate a-reveal">
+            <span class="a-rivet" aria-hidden="true"></span><span class="a-rivet" aria-hidden="true"></span>
+            <span class="a-rivet" aria-hidden="true"></span><span class="a-rivet" aria-hidden="true"></span>
+            <div class="a-plate-head">
+              <p class="a-mono">Targa dati · {company.legalName}</p>
+              <h2 id="a-why-title" class="a-h2">{why.title}</h2>
+              <p>{why.subtitle}</p>
+            </div>
+            <dl class="a-plate-rows">
+              {
+                why.items.map((it) => (
+                  <div class="a-plate-row">
+                    <dt>
+                      <span class="a-plate-value a-mono" data-count={it.value}>
+                        {it.value}
+                      </span>
+                    </dt>
+                    <dd>
+                      <strong>{it.label}</strong>
+                      <span>{it.text}</span>
+                    </dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAV. 05 — Calcolatore -->
+      <section class="a-section" id="calcolatore" data-wire-node aria-labelledby="a-calc-title">
+        <div class="a-container a-calc">
+          <div>
+            <p class="a-tav a-reveal"><span>Tav. 05</span><span class="a-rule"></span><span>{calc.kicker}</span></p>
+            <h2 id="a-calc-title" class="a-h2 a-reveal">{calc.title}</h2>
+            <p class="a-lead a-reveal">{calc.sub}</p>
+            <p class="a-reveal">{calc.text}</p>
+            <p class="a-note a-mono a-reveal">{calc.note}</p>
+            <button class="a-btn a-btn-primary a-reveal" type="button" data-demo="Anteprima di design: il calcolatore EOSolar non è collegato nelle pagine /lab.">
+              {calc.cta} →
+            </button>
+          </div>
+          <div class="a-instrument a-reveal" aria-hidden="true">
+            <div class="a-instrument-bar a-mono"><span>EOSolar</span><span>input → output</span></div>
+            <div class="a-instrument-in">
+              {['F1', 'F2', 'F3'].map((f) => (
+                <div class="a-slot"><span class="a-mono">{f}</span><span class="a-dash" /></div>
+              ))}
+            </div>
+            <div class="a-instrument-out">
+              {calc.outputs.map((o) => (
+                <div class="a-readout">
+                  <span class="a-mono a-readout-v">— — . —</span>
+                  <span class="a-readout-l">{o}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contatti -->
+      <section class="a-section a-contact" id="contatti" data-wire-node aria-labelledby="a-contact-title">
+        <div class="a-container a-contact-grid">
+          <div>
+            <p class="a-tav a-reveal"><span>Contatti</span><span class="a-rule"></span><span>Sopralluogo</span></p>
+            <h2 id="a-contact-title" class="a-h2 a-reveal">{contact.title}</h2>
+            <p class="a-lead a-reveal">{contact.text}</p>
+            <dl class="a-spec a-reveal">
+              <div><dt>Sede</dt><dd>{company.legalName}<br />{company.street}, {company.city}</dd></div>
+              <div><dt>Telefono</dt><dd><a href={company.phoneHref}>{company.phone}</a></dd></div>
+              <div><dt>Email</dt><dd><a href={`mailto:${company.email}`}>{company.email}</a></dd></div>
+              <div><dt>Coordinate</dt><dd class="a-mono">{company.geo.lat.toFixed(4)} N · {company.geo.lng.toFixed(4)} E</dd></div>
+              <div><dt>P.IVA</dt><dd class="a-mono">{company.vat}</dd></div>
+            </dl>
+            <a class="a-link a-reveal" href={company.mapsHref} target="_blank" rel="noopener">Apri il percorso su Google Maps ↗</a>
+          </div>
+          <form class="a-form a-reveal" data-demo-form aria-labelledby="a-form-title">
+            <h3 id="a-form-title" class="a-h3">{contact.formTitle}</h3>
+            <div class="a-field">
+              <label for="a-nome">Nome e cognome *</label>
+              <input id="a-nome" name="nome" required autocomplete="name" />
+            </div>
+            <div class="a-field-row">
+              <div class="a-field">
+                <label for="a-email">Email *</label>
+                <input id="a-email" type="email" name="email" required autocomplete="email" />
+              </div>
+              <div class="a-field">
+                <label for="a-tel">Telefono</label>
+                <input id="a-tel" type="tel" name="telefono" autocomplete="tel" />
+              </div>
+            </div>
+            <div class="a-field">
+              <label for="a-msg">Messaggio</label>
+              <textarea id="a-msg" name="messaggio" rows="4"></textarea>
+            </div>
+            <label class="a-check">
+              <input type="checkbox" required name="privacy" />
+              <span>Ho letto l'<a href="#privacy">informativa privacy</a> e acconsento al trattamento dei dati per ricevere risposta. *</span>
+            </label>
+            <button class="a-btn a-btn-primary a-btn-block" type="submit">{contact.submit}</button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="a-footer">
+      <div class="a-container a-footer-in a-mono">
+        <span>© 2026 {company.legalName}</span>
+        <span>{company.street}, {company.city} · P.IVA {company.vat}</span>
+      </div>
+    </footer>
+  </div>
+</LabShell>
+
+<style is:global>
+  /* Stili globali con prefisso .va / .a-: anche gli elementi SVG e quelli animati restano coperti. */
+  body {
+    background: var(--t-bg);
+    color: var(--t-text);
+    font-family: var(--t-font-body);
+    font-size: var(--t-fs-body);
+    line-height: var(--t-lh-body);
+  }
+  .va {
+    background-image: linear-gradient(var(--t-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--t-grid) 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-position: -1px -1px;
+  }
+  .va :where(h1, h2, h3) {
+    color: var(--t-ink);
+    font-family: var(--t-font-display);
+    font-weight: var(--t-weight-display);
+    margin: 0;
+  }
+  .va p {
+    margin: 0 0 var(--t-space-3);
+  }
+  .va a {
+    color: var(--t-link);
+  }
+  .va :focus-visible {
+    outline: 2px solid var(--t-focus);
+    outline-offset: 3px;
+  }
+  .va mark {
+    background: none;
+    color: var(--t-highlight);
+    box-shadow: inset 0 -0.12em 0 rgba(0, 68, 189, 0.18);
+  }
+  .a-mono {
+    font-family: var(--t-font-mono);
+    font-size: var(--t-fs-label);
+    letter-spacing: var(--t-tracking-label);
+    text-transform: uppercase;
+  }
+  .a-muted {
+    color: var(--t-muted);
+  }
+  .a-container {
+    width: 100%;
+    max-width: var(--t-container);
+    margin-inline: auto;
+    padding-inline: var(--t-gutter);
+    position: relative;
+    z-index: 1;
+  }
+  .a-section {
+    padding-block: var(--t-section-y);
+    border-top: var(--t-border);
+  }
+
+  /* Header */
+  .a-header {
+    position: sticky;
+    top: var(--labbar-h);
+    z-index: 50;
+    background: rgba(243, 245, 248, 0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: var(--t-border);
+  }
+  .a-header-in {
+    display: flex;
+    align-items: center;
+    gap: var(--t-space-4);
+    height: 64px;
+  }
+  .a-logo img {
+    height: 36px;
+    width: auto;
+  }
+  .a-nav {
+    display: none;
+    margin-left: auto;
+    gap: var(--t-space-4);
+  }
+  .a-nav a {
+    color: var(--t-ink);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: var(--t-fs-small);
+  }
+  .a-nav a .a-mono {
+    color: var(--t-link);
+    margin-right: 2px;
+  }
+  .a-nav a:hover {
+    color: var(--t-link);
+  }
+  .a-header .a-btn {
+    margin-left: auto;
+  }
+  @media (min-width: 900px) {
+    .a-nav {
+      display: flex;
+    }
+    .a-header .a-btn {
+      margin-left: 0;
+    }
+  }
+
+  /* Bottoni */
+  .a-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 12px 22px;
+    border-radius: var(--t-radius-s);
+    border: 1px solid transparent;
+    font: 600 0.95rem/1.2 var(--t-font-body);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--t-dur) var(--t-ease), color var(--t-dur) var(--t-ease), border-color 0.2s;
+  }
+  .va .a-btn-primary {
+    background: var(--t-accent);
+    color: var(--t-on-accent);
+  }
+  .va .a-btn-primary:hover {
+    background: var(--t-accent-hover);
+  }
+  .va .a-btn-ghost {
+    background: transparent;
+    color: var(--t-ink);
+    border-color: var(--t-line-strong);
+  }
+  .va .a-btn-ghost:hover {
+    border-color: var(--t-link);
+    color: var(--t-link);
+  }
+  .a-btn-sm {
+    min-height: 40px;
+    padding: 8px 16px;
+    font-size: 0.875rem;
+  }
+  .a-btn-block {
+    width: 100%;
+  }
+  .a-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--t-space-3);
+    margin-top: var(--t-space-5);
+  }
+  .a-link {
+    font-weight: 600;
+  }
+
+  /* Etichetta di tavola */
+  .a-tav {
+    display: flex;
+    align-items: center;
+    gap: var(--t-space-3);
+    font-family: var(--t-font-mono);
+    font-size: var(--t-fs-label);
+    letter-spacing: var(--t-tracking-label);
+    text-transform: uppercase;
+    color: var(--t-muted);
+    margin-bottom: var(--t-space-5) !important;
+  }
+  .a-tav span:first-child {
+    color: var(--t-link);
+    font-weight: 500;
+  }
+  .a-rule {
+    flex: 0 1 120px;
+    height: 1px;
+    background: var(--t-line-strong);
+    transform-origin: left;
+  }
+
+  .a-h2 {
+    font-size: var(--t-fs-h2);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    margin-bottom: var(--t-space-4) !important;
+    max-width: 22ch;
+  }
+  .a-h3 {
+    font-size: var(--t-fs-h3);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    margin-bottom: var(--t-space-2) !important;
+  }
+  .a-lead {
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+    color: var(--t-text);
+    max-width: 60ch;
+  }
+
+  /* TAV 01 */
+  .a-hero1 {
+    min-height: calc(100svh - var(--labbar-h) - 64px);
+    display: flex;
+    align-items: center;
+    padding-block: var(--t-space-7);
+  }
+  .a-hero1-in {
+    display: grid;
+    gap: var(--t-space-5);
+  }
+  .a-motto {
+    font-size: var(--t-fs-hero);
+    line-height: var(--t-lh-tight);
+    letter-spacing: var(--t-tracking-display);
+    font-weight: 600;
+  }
+  .a-line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.06em;
+  }
+  .a-line > span {
+    display: inline-block;
+  }
+  .a-motto em {
+    font-style: normal;
+    color: var(--t-highlight);
+    position: relative;
+  }
+  .a-titleblock {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--t-line-strong);
+    background: var(--t-surface);
+    max-width: 560px;
+    justify-self: end;
+    width: 100%;
+  }
+  .a-titleblock div {
+    padding: 8px 12px;
+    border-right: 1px solid var(--t-line);
+    border-bottom: 1px solid var(--t-line);
+  }
+  .a-titleblock div:nth-child(2n) {
+    border-right: 0;
+  }
+  .a-titleblock div:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+  .a-titleblock dt {
+    font-family: var(--t-font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: var(--t-tracking-label);
+    text-transform: uppercase;
+    color: var(--t-muted);
+  }
+  .a-titleblock dd {
+    margin: 0;
+    font-size: var(--t-fs-small);
+    color: var(--t-ink);
+    font-weight: 500;
+  }
+  .va .a-scrollcue {
+    color: var(--t-muted);
+    text-decoration: none;
+  }
+  .va .a-scrollcue:hover {
+    color: var(--t-link);
+  }
+
+  /* TAV 02 */
+  .a-hero2-in {
+    display: grid;
+    gap: var(--t-space-6);
+    align-items: center;
+  }
+  @media (min-width: 960px) {
+    .a-hero2-in {
+      grid-template-columns: 1.05fr 1fr;
+    }
+  }
+  .a-diagram {
+    margin: 0;
+    background: var(--t-surface);
+    border: var(--t-border);
+    padding: var(--t-space-4);
+    color: var(--t-ink);
+  }
+  .a-diagram svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .a-diagram figcaption {
+    margin-top: var(--t-space-3);
+    color: var(--t-muted);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .a-draw {
+    fill: none;
+    stroke: var(--t-ink);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .a-draw.a-flow-base {
+    stroke: var(--t-line-strong);
+  }
+  .a-draw.a-green {
+    stroke: var(--t-green);
+  }
+  .a-flow {
+    fill: none;
+    stroke: var(--t-brand-blue);
+    stroke-width: 2;
+    stroke-dasharray: 3 14;
+    stroke-linecap: round;
+    animation: a-flow 1.4s linear infinite;
+  }
+  @keyframes a-flow {
+    to {
+      stroke-dashoffset: -34;
+    }
+  }
+  .a-svg-label {
+    font: 500 11px var(--t-font-mono);
+    letter-spacing: 0.08em;
+    fill: var(--t-muted);
+  }
+  .a-svg-value {
+    font: 600 16px var(--t-font-mono);
+    fill: var(--t-ink);
+  }
+  .a-svg-tiny {
+    font: 600 16px var(--t-font-mono);
+    fill: var(--t-ink);
+  }
+
+  /* TAV 03 */
+  .a-report-grid {
+    display: grid;
+    gap: var(--t-space-6);
+  }
+  @media (min-width: 860px) {
+    .a-report-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--t-space-7);
+    }
+  }
+  .a-report-grid article {
+    border-left: 2px solid var(--t-link);
+    padding-left: var(--t-space-4);
+  }
+  .a-num {
+    color: var(--t-link);
+  }
+
+  /* Servizi */
+  .a-head-row {
+    display: grid;
+    gap: var(--t-space-3);
+    margin-bottom: var(--t-space-6);
+  }
+  @media (min-width: 860px) {
+    .a-head-row {
+      grid-template-columns: 1.4fr 1fr;
+      align-items: end;
+    }
+  }
+  .a-services {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    border-top: 1px solid var(--t-line-strong);
+    border-left: 1px solid var(--t-line-strong);
+  }
+  @media (min-width: 640px) {
+    .a-services {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1040px) {
+    .a-services {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .a-service {
+    padding: var(--t-space-4);
+    border-right: 1px solid var(--t-line-strong);
+    border-bottom: 1px solid var(--t-line-strong);
+    background: var(--t-surface);
+    transition: background 0.3s var(--t-ease);
+  }
+  .a-service-img {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    margin-bottom: var(--t-space-3);
+    background: var(--t-surface-2);
+  }
+  .a-service-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.05);
+    transition: filter 0.5s var(--t-ease), transform 0.8s var(--t-ease);
+  }
+  .a-service:hover .a-service-img img,
+  .a-service:focus-within .a-service-img img {
+    filter: none;
+    transform: scale(1.03);
+  }
+  .a-corner {
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    clip-path: polygon(0 0, 18px 0, 18px 1px, 1px 1px, 1px 18px, 0 18px, 0 0, 100% 0, 100% 18px, calc(100% - 1px) 18px, calc(100% - 1px) 1px, calc(100% - 18px) 1px, calc(100% - 18px) 0, 100% 0, 100% 100%, calc(100% - 18px) 100%, calc(100% - 18px) calc(100% - 1px), calc(100% - 1px) calc(100% - 1px), calc(100% - 1px) calc(100% - 18px), 100% calc(100% - 18px), 100% 100%, 0 100%, 0 calc(100% - 18px), 1px calc(100% - 18px), 1px calc(100% - 1px), 18px calc(100% - 1px), 18px 100%, 0 100%);
+  }
+  .a-service-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    color: var(--t-muted);
+    margin-bottom: var(--t-space-2) !important;
+  }
+  .a-service-meta span:first-child {
+    color: var(--t-link);
+    font-weight: 500;
+  }
+  .a-service-desc {
+    font-size: 0.95rem;
+    margin: 0 !important;
+  }
+
+  /* Targa dati */
+  .a-plate {
+    position: relative;
+    background: var(--t-ink);
+    color: #c9d3e3;
+    padding: clamp(24px, 5vw, 56px);
+    border-radius: var(--t-radius-l);
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent 40%);
+  }
+  .a-rivet {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #3a4558;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25);
+  }
+  .a-rivet:nth-child(1) { top: 12px; left: 12px; }
+  .a-rivet:nth-child(2) { top: 12px; right: 12px; }
+  .a-rivet:nth-child(3) { bottom: 12px; left: 12px; }
+  .a-rivet:nth-child(4) { bottom: 12px; right: 12px; }
+  .a-plate .a-h2 {
+    color: #fff;
+  }
+  .a-plate-head .a-mono {
+    color: #8fb3ff;
+  }
+  .a-plate-rows {
+    margin: var(--t-space-5) 0 0;
+    border-top: 1px solid #2b3549;
+  }
+  .a-plate-row {
+    display: grid;
+    grid-template-columns: minmax(96px, 0.5fr) 1fr;
+    gap: var(--t-space-4);
+    padding-block: var(--t-space-4);
+    border-bottom: 1px solid #2b3549;
+    align-items: baseline;
+  }
+  @media (min-width: 860px) {
+    .a-plate-row {
+      grid-template-columns: 220px 1fr;
+    }
+  }
+  .a-plate-row dt {
+    margin: 0;
+  }
+  .a-plate-value {
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    color: #fff;
+    letter-spacing: -0.02em;
+    font-weight: 500;
+    text-transform: none;
+  }
+  .a-plate-row dd {
+    margin: 0;
+    display: grid;
+    gap: 2px;
+  }
+  .a-plate-row strong {
+    color: #fff;
+    font-weight: 600;
+  }
+
+  /* Calcolatore */
+  .a-calc {
+    display: grid;
+    gap: var(--t-space-6);
+    align-items: center;
+  }
+  @media (min-width: 960px) {
+    .a-calc {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .a-note {
+    color: var(--t-muted);
+    text-transform: none;
+    letter-spacing: 0;
+    border-left: 2px solid var(--t-green);
+    padding-left: 12px;
+    margin-block: var(--t-space-4) var(--t-space-5) !important;
+  }
+  .a-instrument {
+    background: var(--t-surface);
+    border: 1px solid var(--t-line-strong);
+  }
+  .a-instrument-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--t-line);
+    color: var(--t-muted);
+  }
+  .a-instrument-bar span:first-child {
+    color: var(--t-green);
+    font-weight: 500;
+  }
+  .a-instrument-in {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--t-line);
+    border-bottom: 1px solid var(--t-line);
+  }
+  .a-slot {
+    background: var(--t-surface);
+    padding: 14px 16px;
+    display: grid;
+    gap: 10px;
+    color: var(--t-ink);
+  }
+  .a-dash {
+    height: 8px;
+    background: repeating-linear-gradient(90deg, var(--t-line-strong) 0 6px, transparent 6px 10px);
+  }
+  .a-instrument-out {
+    padding: var(--t-space-3) var(--t-space-4);
+  }
+  .a-readout {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--t-space-3);
+    padding-block: 12px;
+    border-bottom: 1px dashed var(--t-line);
+    flex-wrap: wrap;
+  }
+  .a-readout:last-child {
+    border-bottom: 0;
+  }
+  .a-readout-v {
+    font-size: 1.5rem;
+    color: var(--t-ink);
+    letter-spacing: 0.05em;
+    order: 2;
+  }
+  .a-readout-l {
+    font-size: var(--t-fs-small);
+    color: var(--t-muted);
+  }
+
+  /* Contatti */
+  .a-contact-grid {
+    display: grid;
+    gap: var(--t-space-6);
+  }
+  @media (min-width: 960px) {
+    .a-contact-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--t-space-7);
+    }
+  }
+  .a-spec {
+    margin: var(--t-space-5) 0;
+    border-top: var(--t-border);
+  }
+  .a-spec div {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: var(--t-space-3);
+    padding-block: 12px;
+    border-bottom: var(--t-border);
+  }
+  .a-spec dt {
+    font-family: var(--t-font-mono);
+    font-size: var(--t-fs-label);
+    letter-spacing: var(--t-tracking-label);
+    text-transform: uppercase;
+    color: var(--t-muted);
+    padding-top: 3px;
+  }
+  .a-spec dd {
+    margin: 0;
+    color: var(--t-ink);
+    overflow-wrap: anywhere;
+  }
+  .a-spec dd.a-mono {
+    font-size: 0.875rem;
+  }
+  .a-form {
+    background: var(--t-surface);
+    border: 1px solid var(--t-line-strong);
+    padding: clamp(20px, 4vw, 40px);
+    display: grid;
+    gap: var(--t-space-4);
+    align-self: start;
+  }
+  .a-field {
+    display: grid;
+    gap: 6px;
+  }
+  .a-field-row {
+    display: grid;
+    gap: var(--t-space-4);
+  }
+  @media (min-width: 560px) {
+    .a-field-row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .a-field label {
+    font-family: var(--t-font-mono);
+    font-size: var(--t-fs-label);
+    letter-spacing: var(--t-tracking-label);
+    text-transform: uppercase;
+    color: var(--t-ink);
+  }
+  .a-field input,
+  .a-field textarea {
+    font: inherit;
+    color: var(--t-ink);
+    background: var(--t-bg);
+    border: 1px solid var(--t-line-strong);
+    border-radius: var(--t-radius-s);
+    padding: 12px 14px;
+    width: 100%;
+  }
+  .a-field input:focus,
+  .a-field textarea:focus {
+    outline: 2px solid var(--t-focus);
+    outline-offset: 0;
+    border-color: var(--t-focus);
+  }
+  .a-check {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: var(--t-fs-small);
+  }
+  .a-check input {
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
+    flex: none;
+    accent-color: var(--t-brand-blue);
+  }
+
+  .a-footer {
+    border-top: var(--t-border);
+    padding-block: var(--t-space-5);
+    color: var(--t-muted);
+    background: var(--t-bg);
+  }
+  .a-footer-in {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--t-space-2);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+
+  const mm = gsap.matchMedia();
+  mm.add('(prefers-reduced-motion: no-preference)', () => {
+    // Motto: le righe salgono come una quota che si scrive.
+    gsap.from('.a-motto .a-line > span', {
+      yPercent: 110,
+      duration: 0.9,
+      ease: 'power3.out',
+      stagger: 0.12,
+      delay: 0.15,
+    });
+
+    // Righe di tavola: il tratto si estende da sinistra.
+    gsap.utils.toArray<HTMLElement>('.a-rule').forEach((rule) => {
+      gsap.from(rule, {
+        scaleX: 0,
+        duration: 0.8,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: rule, start: 'top 90%' },
+      });
+    });
+
+    // Blocchi: comparsa asciutta, piccolo spostamento.
+    gsap.utils.toArray<HTMLElement>('.a-reveal').forEach((el) => {
+      gsap.from(el, {
+        autoAlpha: 0,
+        y: 16,
+        duration: 0.6,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: el, start: 'top 88%' },
+      });
+    });
+
+    // Schema unifilare: ogni tratto si disegna in sequenza.
+    const paths = gsap.utils.toArray<SVGGeometryElement>('.a-diagram .a-draw');
+    paths.forEach((p) => {
+      const len = p.getTotalLength();
+      gsap.set(p, { strokeDasharray: len, strokeDashoffset: len });
+    });
+    gsap.set('.a-diagram .a-flow, .a-diagram text', { autoAlpha: 0 });
+    const tl = gsap.timeline({ scrollTrigger: { trigger: '.a-diagram', start: 'top 75%' } });
+    tl.to(paths, { strokeDashoffset: 0, duration: 0.7, ease: 'power1.inOut', stagger: 0.06 })
+      .to('.a-diagram text', { autoAlpha: 1, duration: 0.4, stagger: 0.03 }, '-=0.6')
+      .to('.a-diagram .a-flow', { autoAlpha: 1, duration: 0.4 });
+
+    // Targa dati: le cifre "si misurano".
+    document.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
+      const raw = el.dataset.count ?? '';
+      const m = raw.match(/^(\d+)(.*)$/);
+      if (!m) return;
+      const target = Number(m[1]);
+      const suffix = m[2];
+      const obj = { v: 0 };
+      el.textContent = `0${suffix}`;
+      gsap.to(obj, {
+        v: target,
+        duration: 1.2,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: el, start: 'top 85%' },
+        onUpdate: () => {
+          el.textContent = `${Math.round(obj.v)}${suffix}`;
+        },
+      });
+    });
+  });
+</script>
